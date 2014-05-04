@@ -2,11 +2,16 @@ pom.xml
 *jar
 /lib/
 /classes/
-/out/
 /target/
 .lein-deps-sum
 .lein-repl-history
 .lein-plugins/
 
-/t3tr0s.js
 *.swp
+
+/public/out/
+/public/t3tr0s.js
+/public/repl-url
+/.repl
+/.nrepl-port
+/node_modules

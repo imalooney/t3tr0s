@@ -1,6 +1,18 @@
 (ns t3tr0s.core
   (:require
-    [clojure.string :refer [join]]))
+    [clojure.browser.repl :as repl]
+    [clojure.string :refer [join]]
+    [jayq.core :refer [$ ajax document-ready]]))
+
+;;------------------------------------------------------------
+;; Connect to the Browser REPL
+;;------------------------------------------------------------
+
+(defn connect-repl []
+  (ajax {:url "repl-url"
+         :cache false
+         :dataType "text"
+         :success #(repl/connect %)}))
 
 (enable-console-print!)
 
@@ -55,6 +67,7 @@
   (println (board-str (:board @state))))
 
 (defn init []
+  (connect-repl)
   (print-board))
 
-(.addEventListener js/window "load" init)
+(document-ready init)
