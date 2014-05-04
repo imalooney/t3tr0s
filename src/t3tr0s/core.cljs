@@ -1,4 +1,4 @@
-(ns tet.core
+(ns t3tr0s.core
   (:require
     [clojure.string :refer [join]]))
 

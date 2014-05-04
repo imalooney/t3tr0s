@@ -8,5 +8,5 @@ pom.xml
 .lein-repl-history
 .lein-plugins/
 
-/tet.js
+/t3tr0s.js
 *.swp
