@@ -90,6 +90,19 @@
   []
   (swap! state assoc :board empty-board))
 
+(defn rotate-piece [piece]
+  (doall (map (fn [[x y]] [(- y) x]) piece))
+  )
+
+(defn test-rotate-piece 
+  "Clear the board, write the piece at 5, 9, rotate the piece, write the piece at 5, 1,
+    print the board."
+  [piece-key]
+  (clear-board)
+  (write-piece-to-board (piece-key pieces) 5 9)
+  (write-piece-to-board (rotate-piece (piece-key pieces)) 5 1)
+  (print-board))
+
 (defn test-piece
   "Clear the board, write a piece at 5,9, and print it."
   [piece-key]
