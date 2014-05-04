@@ -63,16 +63,18 @@
   [board]
   (join "\n" (map row-str board)))
 
-(defn print-board []
+(defn print-board
+  "Prints the board to screen."
+  []
   (println (board-str (:board @state))))
 
-(defn write-to-board [ x y value ]
-  (swap! state assoc-in [:board y x] value)
-  )
+(defn write-to-board
+  "Writes a given value to the x,y position on the board."
+  [ x y value ]
+  (swap! state assoc-in [:board y x] value))
 
 (defn init []
   (connect-repl)
-  (print-board)
-  )
+  (print-board))
 
 (document-ready init)
