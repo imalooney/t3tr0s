@@ -70,44 +70,45 @@
   []
   (println (board-str (:board @state))))
 
-(defn write-to-board
+(defn write-to-board!
   "Writes a given value to the x,y position on the board."
   [ x y value ]
   (if (and (<= 0 x 9) (<= 0 y 21))
     (swap! state assoc-in [:board y x] value)))
 
-(defn write-coord-to-board
+(defn write-coord-to-board!
   [[cx cy] x y]
-    (write-to-board (+ cx x) (+ cy y) 1))
+    (write-to-board! (+ cx x) (+ cy y) 1))
 
-(defn write-piece-to-board
+(defn write-piece-to-board!
   "Writes a given piece to the board."
   [piece x y]
-  (doall (map #(write-coord-to-board % x y) piece)))
+  (doall (map #(write-coord-to-board! % x y) piece)))
 
-(defn clear-board
+(defn clear-board!
   "Clears the board."
   []
   (swap! state assoc :board empty-board))
 
-(defn rotate-piece [piece]
-  (doall (map (fn [[x y]] [(- y) x]) piece))
-  )
+(defn rotate-piece
+  "Create a new piece by rotating the given piece clockwise."
+  [piece]
+  (doall (map (fn [[x y]] [(- y) x]) piece)))
 
-(defn test-rotate-piece 
+(defn test-rotate-piece!
   "Clear the board, write the piece at 5, 9, rotate the piece, write the piece at 5, 1,
     print the board."
   [piece-key]
-  (clear-board)
-  (write-piece-to-board (piece-key pieces) 5 9)
-  (write-piece-to-board (rotate-piece (piece-key pieces)) 5 1)
+  (clear-board!)
+  (write-piece-to-board! (piece-key pieces) 5 9)
+  (write-piece-to-board! (rotate-piece (piece-key pieces)) 5 1)
   (print-board))
 
-(defn test-piece
+(defn test-piece!
   "Clear the board, write a piece at 5,9, and print it."
   [piece-key]
-  (clear-board)
-  (write-piece-to-board (piece-key pieces) 5 9)
+  (clear-board!)
+  (write-piece-to-board! (piece-key pieces) 5 9)
   (print-board))
 
 (defn init []
