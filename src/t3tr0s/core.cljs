@@ -90,6 +90,13 @@
   []
   (swap! state assoc :board empty-board))
 
+(defn test-piece
+  "Clear the board, write a piece at 5,9, and print it."
+  [piece-key]
+  (clear-board)
+  (write-piece-to-board (piece-key pieces) 5 9)
+  (print-board))
+
 (defn init []
   (connect-repl)
   (print-board))
