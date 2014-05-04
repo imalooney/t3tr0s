@@ -70,6 +70,11 @@
   []
   (println (board-str (:board @state))))
 
+(defn read-board
+  "Get the current value from the given board position."
+  [x y]
+  (get-in @state [:board y x]))
+
 (defn write-to-board!
   "Writes a given value to the x,y position on the board."
   [ x y value ]
@@ -94,6 +99,19 @@
   "Create a new piece by rotating the given piece clockwise."
   [piece]
   (doall (map (fn [[x y]] [(- y) x]) piece)))
+
+(defn coord-collide?
+  [[cx cy] x y]
+  (not= 0 (read-board (+ cx x) (+ cy y))))
+
+(defn piece-collide?
+  "Determines if the given piece will collide with anything in the current board."
+  [piece x y]
+  (some #(coord-collide? % x y) piece))
+
+; ------------------------------------------------------------
+; TESTING FUNCTIONS
+; ------------------------------------------------------------
 
 (defn test-rotate-piece!
   "Clear the board, write the piece at 5, 9, rotate the piece, write the piece at 5, 1,
