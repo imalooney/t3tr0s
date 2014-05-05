@@ -183,12 +183,20 @@
   (draw-board)
   (print-board))
 
+(defn auto-refresh
+  "Automatically refresh the page whenever a cljs file is compiled."
+  []
+  (let [socket (.connect js/io "http://localhost:1234")]
+    (.on socket "refresh" #(.reload js/location))))
+
 (defn init []
   (connect-repl)
   (print-board)
   (size-canvas)
   (draw-board)
   (test-rotate-piece! :Z)
+
+  (auto-refresh)
   )
 
 (document-ready init)
