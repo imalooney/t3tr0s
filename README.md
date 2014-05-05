@@ -5,6 +5,10 @@ It was created by Alexey Pajitnov ["to produce the pleasure, to make
 fun"](https://www.youtube.com/watch?v=nTDRY8aPy7c).  Tetris was released on
 June 6, 1984.
 
+## DevBlog
+
+- [Day 1](devblog/day01.md)
+
 ## Setup
 
 1. Install [Leiningen](http://leiningen.org/) and [NodeJS](http://nodejs.org/).
