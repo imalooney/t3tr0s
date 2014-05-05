@@ -75,10 +75,14 @@
   [x y]
   (get-in @state [:board y x]))
 
+(defn coord-inside?
+  [x y]
+  (and (<= 0 x 9) (<= 0 y 21)))
+
 (defn write-to-board!
   "Writes a given value to the x,y position on the board."
   [ x y value ]
-  (if (and (<= 0 x 9) (<= 0 y 21))
+  (if (coord-inside? x y)
     (swap! state assoc-in [:board y x] value)))
 
 (defn write-coord-to-board!
@@ -100,9 +104,16 @@
   [piece]
   (doall (map (fn [[x y]] [(- y) x]) piece)))
 
+(defn coord-occupied?
+  [x y]
+  (not= 0 (read-board x y)))
+
 (defn coord-collide?
   [[cx cy] x y]
-  (not= 0 (read-board (+ cx x) (+ cy y))))
+  (let [abs-x (+ x cx)
+        abs-y (+ y cy)]
+    (or (not (coord-inside? abs-x abs-y))
+        (coord-occupied? abs-x abs-y))))
 
 (defn piece-collide?
   "Determines if the given piece will collide with anything in the current board."
@@ -124,9 +135,19 @@
 
 (defn test-piece!
   "Clear the board, write a piece at 5,9, and print it."
-  [piece-key]
+  [piece-key x y]
   (clear-board!)
-  (write-piece-to-board! (piece-key pieces) 5 9)
+  (write-piece-to-board! (piece-key pieces) x y)
+  (print-board))
+
+(defn test-collide-piece!
+  "Test collision."
+  [piece-key x y]
+  (clear-board!)
+  (write-piece-to-board! (:J pieces) 5 9)
+  (println (piece-collide? (piece-key pieces) x y))
+  (println "\n")
+  (write-piece-to-board! (piece-key pieces) x y)
   (print-board))
 
 (defn init []
