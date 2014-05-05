@@ -50,6 +50,10 @@
 
 (def state (atom {:board empty-board}))
 
+(defn get-cell-color
+  [cell]
+  (if (= 0 cell) "#EEE" "#F0F"))
+
 (defn get-cell-str
   "Return a space or asterisk for the given cell."
   [cell]
@@ -121,6 +125,32 @@
   (some #(coord-collide? % x y) piece))
 
 ; ------------------------------------------------------------
+; DRAWING FUNCTIONS
+; ------------------------------------------------------------
+
+(def sq-size 20)
+
+(defn size-canvas []
+  (let [canvas (.getElementById js/document "canvas")]
+    (aset canvas "width" (* sq-size 10))
+    (aset canvas "height" (* sq-size 22))))
+
+(defn draw-cell
+  [ctx x y]
+  (let [color (get-cell-color (read-board x y))
+        left (* sq-size x)
+        top  (* sq-size y)]
+
+    (aset ctx "fillStyle" color)
+    (.fillRect ctx left top sq-size sq-size)))
+
+(defn draw-board []
+  (let [canvas (.getElementById js/document "canvas")
+        ctx    (.getContext canvas "2d")]
+    (doall (for [x (range 10) y (range 22)]
+      (draw-cell ctx x y)))))
+
+; ------------------------------------------------------------
 ; TESTING FUNCTIONS
 ; ------------------------------------------------------------
 
@@ -131,6 +161,7 @@
   (clear-board!)
   (write-piece-to-board! (piece-key pieces) 5 9)
   (write-piece-to-board! (rotate-piece (piece-key pieces)) 5 1)
+  (draw-board)
   (print-board))
 
 (defn test-piece!
@@ -138,6 +169,7 @@
   [piece-key x y]
   (clear-board!)
   (write-piece-to-board! (piece-key pieces) x y)
+  (draw-board)
   (print-board))
 
 (defn test-collide-piece!
@@ -148,10 +180,15 @@
   (println (piece-collide? (piece-key pieces) x y))
   (println "\n")
   (write-piece-to-board! (piece-key pieces) x y)
+  (draw-board)
   (print-board))
 
 (defn init []
   (connect-repl)
-  (print-board))
+  (print-board)
+  (size-canvas)
+  (draw-board)
+  (test-rotate-piece! :Z)
+  )
 
 (document-ready init)
