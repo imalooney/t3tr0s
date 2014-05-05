@@ -5,6 +5,32 @@ It was created by Alexey Pajitnov ["to produce the pleasure, to make
 fun"](https://www.youtube.com/watch?v=nTDRY8aPy7c).  Tetris was released on
 June 6, 1984.
 
+## Setup
+
+1. Install [Leiningen](http://leiningen.org/) and [NodeJS](http://nodejs.org/).
+1. Run the following in the project directory:
+
+    ```
+    npm install
+    node server
+    ```
+
+1. In another terminal, run the auto-compiler from the project directory:
+
+    ```
+    lein cljsbuild auto
+    ```
+
+1. In another terminal, run the browser REPL:
+
+    ```
+    lein repl
+    > (brepl)
+    ```
+
+1. Open <http://localhost:1234> in your browser.
+
+
 ## Planning
 
 __References__
