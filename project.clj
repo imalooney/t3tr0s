@@ -12,13 +12,19 @@
   :source-paths ["src"]
 
   :cljsbuild { 
-    :builds [{:id "t3tr0s"
-              :source-paths ["src"]
+    :builds {:client {
+              :source-paths ["src/client"]
               :compiler {
-                :output-to "public/t3tr0s.js"
+                :output-to "public/client.js"
                 :output-dir "public/out"
                 :optimizations :none
-                :source-map true}}]}
+                :source-map true}}
+             :server {
+              :source-paths ["src/server"]
+              :compiler {
+                :target :nodejs
+                :output-to "server.js"
+                :optimizations :simple}}}}
 
   :injections [; Rig a (brepl) function to setup an Austin REPL and dump the url to a file.
                ; (This code is immediately executed after starting the repl.)

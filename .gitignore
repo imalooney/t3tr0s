@@ -11,7 +11,8 @@ pom.xml
 *.swp
 
 /public/out/
-/public/t3tr0s.js
+/public/client.js
+/server.js
 /public/repl-url
 /.repl
 /.nrepl-port
