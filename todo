@@ -1,0 +1,76 @@
+
+;;-----------------------------------------------------------------------
+;; game
+;;-----------------------------------------------------------------------
+
+- create state of current piece
+  - :piece :J
+  - :position {:x 0 :y 0}
+
+- add color
+  - change write-piece to write the piece's keyword to the board cell
+  - (for coloring/texturing per piece)
+
+- repaint when relevant state changes
+  - create (drawable-board) from current piece and board
+
+- move piece
+  - ignore if piece is nil
+  - key listener modifies :position
+  - create try-move!
+
+- rotate piece
+  - ignore if piece is nil
+  - rename functions "collide" -> "fits", and "occupied" -> "empty"
+  - create try-rotate!
+
+- hard drop
+  - get-drop-pos
+  - debug by drawing the ghost piece
+
+- gravity step
+  - implement as go-routine
+    - wait on blink
+  - drop (lower position over time)
+  - lock (write piece to board if can't go any lower)
+  - spawn (reset current position and randomize piece)
+
+- row collapse
+  - get-full-rows (indices)
+  - blink
+  - collapse full rows
+
+;;-----------------------------------------------------------------------
+;; stats graph
+;;-----------------------------------------------------------------------
+
+- build live graph of the game
+  - x-axis = piece number
+  - y-axis = height of the board after piece was dropped
+  - highlight rows that were collapsed
+  - shade cells above to indicate:
+    - a general sense of time it took to drop the piece
+    - where the piece was hard-dropped
+
+- important to make beautiful to beckon exploration
+
+- treat the graph as a map to be navigated
+  - mouse over a column to explain the data
+    - column rotates to a front view of the board (eager to show)
+      - revealing that the original column was in fact a side view of the board (aha)
+    - piece animates to show where it was hard-dropped
+
+;;-----------------------------------------------------------------------
+;; multiplayer
+;;-----------------------------------------------------------------------
+
+- before game
+  - show lobby
+
+- during game
+  - render all views (since we recieve all board states)
+  - update layout order by scores
+
+- after game
+  - show everyone's stats graph
+
