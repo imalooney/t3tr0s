@@ -48,7 +48,17 @@
                   [0 0 0 0 0 0 0 0 0 0]
                   [0 0 0 0 0 0 0 0 0 0]])
 
-(def state (atom {:board empty-board}))
+(defn get-rand-piece
+  "Return a random piece."
+  []
+  (pieces (rand-nth (keys pieces))))
+
+; The starting position of all pieces.
+(def start-position [4 2])
+
+(def state (atom {:piece (get-rand-piece)
+                  :position start-position
+                  :board empty-board}))
 
 (defn get-cell-color
   [cell]
@@ -145,6 +155,27 @@
       (draw-cell ctx x y board))
     nil))
 
+(defn create-drawable-board
+  "Creates a new drawable board, by combining the current piece with the current board."
+  []
+  (let [piece (:piece @state)
+        [x y] (:position @state)
+        board (:board @state)]
+  (write-piece-to-board piece x y board)))
+
+(defn draw-state
+  "Draw the current state of the board."
+  []
+  (draw-board (create-drawable-board)))
+
+(add-watch state :draw draw-state)
+
+(defn spawn-piece!
+  "Spawns a random piece at the starting position."
+  []
+  (swap! state assoc :piece (get-rand-piece)
+                     :position start-position))
+
 (defn auto-refresh
   "Automatically refresh the page whenever a cljs file is compiled."
   []
@@ -155,7 +186,7 @@
 (defn init []
   (connect-repl)
   (size-canvas)
-  (draw-board (:board @state))
+  (spawn-piece!)
 
   (auto-refresh)
   )
