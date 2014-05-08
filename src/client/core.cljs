@@ -56,32 +56,41 @@
 
 (defn read-board
   "Get the current value from the given board position."
-  [x y]
-  (get-in @state [:board y x]))
+  [x y board]
+  (get-in board [y x]))
 
 (defn coord-inside?
   [x y]
   (and (<= 0 x 9) (<= 0 y 21)))
 
-(defn write-to-board!
-  "Writes a given value to the x,y position on the board."
-  [ x y value ]
+(defn write-to-board
+  "Returns a new board with a value written to the given position."
+  [x y value board]
   (if (coord-inside? x y)
-    (swap! state assoc-in [:board y x] value)))
+    (assoc-in board [y x] value)
+    board))
 
-(defn write-coord-to-board!
-  [[cx cy] x y]
-    (write-to-board! (+ cx x) (+ cy y) 1))
+(defn write-coord-to-board
+  "Returns a new board with a value written to the given relative coordinate and position."
+  [[cx cy] x y value board]
+    (write-to-board (+ cx x) (+ cy y) value board))
 
-(defn write-piece-to-board!
-  "Writes a given piece to the board."
-  [piece x y]
-  (doall (map #(write-coord-to-board! % x y) piece)))
+(defn write-coords-to-board
+  "Returns a new board with a value written to the given relative coordinates and position."
+  [coords x y value board]
+  (if (zero? (count coords))
+    board
+    (let [coord (first coords)
+          rest-coords (rest coords)
+          new-board (write-coord-to-board coord x y value board)]
+      (recur rest-coords x y value new-board))))
 
-(defn clear-board!
-  "Clears the board."
-  []
-  (swap! state assoc :board empty-board))
+(defn write-piece-to-board
+  "Returns a new board with a the given piece written to the coordinate on the board."
+  [piece-key x y board]
+  (let [value piece-key
+        coords (piece-key pieces)]
+    (write-coords-to-board coords x y value board)))
 
 (defn rotate-piece
   "Create a new piece by rotating the given piece clockwise."
@@ -90,21 +99,21 @@
 
 (defn coord-empty?
   "Determines if the given coordinate on the board is empty."
-  [x y]
-  (zero? (read-board x y)))
+  [x y board]
+  (zero? (read-board x y board)))
 
 (defn coord-fits?
   "Determines if the given relative coordinate fits at the position on the board."
-  [[cx cy] x y]
+  [[cx cy] x y board]
   (let [abs-x (+ x cx)
         abs-y (+ y cy)]
     (and (coord-inside? abs-x abs-y)
-         (coord-empty? abs-x abs-y))))
+         (coord-empty? abs-x abs-y board))))
 
 (defn piece-fits?
   "Determines if the given piece will collide with anything in the current board."
-  [piece x y]
-  (every? #(coord-fits? % x y) piece))
+  [piece x y board]
+  (every? #(coord-fits? % x y board) piece))
 
 ; ------------------------------------------------------------
 ; DRAWING FUNCTIONS
@@ -118,19 +127,22 @@
     (aset canvas "height" (* sq-size 22))))
 
 (defn draw-cell
-  [ctx x y]
-  (let [color (get-cell-color (read-board x y))
+  "Draw the given cell of the given board."
+  [ctx x y board]
+  (let [color (get-cell-color (read-board x y board))
         left (* sq-size x)
         top  (* sq-size y)]
-
     (aset ctx "fillStyle" color)
     (.fillRect ctx left top sq-size sq-size)))
 
-(defn draw-board []
+(defn draw-board
+  "Draw the given board to the canvas."
+  [board]
   (let [canvas (.getElementById js/document "canvas")
         ctx    (.getContext canvas "2d")]
-    (doall (for [x (range 10) y (range 22)]
-      (draw-cell ctx x y)))))
+    (doseq [x (range 10) y (range 22)]
+      (draw-cell ctx x y board))
+    nil))
 
 (defn auto-refresh
   "Automatically refresh the page whenever a cljs file is compiled."
@@ -142,7 +154,7 @@
 (defn init []
   (connect-repl)
   (size-canvas)
-  (draw-board)
+  (draw-board (:board @state))
 
   (auto-refresh)
   )
