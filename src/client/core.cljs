@@ -139,10 +139,8 @@
 
 (defn init []
   (connect-repl)
-  (print-board)
   (size-canvas)
   (draw-board)
-  (test-rotate-piece! :Z)
 
   (auto-refresh)
   )
