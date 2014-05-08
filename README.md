@@ -8,6 +8,7 @@ June 6, 1984.
 ## DevBlog
 
 - [Day 1](devblog/day01.md)
+- [Day 2](devblog/day02.md)
 
 ## Setup
 
