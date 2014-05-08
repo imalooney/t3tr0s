@@ -32,7 +32,7 @@ June 6, 1984.
     > (brepl)
     ```
 
-1. Open <http://localhost:1234> in your browser.
+1. Open <http://localhost:1984> in your browser.
 
 
 ## Planning
