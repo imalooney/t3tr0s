@@ -88,21 +88,23 @@
   [piece]
   (doall (map (fn [[x y]] [(- y) x]) piece)))
 
-(defn coord-occupied?
+(defn coord-empty?
+  "Determines if the given coordinate on the board is empty."
   [x y]
-  (not= 0 (read-board x y)))
+  (zero? (read-board x y)))
 
-(defn coord-collide?
+(defn coord-fits?
+  "Determines if the given relative coordinate fits at the position on the board."
   [[cx cy] x y]
   (let [abs-x (+ x cx)
         abs-y (+ y cy)]
-    (or (not (coord-inside? abs-x abs-y))
-        (coord-occupied? abs-x abs-y))))
+    (and (coord-inside? abs-x abs-y)
+         (coord-empty? abs-x abs-y))))
 
-(defn piece-collide?
+(defn piece-fits?
   "Determines if the given piece will collide with anything in the current board."
   [piece x y]
-  (some #(coord-collide? % x y) piece))
+  (every? #(coord-fits? % x y) piece))
 
 ; ------------------------------------------------------------
 ; DRAWING FUNCTIONS
