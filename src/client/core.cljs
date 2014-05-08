@@ -197,6 +197,49 @@
                      :position start-position))
 
 ;;------------------------------------------------------------
+;; Input-driven STATE CHANGES
+;;------------------------------------------------------------
+
+(def key-codes {:left 37
+                :up 38
+                :right 39
+                :down 40
+                :space 32})
+
+(defn try-move!
+  "Try moving the current piece to the given offset."
+  [dx dy]
+  (let [[x y] (:position @state)
+        piece (:piece @state)
+        board (:board @state)
+        nx (+ dx x)
+        ny (+ dy y)]
+    (if (piece-fits? piece nx ny board)
+      (swap! state assoc :position [nx ny]))))
+
+(defn try-rotate!
+  "Try rotating the current piece."
+  []
+  (let [[x y] (:position @state)
+        piece (:piece @state)
+        board (:board @state)
+        new-piece (rotate-piece piece)]
+    (if (piece-fits? new-piece x y board)
+      (swap! state assoc :piece new-piece))))
+
+(defn add-key-events
+  "Add all the key inputs."
+  []
+  (.addEventListener js/window "keydown"
+     (fn [e]
+       (let [code (aget e "keyCode")]
+         (cond
+           (= code (:down key-codes))  (do (try-move!  0  1) (.preventDefault e))
+           (= code (:left key-codes))  (do (try-move! -1  0) (.preventDefault e))
+           (= code (:right key-codes)) (do (try-move!  1  0) (.preventDefault e))
+           (= code (:up key-codes))    (do (try-rotate!)     (.preventDefault e)))))))
+
+;;------------------------------------------------------------
 ;; Facilities
 ;;------------------------------------------------------------
 
@@ -220,6 +263,7 @@
 (defn init []
   (size-canvas)
   (spawn-piece!)
+  (add-key-events)
 
   (connect-repl)
   (auto-refresh)
