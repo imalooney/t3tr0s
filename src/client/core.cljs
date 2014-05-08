@@ -54,26 +54,6 @@
   [cell]
   (if (= 0 cell) "#EEE" "#F0F"))
 
-(defn get-cell-str
-  "Return a space or asterisk for the given cell."
-  [cell]
-  (if (= 0 cell) "_" "*"))
-
-(defn row-str
-  "Create a string from a board row."
-  [row]
-  (join "" (map get-cell-str row)))
-
-(defn board-str
-  "Create a string from the tetris board."
-  [board]
-  (join "\n" (map row-str board)))
-
-(defn print-board
-  "Prints the board to screen."
-  []
-  (println (board-str (:board @state))))
-
 (defn read-board
   "Get the current value from the given board position."
   [x y]
