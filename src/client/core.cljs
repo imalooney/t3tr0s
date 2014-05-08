@@ -4,17 +4,11 @@
     [clojure.string :refer [join]]
     [jayq.core :refer [$ ajax document-ready]]))
 
-;;------------------------------------------------------------
-;; Connect to the Browser REPL
-;;------------------------------------------------------------
-
-(defn connect-repl []
-  (ajax {:url "repl-url"
-         :cache false
-         :dataType "text"
-         :success #(repl/connect %)}))
-
 (enable-console-print!)
+
+;;------------------------------------------------------------
+;; Pieces.
+;;------------------------------------------------------------
 
 (def pieces
   {:I {:name :I :coords [[0 0] [0 -1] [0 1] [0 2]]}
@@ -24,6 +18,15 @@
    :Z {:name :Z :coords [[0 0] [-1 -1] [0 -1] [1 0]]}
    :O {:name :O :coords [[0 0] [-1 0] [-1 1] [0 1]]}
    :T {:name :T :coords [[0 0] [-1 0] [1 0] [0 1]]}})
+
+(defn get-rand-piece
+  "Return a random piece."
+  []
+  (pieces (rand-nth (keys pieces))))
+
+;;------------------------------------------------------------
+;; Board.
+;;------------------------------------------------------------
 
 (def empty-board [[0 0 0 0 0 0 0 0 0 0]
                   [0 0 0 0 0 0 0 0 0 0]
@@ -48,30 +51,26 @@
                   [0 0 0 0 0 0 0 0 0 0]
                   [0 0 0 0 0 0 0 0 0 0]])
 
-(defn get-rand-piece
-  "Return a random piece."
-  []
-  (pieces (rand-nth (keys pieces))))
-
 ; The starting position of all pieces.
 (def start-position [4 2])
 
-(def state (atom {:piece (get-rand-piece)
-                  :position start-position
-                  :board empty-board}))
+(defn coord-inside?
+  "Determines if the coordinate is inside the board."
+  [x y]
+  (and (<= 0 x 9) (<= 0 y 21)))
 
-(defn get-cell-color
-  [cell]
-  (if (= 0 cell) "#EEE" "#F0F"))
+
+; The size of a cell in pixels.
+(def cell-size 20)
+
+;;------------------------------------------------------------
+;; Pure Functions operating on a board.
+;;------------------------------------------------------------
 
 (defn read-board
   "Get the current value from the given board position."
   [x y board]
   (get-in board [y x]))
-
-(defn coord-inside?
-  [x y]
-  (and (<= 0 x 9) (<= 0 y 21)))
 
 (defn write-to-board
   "Returns a new board with a value written to the given position."
@@ -126,25 +125,30 @@
   [piece x y board]
   (every? #(coord-fits? % x y board) (:coords piece)))
 
-; ------------------------------------------------------------
-; DRAWING FUNCTIONS
-; ------------------------------------------------------------
+;;------------------------------------------------------------
+;; PAINTING (for showing the game on a canvas)
+;;------------------------------------------------------------
 
-(def sq-size 20)
-
-(defn size-canvas []
+(defn size-canvas
+  "Set the size of the canvas."
+  []
   (let [canvas (.getElementById js/document "canvas")]
-    (aset canvas "width" (* sq-size 10))
-    (aset canvas "height" (* sq-size 22))))
+    (aset canvas "width" (* cell-size 10))
+    (aset canvas "height" (* cell-size 22))))
+
+(defn get-cell-color
+  "Get the color for the given cell value."
+  [value]
+  (if (zero? value) "#EEE" "#CC0000"))
 
 (defn draw-cell
   "Draw the given cell of the given board."
   [ctx x y board]
   (let [color (get-cell-color (read-board x y board))
-        left (* sq-size x)
-        top  (* sq-size y)]
+        left (* cell-size x)
+        top  (* cell-size y)]
     (aset ctx "fillStyle" color)
-    (.fillRect ctx left top sq-size sq-size)))
+    (.fillRect ctx left top cell-size cell-size)))
 
 (defn draw-board
   "Draw the given board to the canvas."
@@ -154,6 +158,18 @@
     (doseq [x (range 10) y (range 22)]
       (draw-cell ctx x y board))
     nil))
+
+;;------------------------------------------------------------
+;; STATE OF THE GAME
+;;------------------------------------------------------------
+
+(def state (atom {:piece (get-rand-piece)
+                  :position start-position
+                  :board empty-board}))
+
+;;------------------------------------------------------------
+;; STATE MONITOR
+;;------------------------------------------------------------
 
 (defn create-drawable-board
   "Creates a new drawable board, by combining the current piece with the current board."
@@ -170,11 +186,25 @@
 
 (add-watch state :draw draw-state)
 
+;;------------------------------------------------------------
+;; Game-driven STATE CHANGES
+;;------------------------------------------------------------
+
 (defn spawn-piece!
   "Spawns a random piece at the starting position."
   []
   (swap! state assoc :piece (get-rand-piece)
                      :position start-position))
+
+;;------------------------------------------------------------
+;; Facilities
+;;------------------------------------------------------------
+
+(defn connect-repl []
+  (ajax {:url "repl-url"
+         :cache false
+         :dataType "text"
+         :success #(repl/connect %)}))
 
 (defn auto-refresh
   "Automatically refresh the page whenever a cljs file is compiled."
@@ -183,11 +213,15 @@
         socket (.connect js/io url)]
     (.on socket "refresh" #(.reload js/location))))
 
+;;------------------------------------------------------------
+;; Entry Point
+;;------------------------------------------------------------
+
 (defn init []
-  (connect-repl)
   (size-canvas)
   (spawn-piece!)
 
+  (connect-repl)
   (auto-refresh)
   )
 
