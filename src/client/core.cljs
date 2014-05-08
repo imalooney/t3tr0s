@@ -130,39 +130,6 @@
     (doall (for [x (range 10) y (range 22)]
       (draw-cell ctx x y)))))
 
-; ------------------------------------------------------------
-; TESTING FUNCTIONS
-; ------------------------------------------------------------
-
-(defn test-rotate-piece!
-  "Clear the board, write the piece at 5, 9, rotate the piece, write the piece at 5, 1,
-    print the board."
-  [piece-key]
-  (clear-board!)
-  (write-piece-to-board! (piece-key pieces) 5 9)
-  (write-piece-to-board! (rotate-piece (piece-key pieces)) 5 1)
-  (draw-board)
-  (print-board))
-
-(defn test-piece!
-  "Clear the board, write a piece at 5,9, and print it."
-  [piece-key x y]
-  (clear-board!)
-  (write-piece-to-board! (piece-key pieces) x y)
-  (draw-board)
-  (print-board))
-
-(defn test-collide-piece!
-  "Test collision."
-  [piece-key x y]
-  (clear-board!)
-  (write-piece-to-board! (:J pieces) 5 9)
-  (println (piece-collide? (piece-key pieces) x y))
-  (println "\n")
-  (write-piece-to-board! (piece-key pieces) x y)
-  (draw-board)
-  (print-board))
-
 (defn auto-refresh
   "Automatically refresh the page whenever a cljs file is compiled."
   []
