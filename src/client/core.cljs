@@ -17,13 +17,13 @@
 (enable-console-print!)
 
 (def pieces
-  {:I [[0 0] [0 -1] [0 1] [0 2]]
-   :L [[0 0] [0 1] [1 1] [0 -1]]
-   :J [[0 0] [0 -1] [0 1] [-1 1]]
-   :S [[0 0] [-1 0] [0 -1] [1 -1]]
-   :Z [[0 0] [-1 -1] [0 -1] [1 0]]
-   :O [[0 0] [-1 0] [-1 1] [0 1]]
-   :T [[0 0] [-1 0] [1 0] [0 1]]})
+  {:I {:name :I :coords [[0 0] [0 -1] [0 1] [0 2]]}
+   :L {:name :L :coords [[0 0] [0 1] [1 1] [0 -1]]}
+   :J {:name :J :coords [[0 0] [0 -1] [0 1] [-1 1]]}
+   :S {:name :S :coords [[0 0] [-1 0] [0 -1] [1 -1]]}
+   :Z {:name :Z :coords [[0 0] [-1 -1] [0 -1] [1 0]]}
+   :O {:name :O :coords [[0 0] [-1 0] [-1 1] [0 1]]}
+   :T {:name :T :coords [[0 0] [-1 0] [1 0] [0 1]]}})
 
 (def empty-board [[0 0 0 0 0 0 0 0 0 0]
                   [0 0 0 0 0 0 0 0 0 0]
@@ -87,15 +87,16 @@
 
 (defn write-piece-to-board
   "Returns a new board with a the given piece written to the coordinate on the board."
-  [piece-key x y board]
-  (let [value piece-key
-        coords (piece-key pieces)]
+  [piece x y board]
+  (let [value (:name piece)
+        coords (:coords piece)]
     (write-coords-to-board coords x y value board)))
 
 (defn rotate-piece
   "Create a new piece by rotating the given piece clockwise."
   [piece]
-  (doall (map (fn [[x y]] [(- y) x]) piece)))
+  (let [new-coords (map (fn [[x y]] [(- y) x]) (:coords piece))]
+    (assoc piece :coords new-coords)))
 
 (defn coord-empty?
   "Determines if the given coordinate on the board is empty."
@@ -113,7 +114,7 @@
 (defn piece-fits?
   "Determines if the given piece will collide with anything in the current board."
   [piece x y board]
-  (every? #(coord-fits? % x y board) piece))
+  (every? #(coord-fits? % x y board) (:coords piece)))
 
 ; ------------------------------------------------------------
 ; DRAWING FUNCTIONS
