@@ -106,8 +106,10 @@
 (defn rotate-piece
   "Create a new piece by rotating the given piece clockwise."
   [piece]
-  (let [new-coords (map (fn [[x y]] [(- y) x]) (:coords piece))]
-    (assoc piece :coords new-coords)))
+  (if (= :O (:name piece))
+    piece
+    (let [new-coords (map (fn [[x y]] [(- y) x]) (:coords piece))]
+      (assoc piece :coords new-coords))))
 
 (defn coord-empty?
   "Determines if the given coordinate on the board is empty."
