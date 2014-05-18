@@ -30,28 +30,8 @@
 ;; Board.
 ;;------------------------------------------------------------
 
-(def empty-board [[0 0 0 0 0 0 0 0 0 0]
-                  [0 0 0 0 0 0 0 0 0 0]
-                  [0 0 0 0 0 0 0 0 0 0]
-                  [0 0 0 0 0 0 0 0 0 0]
-                  [0 0 0 0 0 0 0 0 0 0]
-                  [0 0 0 0 0 0 0 0 0 0]
-                  [0 0 0 0 0 0 0 0 0 0]
-                  [0 0 0 0 0 0 0 0 0 0]
-                  [0 0 0 0 0 0 0 0 0 0]
-                  [0 0 0 0 0 0 0 0 0 0]
-                  [0 0 0 0 0 0 0 0 0 0]
-                  [0 0 0 0 0 0 0 0 0 0]
-                  [0 0 0 0 0 0 0 0 0 0]
-                  [0 0 0 0 0 0 0 0 0 0]
-                  [0 0 0 0 0 0 0 0 0 0]
-                  [0 0 0 0 0 0 0 0 0 0]
-                  [0 0 0 0 0 0 0 0 0 0]
-                  [0 0 0 0 0 0 0 0 0 0]
-                  [0 0 0 0 0 0 0 0 0 0]
-                  [0 0 0 0 0 0 0 0 0 0]
-                  [0 0 0 0 0 0 0 0 0 0]
-                  [0 0 0 0 0 0 0 0 0 0]])
+(def empty-row (vec (repeat 10 0)))
+(def empty-board (vec (repeat 22 empty-row)))
 
 ; The starting position of all pieces.
 (def start-position [4 2])
@@ -74,6 +54,8 @@
    :Z "#F00"
    :O "#FF0"
    :T "#A0F"})
+
+(def cell-filled? (complement zero?))
 
 ;;------------------------------------------------------------
 ;; Pure Functions operating on a board.
@@ -205,6 +187,15 @@
   (swap! state assoc :piece (get-rand-piece)
                      :position start-position))
 
+(defn try-collapse!
+  "Try to collapse any full rows on the current board."
+  []
+  (let [board (:board @state)
+        cleared-board (remove #(every? cell-filled? %) board)
+        n (- (count board) (count cleared-board))
+        new-board (into (vec (repeat n empty-row)) cleared-board)]
+    (swap! state assoc :board new-board)))
+
 (defn go-go-gravity!
   "Starts the gravity routine."
   []
@@ -219,6 +210,7 @@
           (swap! state assoc-in [:position 1] ny)
           (do
             (swap! state assoc :board (write-piece-to-board piece x y board))
+            (try-collapse!)
             (spawn-piece!))))
       (recur))))
 
