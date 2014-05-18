@@ -1,8 +1,10 @@
 (ns client.core
+  (:require-macros [cljs.core.async.macros :refer [go]])
   (:require
     [clojure.browser.repl :as repl]
     [clojure.string :refer [join]]
-    [jayq.core :refer [$ ajax document-ready]]))
+    [jayq.core :refer [$ ajax document-ready]]
+    [cljs.core.async :refer [put! chan <! timeout]]))
 
 (enable-console-print!)
 
