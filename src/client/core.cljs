@@ -200,6 +200,23 @@
   (swap! state assoc :piece (get-rand-piece)
                      :position start-position))
 
+(defn go-go-gravity!
+  "Starts the gravity routine."
+  []
+  (go
+    (loop []
+      (<! (timeout 1000))
+      (let [[x y] (:position @state)
+            piece (:piece @state)
+            board (:board @state)
+            ny (inc y)]
+        (if (piece-fits? piece x ny board)
+          (swap! state assoc-in [:position 1] ny)
+          (do
+            (swap! state assoc :board (write-piece-to-board piece x y board))
+            (spawn-piece!))))
+      (recur))))
+
 ;;------------------------------------------------------------
 ;; Input-driven STATE CHANGES
 ;;------------------------------------------------------------
@@ -268,6 +285,7 @@
   (size-canvas)
   (spawn-piece!)
   (add-key-events)
+  (go-go-gravity!)
 
   (connect-repl)
   (auto-refresh)
