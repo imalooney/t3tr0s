@@ -121,6 +121,13 @@
   [piece x y board]
   (every? #(coord-fits? % x y board) (:coords piece)))
 
+(defn get-drop-pos
+  "Get the future drop position of the given piece."
+  [piece x y board]
+  (let [collide? (fn [cy] (not (piece-fits? piece x cy board)))
+        cy (first (filter collide? (iterate inc y)))]
+    (dec cy)))
+
 ;;------------------------------------------------------------
 ;; PAINTING (for showing the game on a canvas)
 ;;------------------------------------------------------------
@@ -196,6 +203,16 @@
         new-board (into (vec (repeat n empty-row)) cleared-board)]
     (swap! state assoc :board new-board)))
 
+(defn lock-piece!
+  "Lock the current piece into the board."
+  []
+  (let [[x y] (:position @state)
+        piece (:piece @state)
+        board (:board @state)]
+    (swap! state assoc :board (write-piece-to-board piece x y board))
+    (try-collapse!)
+    (spawn-piece!)))
+
 (defn go-go-gravity!
   "Starts the gravity routine."
   []
@@ -208,10 +225,7 @@
             ny (inc y)]
         (if (piece-fits? piece x ny board)
           (swap! state assoc-in [:position 1] ny)
-          (do
-            (swap! state assoc :board (write-piece-to-board piece x y board))
-            (try-collapse!)
-            (spawn-piece!))))
+          (lock-piece!)))
       (recur))))
 
 ;;------------------------------------------------------------
@@ -245,6 +259,16 @@
     (if (piece-fits? new-piece x y board)
       (swap! state assoc :piece new-piece))))
 
+(defn hard-drop!
+  "Hard drop the current piece."
+  []
+  (let [[x y] (:position @state)
+        piece (:piece @state)
+        board (:board @state)
+        ny (get-drop-pos piece x y board)]
+    (swap! state assoc :position [x ny])
+    (lock-piece!)))
+
 (defn add-key-events
   "Add all the key inputs."
   []
@@ -255,6 +279,7 @@
            (= code (:down key-codes))  (do (try-move!  0  1) (.preventDefault e))
            (= code (:left key-codes))  (do (try-move! -1  0) (.preventDefault e))
            (= code (:right key-codes)) (do (try-move!  1  0) (.preventDefault e))
+           (= code (:space key-codes)) (do (hard-drop!)      (.preventDefault e))
            (= code (:up key-codes))    (do (try-rotate!)     (.preventDefault e)))))))
 
 ;;------------------------------------------------------------
