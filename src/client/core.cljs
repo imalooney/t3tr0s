@@ -65,6 +65,16 @@
 ; The size of a cell in pixels.
 (def cell-size 20)
 
+(def cell-colors
+  { 0 "#333"
+   :I "#0FF"
+   :L "#FA0"
+   :J "#00F"
+   :S "#0F0"
+   :Z "#F00"
+   :O "#FF0"
+   :T "#A0F"})
+
 ;;------------------------------------------------------------
 ;; Pure Functions operating on a board.
 ;;------------------------------------------------------------
@@ -140,15 +150,10 @@
     (aset canvas "width" (* cell-size 10))
     (aset canvas "height" (* cell-size 22))))
 
-(defn get-cell-color
-  "Get the color for the given cell value."
-  [value]
-  (if (zero? value) "#EEE" "#CC0000"))
-
 (defn draw-cell
   "Draw the given cell of the given board."
   [ctx x y board]
-  (let [color (get-cell-color (read-board x y board))
+  (let [color (cell-colors (read-board x y board))
         left (* cell-size x)
         top  (* cell-size y)]
     (aset ctx "fillStyle" color)
