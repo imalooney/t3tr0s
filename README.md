@@ -1,13 +1,13 @@
 # t3tr0s
 
-<img src="http://i.imgur.com/XzonCuN.gif" align="right">
+<img src="http://i.imgur.com/XzonCuN.gif" align="right" width="100px">
 
 A 30th anniversary celebration of a certain tetrominos game... called Tetris.
 It was created by Alexey Pajitnov ["to produce the pleasure, to make
 fun"](https://www.youtube.com/watch?v=nTDRY8aPy7c).  Tetris was released on
 June 6, 1984.
 
-## DevBlog
+__DevBlog__
 
 - [Day 1](devblog/day01.md)
 - [Day 2](devblog/day02.md)
