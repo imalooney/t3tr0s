@@ -158,12 +158,81 @@
     nil))
 
 ;;------------------------------------------------------------
+;; Web Socket (for connecting to the server)
+;;------------------------------------------------------------
+
+(def socket (atom nil))
+
+(defn connect-socket!
+  "Create a web socket connection to the server."
+  []
+  (let [url (.-href js/location)]
+    (reset! socket (.connect js/io url))))
+
+;;------------------------------------------------------------
 ;; STATE OF THE GAME
 ;;------------------------------------------------------------
 
 (def state (atom {:piece (get-rand-piece)
                   :position start-position
                   :board empty-board}))
+
+;;------------------------------------------------------------
+;; VCR (record game)
+;;------------------------------------------------------------
+
+(def vcr (atom {:canvas nil
+                :recording false
+                :prev-ms nil
+                :frames []}))
+
+(defn get-clock
+  "Get the number of milliseconds elapsed since 1970."
+  []
+  (.now js/Date))
+
+(defn record-frame!
+  "Record the image and time of this frame."
+  []
+  (let [ms (get-clock)
+        dt (if-let [prev-ms (:prev-ms @vcr)]
+             (- ms prev-ms)
+             0)
+        prev-url (if-let [prev-frame (last (:frames @vcr))]
+                   (:data-url prev-frame))
+        url (.toDataURL (:canvas @vcr))]
+    (when (not= prev-url url)
+      (swap! vcr update-in [:frames] conj {:dt dt :data-url url})
+      (swap! vcr assoc :prev-ms ms))))
+
+(defn start-record!
+  "Start recording."
+  []
+  (js/console.log "starting record")
+  (swap! vcr assoc :canvas (.getElementById js/document "canvas")
+                   :prev-ms nil
+                   :recording true
+                   :frames [])
+  (record-frame!))
+
+(defn stop-record!
+  "Stop recording."
+  []
+  (js/console.log "stopping record")
+  (swap! vcr assoc :recording false))
+
+(defn toggle-record!
+  "Toggle recording."
+  []
+  (if (:recording @vcr)
+    (stop-record!)
+    (start-record!)))
+
+(defn publish-record!
+  "Push the recording to the server to be rendered."
+  []
+  (let [data (pr-str (:frames @vcr))]
+    (.emit @socket "create-gif" data)))
 
 ;;------------------------------------------------------------
 ;; STATE MONITOR
@@ -180,7 +249,9 @@
 (defn draw-state
   "Draw the current state of the board."
   []
-  (draw-board (create-drawable-board)))
+  (draw-board (create-drawable-board))
+  (if (:recording @vcr)
+    (record-frame!)))
 
 (add-watch state :draw draw-state)
 
@@ -236,7 +307,8 @@
                 :up 38
                 :right 39
                 :down 40
-                :space 32})
+                :space 32
+                :shift 16})
 
 (defn try-move!
   "Try moving the current piece to the given offset."
@@ -280,7 +352,12 @@
            (= code (:left key-codes))  (do (try-move! -1  0) (.preventDefault e))
            (= code (:right key-codes)) (do (try-move!  1  0) (.preventDefault e))
            (= code (:space key-codes)) (do (hard-drop!)      (.preventDefault e))
-           (= code (:up key-codes))    (do (try-rotate!)     (.preventDefault e)))))))
+           (= code (:up key-codes))    (do (try-rotate!)     (.preventDefault e))))))
+  (.addEventListener js/window "keyup"
+     (fn [e]
+       (let [code (aget e "keyCode")]
+         (cond
+           (= code (:shift key-codes)) (toggle-record!))))))
 
 ;;------------------------------------------------------------
 ;; Facilities
@@ -295,9 +372,7 @@
 (defn auto-refresh
   "Automatically refresh the page whenever a cljs file is compiled."
   []
-  (let [url (.-href js/location)
-        socket (.connect js/io url)]
-    (.on socket "refresh" #(.reload js/location))))
+  (.on @socket "refresh" #(.reload js/location)))
 
 ;;------------------------------------------------------------
 ;; Entry Point
@@ -310,6 +385,7 @@
   (go-go-gravity!)
 
   (connect-repl)
+  (connect-socket!)
   (auto-refresh)
   )
 
