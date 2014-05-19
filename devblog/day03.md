@@ -1,5 +1,7 @@
 # Day 3
 
+<img src="http://i.imgur.com/XzonCuN.gif" align="right">
+
 We started the day looking at the `core.async` library since I thought it would
 drastically simplify the way we write time-based events.  It is similar to C#
 Co-Routines in Unity.  So we built this simple app to test it out.
