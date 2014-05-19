@@ -1,5 +1,7 @@
 # t3tr0s
 
+<img src="http://i.imgur.com/XzonCuN.gif" align="right">
+
 A 30th anniversary celebration of a certain tetrominos game... called Tetris.
 It was created by Alexey Pajitnov ["to produce the pleasure, to make
 fun"](https://www.youtube.com/watch?v=nTDRY8aPy7c).  Tetris was released on
@@ -28,12 +30,33 @@ June 6, 1984.
     ```
 
 1. Open <http://localhost:1984> in your browser.
-1. If you want a REPL connected to the browser for testing:
 
+### Browser REPL
+
+If you want a REPL connected to the browser for testing:
+
+```
+lein repl
+> (brepl)
+```
+
+### Recording GIFs
+
+If you want to record a GIF of gameplay:
+
+1. Create empty "gif" directory at the project root.
+1. Open the game in the browser.
+1. Open the Javascript console.
+1. Start playing.
+1. Press "shift" to start/stop recording. (new ones override old ones)
+1. In browser REPL:
+
+    ```clj
+    (ns client.core)
+    (publish-record!)
     ```
-    lein repl
-    > (brepl)
-    ```
+
+1. In the "gif" folder, you should see "anim.gif" and intermediate PNG frames.
 
 ## Planning
 
