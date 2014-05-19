@@ -9,6 +9,7 @@ June 6, 1984.
 
 - [Day 1](devblog/day01.md)
 - [Day 2](devblog/day02.md)
+- [Day 3](devblog/day03.md)
 
 ## Setup
 
@@ -26,15 +27,13 @@ June 6, 1984.
     lein cljsbuild auto
     ```
 
-1. In another terminal, run the browser REPL:
+1. Open <http://localhost:1984> in your browser.
+1. If you want a REPL connected to the browser for testing:
 
     ```
     lein repl
     > (brepl)
     ```
-
-1. Open <http://localhost:1984> in your browser.
-
 
 ## Planning
 
