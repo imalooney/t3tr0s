@@ -302,6 +302,7 @@
     (swap! state assoc :board new-board)))
 
 (defn go-go-collapse!
+  "Starts the collapse animation if we need to, returning nil or the animation channel."
   []
   (let [board (:board @state)
         rows (get-filled-row-indices board)]
@@ -312,10 +313,10 @@
         ; blink n times
         (doseq [i (range 3)]
 
-          (<! (timeout 100))                      ; resume here in 0.5 seconds
+          (<! (timeout 100))                      ; resume here later
           (swap! state assoc :flashing-rows rows) ; flash rows
 
-          (<! (timeout 100))                      ; resume here in 0.5 seconds
+          (<! (timeout 100))                      ; resume here later
           (swap! state update-in
                  [:flashing-rows] empty))         ; unflash rows
 
@@ -330,6 +331,9 @@
         piece (:piece @state)
         board (:board @state)]
     (swap! state assoc :board (write-piece-to-board piece x y board))
+
+    ; If collapse routine returns a channel...
+    ; then wait for it before spawning a new piece.
     (if-let [collapse-anim (go-go-collapse!)]
       (go (<! collapse-anim) (spawn-piece!))
       (spawn-piece!))))
