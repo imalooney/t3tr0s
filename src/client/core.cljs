@@ -30,7 +30,8 @@
 ;; Board.
 ;;------------------------------------------------------------
 
-(def empty-row (vec (repeat 10 0)))
+(def empty-row       (vec (repeat 10 0)))
+(def highlighted-row (vec (repeat 10 :H)))
 (def empty-board (vec (repeat 22 empty-row)))
 
 ; The starting position of all pieces.
@@ -54,7 +55,9 @@
    :Z "#F00"
    :O "#FF0"
    :T "#A0F"
-   :G "#555"})
+   :G "#555"  ; ghost piece
+   :H "#DDD"  ; highlighted (filled or about to collapse)
+   })
 
 (def cell-filled? (complement zero?))
 
@@ -95,6 +98,21 @@
   (let [value (:name piece)
         coords (:coords piece)]
     (write-coords-to-board coords x y value board)))
+
+(defn highlight-rows
+  "Returns a new board with the given rows highlighted."
+  [active-rows board]
+  (vec (map-indexed
+   (fn [i row]
+     (if (active-rows i) highlighted-row row)) board)))
+
+(defn get-filled-row-indices
+  "Get the indices of the filled rows for the given board."
+  [board]
+  (->> (map-indexed vector board)                        ; indexed rows [[0 r] [1 r]]
+       (filter (fn [[i row]] (every? cell-filled? row))) ; choose filled [1 r]
+       (map first)                                       ; select index only
+       (apply hash-set)))                                ; convert to a set     
 
 (defn rotate-piece
   "Create a new piece by rotating the given piece clockwise."
@@ -176,7 +194,10 @@
 
 (def state (atom {:piece (get-rand-piece)
                   :position start-position
-                  :board empty-board}))
+                  :board empty-board
+
+                  :animating false
+                  :highlighted-rows #{}}))
 
 ;;------------------------------------------------------------
 ;; VCR (record game)
@@ -248,8 +269,9 @@
         ghost (assoc piece :name :G)
         gy    (get-drop-pos piece x y board)
         board1 (write-piece-to-board ghost x gy board)
-        board2 (write-piece-to-board piece x y board1)]
-    board2))
+        board2 (write-piece-to-board piece x y board1)
+        board3 (highlight-rows (:highlighted-rows @state) board2)]
+    board3))
 
 (defn draw-state
   "Draw the current state of the board."
@@ -270,14 +292,38 @@
   (swap! state assoc :piece (get-rand-piece)
                      :position start-position))
 
-(defn try-collapse!
-  "Try to collapse any full rows on the current board."
+(defn collapse-rows!
+  "Collapse all filled rows."
   []
   (let [board (:board @state)
         cleared-board (remove #(every? cell-filled? %) board)
         n (- (count board) (count cleared-board))
         new-board (into (vec (repeat n empty-row)) cleared-board)]
     (swap! state assoc :board new-board)))
+
+(defn go-go-collapse!
+  []
+  (let [board (:board @state)
+        rows (get-filled-row-indices board)]
+
+    (js/console.log "Collapsing?")
+    (when (> (count rows) 0)
+      (js/console.log "YES")
+      (swap! state assoc :animating true)
+      (go
+        ; blink n times
+        (doseq [i (range 3)]
+          (js/console.log "Blink" i)
+
+          (<! (timeout 100))                            ; resume here in 0.5 seconds
+          (swap! state assoc :highlighted-rows rows)    ; highlight rows
+          (<! (timeout 100))                            ; resume here in 0.5 seconds
+          (swap! state assoc :highlighted-rows #{}))     ; unhighlight rows
+
+        ; finally collapse
+        (js/console.log "Collapsing.")
+        (collapse-rows!)
+        (swap! state assoc :animating false)))))
 
 (defn lock-piece!
   "Lock the current piece into the board."
@@ -286,7 +332,7 @@
         piece (:piece @state)
         board (:board @state)]
     (swap! state assoc :board (write-piece-to-board piece x y board))
-    (try-collapse!)
+    (go-go-collapse!)
     (spawn-piece!)))
 
 (defn go-go-gravity!
@@ -295,13 +341,14 @@
   (go
     (loop []
       (<! (timeout 1000))
-      (let [[x y] (:position @state)
-            piece (:piece @state)
-            board (:board @state)
-            ny (inc y)]
-        (if (piece-fits? piece x ny board)
-          (swap! state assoc-in [:position 1] ny)
-          (lock-piece!)))
+      (when-not (:animating @state)
+        (let [[x y] (:position @state)
+              piece (:piece @state)
+              board (:board @state)
+              ny (inc y)]
+          (if (piece-fits? piece x ny board)
+            (swap! state assoc-in [:position 1] ny)
+            (lock-piece!))))
       (recur))))
 
 ;;------------------------------------------------------------
