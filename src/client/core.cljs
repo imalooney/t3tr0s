@@ -145,7 +145,7 @@
   [piece x y board]
   (let [collide? (fn [cy] (not (piece-fits? piece x cy board)))
         cy (first (filter collide? (iterate inc y)))]
-    (dec cy)))
+    (max y (dec cy))))
 
 ;;------------------------------------------------------------
 ;; PAINTING (for showing the game on a canvas)
