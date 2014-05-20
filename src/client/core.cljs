@@ -197,7 +197,7 @@
                   :board empty-board
 
                   :animating false
-                  :highlighted-rows #{}}))
+                  :flashing-rows #{}}))
 
 ;;------------------------------------------------------------
 ;; VCR (record game)
@@ -270,7 +270,7 @@
         gy    (get-drop-pos piece x y board)
         board1 (write-piece-to-board ghost x gy board)
         board2 (write-piece-to-board piece x y board1)
-        board3 (highlight-rows (:highlighted-rows @state) board2)]
+        board3 (highlight-rows (:flashing-rows @state) board2)]
     board3))
 
 (defn draw-state
@@ -306,22 +306,20 @@
   (let [board (:board @state)
         rows (get-filled-row-indices board)]
 
-    (js/console.log "Collapsing?")
     (when (> (count rows) 0)
-      (js/console.log "YES")
       (swap! state assoc :animating true)
       (go
         ; blink n times
         (doseq [i (range 3)]
-          (js/console.log "Blink" i)
 
-          (<! (timeout 100))                            ; resume here in 0.5 seconds
-          (swap! state assoc :highlighted-rows rows)    ; highlight rows
-          (<! (timeout 100))                            ; resume here in 0.5 seconds
-          (swap! state assoc :highlighted-rows #{}))     ; unhighlight rows
+          (<! (timeout 100))                      ; resume here in 0.5 seconds
+          (swap! state assoc :flashing-rows rows) ; flash rows
+
+          (<! (timeout 100))                      ; resume here in 0.5 seconds
+          (swap! state update-in
+                 [:flashing-rows] empty))         ; unflash rows
 
         ; finally collapse
-        (js/console.log "Collapsing.")
         (collapse-rows!)
         (swap! state assoc :animating false)))))
 
