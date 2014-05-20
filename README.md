@@ -1,6 +1,6 @@
 # t3tr0s
 
-<img src="http://i.imgur.com/XzonCuN.gif" align="right" width="132px">
+<img src="http://i.imgur.com/eq19e4b.gif" align="right" width="132px">
 
 We are re-creating Tetris™ in ClojureScript.  We are mainly doing this to
 [produce the pleasure](http://youtu.be/nTDRY8aPy7c?t=3m14s) and to celebrate

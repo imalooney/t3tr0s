@@ -74,3 +74,12 @@
 - after game
   - show everyone's stats graph
 
+
+
+
+
+
+
+- make piece nil once we lock it into position
+- check if piece is nil on drawable board.
+- check if piece is nil on gravity routine.
