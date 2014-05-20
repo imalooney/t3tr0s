@@ -330,8 +330,9 @@
         piece (:piece @state)
         board (:board @state)]
     (swap! state assoc :board (write-piece-to-board piece x y board))
-    (go-go-collapse!)
-    (spawn-piece!)))
+    (if-let [collapse-anim (go-go-collapse!)]
+      (go (<! collapse-anim) (spawn-piece!))
+      (spawn-piece!))))
 
 (defn go-go-gravity!
   "Starts the gravity routine."
