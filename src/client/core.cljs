@@ -53,7 +53,8 @@
    :S "#0F0"
    :Z "#F00"
    :O "#FF0"
-   :T "#A0F"})
+   :T "#A0F"
+   :G "#555"})
 
 (def cell-filled? (complement zero?))
 
@@ -243,8 +244,12 @@
   []
   (let [piece (:piece @state)
         [x y] (:position @state)
-        board (:board @state)]
-  (write-piece-to-board piece x y board)))
+        board (:board @state)
+        ghost (assoc piece :name :G)
+        gy    (get-drop-pos piece x y board)
+        board1 (write-piece-to-board ghost x gy board)
+        board2 (write-piece-to-board piece x y board1)]
+    board2))
 
 (defn draw-state
   "Draw the current state of the board."
