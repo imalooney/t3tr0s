@@ -2,12 +2,14 @@
 
 <img src="http://i.imgur.com/eq19e4b.gif" align="right" width="132px">
 
-We are re-creating Tetris™ in ClojureScript.  We are mainly doing this to
-[produce the pleasure](http://youtu.be/nTDRY8aPy7c?t=3m14s) and to celebrate
-the 30th anniversary of its original release in 1984.  Our remake will enable
-us to host a small, local tournament and to share a montage of the game's
-history, with each level resembling a different version from its past.  (We are
-working on the game at least once a week):
+We are re-creating Tetris™ in
+[ClojureScript](https://github.com/shaunlebron/ClojureScript-Syntax-in-15-minutes).
+We are mainly doing this to
+[produce the pleasure](http://youtu.be/nTDRY8aPy7c?t=3m14s)
+and to celebrate the 30th anniversary of its original release in 1984.  Our
+remake will enable us to host a small, local tournament and to share a montage
+of the game's history, with each level resembling a different version from its
+past.  (We are working on the game at least once a week):
 
 - [DevBlog 1](devblog/day01.md)
 - [DevBlog 2](devblog/day02.md)
