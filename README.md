@@ -11,10 +11,10 @@ remake will enable us to host a small, local tournament and to share a montage
 of the game's history, with each level resembling a different version from its
 past.  (We are working on the game at least once a week):
 
-- [DevBlog 1](devblog/day01.md)
-- [DevBlog 2](devblog/day02.md)
-- [DevBlog 3](devblog/day03.md)
-- [DevBlog 4](devblog/day04.md)
+- [DevBlog 1](devblog/day01.md) - data, collision, rotation, drawing
+- [DevBlog 2](devblog/day02.md) - basic piece control
+- [DevBlog 3](devblog/day03.md) - gravity, stack, collapse, hard-drop
+- [DevBlog 4](devblog/day04.md) - ghost piece, flash before collapse
 
 ## Setup
 
