@@ -1,4 +1,4 @@
-# t3tr0s
+<img src="public/img/t3tr0s_500w.png">
 
 <img src="http://i.imgur.com/eq19e4b.gif" align="right" width="132px">
 
