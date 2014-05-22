@@ -3,39 +3,39 @@
 ;; game
 ;;-----------------------------------------------------------------------
 
-- create state of current piece
+X create state of current piece
   - :piece :J
   - :position {:x 0 :y 0}
 
-- add color
+X add color
   - change write-piece to write the piece's keyword to the board cell
   - (for coloring/texturing per piece)
 
-- repaint when relevant state changes
+X repaint when relevant state changes
   - create (drawable-board) from current piece and board
 
-- move piece
+X move piece
   - ignore if piece is nil
   - key listener modifies :position
   - create try-move!
 
-- rotate piece
+X rotate piece
   - ignore if piece is nil
   - rename functions "collide" -> "fits", and "occupied" -> "empty"
   - create try-rotate!
 
-- hard drop
+X hard drop
   - get-drop-pos
   - debug by drawing the ghost piece
 
-- gravity step
+X gravity step
   - implement as go-routine
     - wait on blink
   - drop (lower position over time)
   - lock (write piece to board if can't go any lower)
   - spawn (reset current position and randomize piece)
 
-- row collapse
+X row collapse
   - get-full-rows (indices)
   - blink
   - collapse full rows
@@ -74,12 +74,37 @@
 - after game
   - show everyone's stats graph
 
+;;-----------------------------------------------------------------------
+;; fixes
+;;-----------------------------------------------------------------------
 
+- Fix implementation inefficiencies:
+  - make piece nil once we lock it into position
+    - check if piece is nil on drawable board.
+    - check if piece is nil on gravity routine.
+  - hook requestAnimFrame to draw if relevant state differs from previous frame
+    - remove draw from atom watcher (because multiple changes happen per frame)
 
+- Fix control potential annoyances
+  - nudge piece when rotating while flush with edge?
+  - grant more time for t-spinning and general shifting?
+    - reset gravity timeout when key is down
+      - "fan" timeout and down key channels in gravity routine
+        - if down key comes first, recur?
+      - if at drop pos, also "fan" a global timeout to keep piece from shifting forever.
 
+;;-----------------------------------------------------------------------
+;; juice
+;;-----------------------------------------------------------------------
 
+- Emotionally connect player to actions:
+  - when piece is locked in, either...
+    - body blink
+    - border blink
+    - shockwave border
+  - when piece is hard-dropped:
+    - show trail
+  - when blocks collapse:
+  - when piece enters:
 
-
-- make piece nil once we lock it into position
-- check if piece is nil on drawable board.
-- check if piece is nil on gravity routine.
+- "Casino" sounds (don't clash when everyone's speakers are on)
