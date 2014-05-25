@@ -1,6 +1,6 @@
 (defproject t3tr0s "0.1.0-SNAPSHOT"
-  :description "FIXME: write this!"
-  :url "http://example.com/FIXME"
+  :description "multiplayer Tetris™ for a 30th anniversary celebration tournament"
+  :url "https://github.com/imalooney/t3tr0s"
 
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [org.clojure/clojurescript "0.0-2202"]
