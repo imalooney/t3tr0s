@@ -53,7 +53,7 @@ If you want to record a GIF of gameplay:
 1. To write the recording to a file, type this in the browser REPL:
 
     ```clj
-    (ns client.core)
+    (ns client.vcr)
     (publish-record!)
     ```
 
