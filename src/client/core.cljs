@@ -54,11 +54,22 @@
 ;; Game-driven STATE CHANGES
 ;;------------------------------------------------------------
 
+(defn game-over
+  "You lost, get to the chopper"
+  []
+  (js/console.log "game over"))
+
 (defn spawn-piece!
   "Spawns a random piece at the starting position."
   []
-  (swap! state assoc :piece (get-rand-piece)
-                     :position start-position))
+  (let [piece (get-rand-piece)
+        [x y] start-position
+        board (:board @state)]
+    (if (piece-fits? piece x y board)
+      (swap! state assoc :piece (get-rand-piece)
+                     :position start-position)
+      (game-over))
+  ))
 
 (defn collapse-rows!
   "Collapse all filled rows."
