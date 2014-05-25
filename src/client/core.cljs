@@ -168,13 +168,15 @@
   []
   (.addEventListener js/window "keydown"
      (fn [e]
-       (let [code (aget e "keyCode")]
-         (cond
-           (= code (:down key-codes))  (do (try-move!  0  1) (.preventDefault e))
-           (= code (:left key-codes))  (do (try-move! -1  0) (.preventDefault e))
-           (= code (:right key-codes)) (do (try-move!  1  0) (.preventDefault e))
-           (= code (:space key-codes)) (do (hard-drop!)      (.preventDefault e))
-           (= code (:up key-codes))    (do (try-rotate!)     (.preventDefault e))))))
+       (if (:piece @state)
+         (let [code (aget e "keyCode")]
+          (cond
+            (= code (:down key-codes))  (do (try-move!  0  1) (.preventDefault e))
+            (= code (:left key-codes))  (do (try-move! -1  0) (.preventDefault e))
+            (= code (:right key-codes)) (do (try-move!  1  0) (.preventDefault e))
+            (= code (:space key-codes)) (do (hard-drop!)      (.preventDefault e))
+            (= code (:up key-codes))    (do (try-rotate!)     (.preventDefault e))))))
+        )
   (.addEventListener js/window "keyup"
      (fn [e]
        (let [code (aget e "keyCode")]
