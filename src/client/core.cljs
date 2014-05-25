@@ -1,192 +1,26 @@
 (ns client.core
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require
-    [clojure.browser.repl :as repl]
-    [clojure.string :refer [join]]
-    [jayq.core :refer [$ ajax document-ready]]
+    [client.board :refer [piece-fits?
+                          cell-filled?
+                          rotate-piece
+                          start-position
+                          empty-board
+                          empty-row
+                          get-drop-pos
+                          get-rand-piece
+                          write-piece-to-board
+                          create-drawable-board
+                          get-filled-row-indices
+                          ]]
+    [client.paint :refer [size-canvas!
+                          draw-board!]]
+    [client.repl :as repl]
+    [client.socket :refer [socket connect-socket!]]
+    [client.vcr :refer [vcr toggle-record! record-frame!]]
     [cljs.core.async :refer [put! chan <! timeout]]))
 
 (enable-console-print!)
-
-;;------------------------------------------------------------
-;; Pieces.
-;;------------------------------------------------------------
-
-(def pieces
-  {:I {:name :I :coords [[0 0] [0 -1] [0 1] [0 2]]}
-   :L {:name :L :coords [[0 0] [0 1] [1 1] [0 -1]]}
-   :J {:name :J :coords [[0 0] [0 -1] [0 1] [-1 1]]}
-   :S {:name :S :coords [[0 0] [-1 0] [0 -1] [1 -1]]}
-   :Z {:name :Z :coords [[0 0] [-1 -1] [0 -1] [1 0]]}
-   :O {:name :O :coords [[0 0] [-1 0] [-1 1] [0 1]]}
-   :T {:name :T :coords [[0 0] [-1 0] [1 0] [0 1]]}})
-
-(defn get-rand-piece
-  "Return a random piece."
-  []
-  (pieces (rand-nth (keys pieces))))
-
-;;------------------------------------------------------------
-;; Board.
-;;------------------------------------------------------------
-
-(def empty-row       (vec (repeat 10 0)))
-(def highlighted-row (vec (repeat 10 :H)))
-(def empty-board (vec (repeat 22 empty-row)))
-
-; The starting position of all pieces.
-(def start-position [4 2])
-
-(defn coord-inside?
-  "Determines if the coordinate is inside the board."
-  [x y]
-  (and (<= 0 x 9) (<= 0 y 21)))
-
-
-; The size of a cell in pixels.
-(def cell-size 20)
-
-(def cell-colors
-  { 0 "#333"
-   :I "#0FF"
-   :L "#FA0"
-   :J "#00F"
-   :S "#0F0"
-   :Z "#F00"
-   :O "#FF0"
-   :T "#A0F"
-   :G "#555"  ; ghost piece
-   :H "#DDD"  ; highlighted (filled or about to collapse)
-   })
-
-(def cell-filled? (complement zero?))
-
-;;------------------------------------------------------------
-;; Pure Functions operating on a board.
-;;------------------------------------------------------------
-
-(defn read-board
-  "Get the current value from the given board position."
-  [x y board]
-  (get-in board [y x]))
-
-(defn write-to-board
-  "Returns a new board with a value written to the given position."
-  [x y value board]
-  (if (coord-inside? x y)
-    (assoc-in board [y x] value)
-    board))
-
-(defn write-coord-to-board
-  "Returns a new board with a value written to the given relative coordinate and position."
-  [[cx cy] x y value board]
-    (write-to-board (+ cx x) (+ cy y) value board))
-
-(defn write-coords-to-board
-  "Returns a new board with a value written to the given relative coordinates and position."
-  [coords x y value board]
-  (if (zero? (count coords))
-    board
-    (let [coord (first coords)
-          rest-coords (rest coords)
-          new-board (write-coord-to-board coord x y value board)]
-      (recur rest-coords x y value new-board))))
-
-(defn write-piece-to-board
-  "Returns a new board with a the given piece written to the coordinate on the board."
-  [piece x y board]
-  (let [value (:name piece)
-        coords (:coords piece)]
-    (write-coords-to-board coords x y value board)))
-
-(defn highlight-rows
-  "Returns a new board with the given rows highlighted."
-  [active-rows board]
-  (vec (map-indexed
-   (fn [i row]
-     (if (active-rows i) highlighted-row row)) board)))
-
-(defn get-filled-row-indices
-  "Get the indices of the filled rows for the given board."
-  [board]
-  (->> (map-indexed vector board)                        ; indexed rows [[0 r] [1 r]]
-       (filter (fn [[i row]] (every? cell-filled? row))) ; choose filled [1 r]
-       (map first)                                       ; select index only
-       (apply hash-set)))                                ; convert to a set     
-
-(defn rotate-piece
-  "Create a new piece by rotating the given piece clockwise."
-  [piece]
-  (if (= :O (:name piece))
-    piece
-    (let [new-coords (map (fn [[x y]] [(- y) x]) (:coords piece))]
-      (assoc piece :coords new-coords))))
-
-(defn coord-empty?
-  "Determines if the given coordinate on the board is empty."
-  [x y board]
-  (zero? (read-board x y board)))
-
-(defn coord-fits?
-  "Determines if the given relative coordinate fits at the position on the board."
-  [[cx cy] x y board]
-  (let [abs-x (+ x cx)
-        abs-y (+ y cy)]
-    (and (coord-inside? abs-x abs-y)
-         (coord-empty? abs-x abs-y board))))
-
-(defn piece-fits?
-  "Determines if the given piece will collide with anything in the current board."
-  [piece x y board]
-  (every? #(coord-fits? % x y board) (:coords piece)))
-
-(defn get-drop-pos
-  "Get the future drop position of the given piece."
-  [piece x y board]
-  (let [collide? (fn [cy] (not (piece-fits? piece x cy board)))
-        cy (first (filter collide? (iterate inc y)))]
-    (max y (dec cy))))
-
-;;------------------------------------------------------------
-;; PAINTING (for showing the game on a canvas)
-;;------------------------------------------------------------
-
-(defn size-canvas
-  "Set the size of the canvas."
-  []
-  (let [canvas (.getElementById js/document "canvas")]
-    (aset canvas "width" (* cell-size 10))
-    (aset canvas "height" (* cell-size 22))))
-
-(defn draw-cell
-  "Draw the given cell of the given board."
-  [ctx x y board]
-  (let [color (cell-colors (read-board x y board))
-        left (* cell-size x)
-        top  (* cell-size y)]
-    (aset ctx "fillStyle" color)
-    (.fillRect ctx left top cell-size cell-size)))
-
-(defn draw-board
-  "Draw the given board to the canvas."
-  [board]
-  (let [canvas (.getElementById js/document "canvas")
-        ctx    (.getContext canvas "2d")]
-    (doseq [x (range 10) y (range 22)]
-      (draw-cell ctx x y board))
-    nil))
-
-;;------------------------------------------------------------
-;; Web Socket (for connecting to the server)
-;;------------------------------------------------------------
-
-(def socket (atom nil))
-
-(defn connect-socket!
-  "Create a web socket connection to the server."
-  []
-  (let [url (.-href js/location)]
-    (reset! socket (.connect js/io url))))
 
 ;;------------------------------------------------------------
 ;; STATE OF THE GAME
@@ -200,83 +34,18 @@
                   :flashing-rows #{}}))
 
 ;;------------------------------------------------------------
-;; VCR (record game)
-;;------------------------------------------------------------
-
-(def vcr (atom {:canvas nil
-                :recording false
-                :prev-ms nil
-                :frames []}))
-
-(defn get-clock
-  "Get the number of milliseconds elapsed since 1970."
-  []
-  (.now js/Date))
-
-(defn record-frame!
-  "Record the image and time of this frame."
-  []
-  (let [ms (get-clock)
-        dt (if-let [prev-ms (:prev-ms @vcr)]
-             (- ms prev-ms)
-             0)
-        prev-url (if-let [prev-frame (last (:frames @vcr))]
-                   (:data-url prev-frame))
-        url (.toDataURL (:canvas @vcr))]
-    (when (not= prev-url url)
-      (swap! vcr update-in [:frames] conj {:dt dt :data-url url})
-      (swap! vcr assoc :prev-ms ms))))
-
-(defn start-record!
-  "Start recording."
-  []
-  (js/console.log "starting record")
-  (swap! vcr assoc :canvas (.getElementById js/document "canvas")
-                   :prev-ms nil
-                   :recording true
-                   :frames [])
-  (record-frame!))
-
-(defn stop-record!
-  "Stop recording."
-  []
-  (js/console.log "stopping record")
-  (swap! vcr assoc :recording false))
-
-(defn toggle-record!
-  "Toggle recording."
-  []
-  (if (:recording @vcr)
-    (stop-record!)
-    (start-record!)))
-
-(defn publish-record!
-  "Push the recording to the server to be rendered."
-  []
-  (let [data (pr-str (:frames @vcr))]
-    (.emit @socket "create-gif" data)))
-
-;;------------------------------------------------------------
 ;; STATE MONITOR
 ;;------------------------------------------------------------
-
-(defn create-drawable-board
-  "Creates a new drawable board, by combining the current piece with the current board."
-  []
-  (let [piece (:piece @state)
-        [x y] (:position @state)
-        board (:board @state)
-        ghost (assoc piece :name :G)
-        gy    (get-drop-pos piece x y board)
-        board1 (write-piece-to-board ghost x gy board)
-        board2 (write-piece-to-board piece x y board1)
-        board3 (highlight-rows (:flashing-rows @state) board2)]
-    board3))
 
 (defn draw-state
   "Draw the current state of the board."
   []
-  (draw-board (create-drawable-board))
+  (let [{piece :piece
+         [x y] :position
+         board :board
+         flashing-rows :flashing-rows} @state]
+    (draw-board! (create-drawable-board piece x y board flashing-rows)))
+
   (if (:recording @vcr)
     (record-frame!)))
 
@@ -418,12 +187,6 @@
 ;; Facilities
 ;;------------------------------------------------------------
 
-(defn connect-repl []
-  (ajax {:url "repl-url"
-         :cache false
-         :dataType "text"
-         :success #(repl/connect %)}))
-
 (defn auto-refresh
   "Automatically refresh the page whenever a cljs file is compiled."
   []
@@ -434,14 +197,14 @@
 ;;------------------------------------------------------------
 
 (defn init []
-  (size-canvas)
+  (size-canvas!)
   (spawn-piece!)
   (add-key-events)
   (go-go-gravity!)
 
-  (connect-repl)
+  (repl/connect)
   (connect-socket!)
   (auto-refresh)
   )
 
-(document-ready init)
+(.addEventListener js/window "load" init)
