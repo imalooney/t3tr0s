@@ -36,19 +36,39 @@
 ;; STATE MONITOR
 ;;------------------------------------------------------------
 
-(defn draw-state
+(defn drawable-board
   "Draw the current state of the board."
   []
   (let [{piece :piece
          [x y] :position
          board :board
          flashing-rows :flashing-rows} @state]
-    (draw-board! (create-drawable-board piece x y board flashing-rows)))
+    (create-drawable-board piece x y board flashing-rows)))
 
-  (if (:recording @vcr)
-    (record-frame!)))
+(defn make-redraw-chan
+  "Create a channel that receives a value everytime a redraw is requested."
+  []
+  (let [redraw-chan (chan)
+        request-anim #(.requestAnimationFrame js/window %)]
+    (letfn [(trigger-redraw []
+              (put! redraw-chan 1)
+              (request-anim trigger-redraw))]
+      (request-anim trigger-redraw)
+      redraw-chan)))
 
-(add-watch state :draw draw-state)
+(defn go-go-draw!
+  "Kicks off the drawing routine."
+  []
+  (let [redraw-chan (make-redraw-chan)]
+    (go
+      (loop [board nil]
+        (<! redraw-chan)
+        (let [new-board (drawable-board)]
+          (when (not= board new-board)
+            (draw-board! new-board)
+            (if (:recording @vcr)
+              (record-frame!)))
+          (recur new-board))))))
 
 ;;------------------------------------------------------------
 ;; Game-driven STATE CHANGES
@@ -223,6 +243,7 @@
   (try-spawn-piece!)
   (add-key-events)
   (go-go-gravity!)
+  (go-go-draw!)
 
   (repl/connect)
   (connect-socket!)
