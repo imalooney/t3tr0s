@@ -59,17 +59,21 @@
   []
   (js/console.log "game over"))
 
-(defn spawn-piece!
+(defn spawn-piece! 
   "Spawns a random piece at the starting position."
+  [piece]
+    (swap! state assoc :piece piece
+                       :position start-position))
+
+(defn try-spawn-piece!
+  "Checks if new piece can be written to starting position."
   []
   (let [piece (get-rand-piece)
         [x y] start-position
         board (:board @state)]
     (if (piece-fits? piece x y board)
-      (swap! state assoc :piece (get-rand-piece)
-                     :position start-position)
-      (game-over))
-  ))
+      (spawn-piece! piece)
+      (game-over))))
 
 (defn collapse-rows!
   "Collapse all filled rows."
@@ -113,8 +117,8 @@
     ; If collapse routine returns a channel...
     ; then wait for it before spawning a new piece.
     (if-let [collapse-anim (go-go-collapse!)]
-      (go (<! collapse-anim) (spawn-piece!))
-      (spawn-piece!))))
+      (go (<! collapse-anim) (try-spawn-piece!))
+      (try-spawn-piece!))))
 
 (defn go-go-gravity!
   "Starts the gravity routine."
@@ -209,7 +213,7 @@
 
 (defn init []
   (size-canvas!)
-  (spawn-piece!)
+  (try-spawn-piece!)
   (add-key-events)
   (go-go-gravity!)
 
