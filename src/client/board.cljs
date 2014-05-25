@@ -125,9 +125,12 @@
 (defn create-drawable-board
   "Creates a new drawable board, by combining the current piece with the current board."
   [piece x y board flashing-rows]
-  (let [ghost (assoc piece :name :G)
-        gy    (get-drop-pos piece x y board)
-        board1 (write-piece-to-board ghost x gy board)
-        board2 (write-piece-to-board piece x y board1)
-        board3 (highlight-rows flashing-rows board2)]
-    board3))
+  (if piece
+    (let [ghost (assoc piece :name :G)
+          gy    (get-drop-pos piece x y board)
+          board1 (write-piece-to-board ghost x gy board)
+          board2 (write-piece-to-board piece x y board1)
+          board3 (highlight-rows flashing-rows board2)]
+      board3)
+    (let [board3 (highlight-rows flashing-rows board)]
+      board3)))

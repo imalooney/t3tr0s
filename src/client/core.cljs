@@ -30,7 +30,6 @@
                   :position start-position
                   :board empty-board
 
-                  :animating false
                   :flashing-rows #{}}))
 
 ;;------------------------------------------------------------
@@ -77,7 +76,6 @@
         rows (get-filled-row-indices board)]
 
     (when (> (count rows) 0)
-      (swap! state assoc :animating true)
       (go
         ; blink n times
         (doseq [i (range 3)]
@@ -90,8 +88,7 @@
                  [:flashing-rows] empty))         ; unflash rows
 
         ; finally collapse
-        (collapse-rows!)
-        (swap! state assoc :animating false)))))
+        (collapse-rows!)))))
 
 (defn lock-piece!
   "Lock the current piece into the board."
@@ -99,7 +96,8 @@
   (let [[x y] (:position @state)
         piece (:piece @state)
         board (:board @state)]
-    (swap! state assoc :board (write-piece-to-board piece x y board))
+    (swap! state assoc  :board (write-piece-to-board piece x y board)
+                        :piece nil)
 
     ; If collapse routine returns a channel...
     ; then wait for it before spawning a new piece.
@@ -113,7 +111,7 @@
   (go
     (loop []
       (<! (timeout 1000))
-      (when-not (:animating @state)
+      (when (:piece @state)
         (let [[x y] (:position @state)
               piece (:piece @state)
               board (:board @state)
