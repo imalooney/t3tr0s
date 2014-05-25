@@ -12,7 +12,7 @@
                           write-piece-to-board
                           create-drawable-board
                           get-filled-row-indices
-                          ]]
+                          write-to-board]]
     [client.paint :refer [size-canvas!
                           draw-board!]]
     [client.repl :as repl]
@@ -54,10 +54,17 @@
 ;; Game-driven STATE CHANGES
 ;;------------------------------------------------------------
 
-(defn game-over
+(defn game-over!
   "You lost, get to the chopper"
   []
-  (js/console.log "game over"))
+  (go
+    (doseq [y (reverse (range 22))
+            x (range 10)]
+      (if (even? x)
+        (<! (timeout 2)))
+      (let [board (write-to-board x y :I (:board @state))]
+         (swap! state assoc :board board))))
+    )
 
 (defn spawn-piece! 
   "Spawns a random piece at the starting position."
@@ -73,7 +80,7 @@
         board (:board @state)]
     (if (piece-fits? piece x y board)
       (spawn-piece! piece)
-      (game-over))))
+      (game-over!))))
 
 (defn collapse-rows!
   "Collapse all filled rows."
