@@ -17,7 +17,8 @@
                           write-to-board
                           n-rows
                           n-cols]]
-    [client.rules :refer [get-points]]
+    [client.rules :refer [get-points
+                          level-up?]]
     [client.paint :refer [size-canvas!
                           draw-board!]]
     [client.repl :as repl]
@@ -37,7 +38,10 @@
 
                   :flashing-rows #{}
 
-                  :score 0}))
+                  :score 0
+                  :level 0
+                  :level-lines 0
+                  :total-lines 0}))
 
 ; required for pausing/resuming the gravity routine
 (def pause-grav (chan))
@@ -117,20 +121,44 @@
         (<! (timeout 1000))
         (go-go-game-over!)))))
 
+(defn update-points!
+  [rows-cleared]
+  (let [n rows-cleared
+        level (:level @state)
+        points (get-points n (inc level))
+        level-lines (+ n (:level-lines @state))]
+
+    ; update the score before a possible level-up
+    (swap! state update-in [:score] + points)
+
+    (if (level-up? level-lines)
+      (do
+        (swap! state update-in [:level] inc)
+        (swap! state assoc :level-lines 0)
+        (js/console.log "leveled up"))
+      (swap! state assoc :level-lines level-lines))
+
+    (swap! state update-in [:total-lines] + n)
+
+    (js/console.log "level-lines:" (:level-lines @state))
+    (js/console.log "total-lines:" (:total-lines @state))
+    (js/console.log "level:" (:level @state))
+
+    (js/console.log "Points scored: ")
+    (js/console.log points)
+    (js/console.log "Current Score: ")
+    (js/console.log (:score @state))))
+
 (defn collapse-rows!
   "Collapse all filled rows."
   []
   (let [board (:board @state)
         cleared-board (remove #(every? cell-filled? %) board)
         n (- (count board) (count cleared-board))
-        new-board (into (vec (repeat n empty-row)) cleared-board)
-        points (get-points n 1)]
+        new-board (into (vec (repeat n empty-row)) cleared-board)]
+
     (swap! state assoc :board new-board)
-    (swap! state update-in [:score] + points)
-    (js/console.log "Points scored: ")
-    (js/console.log points)
-    (js/console.log "Current Score: ")
-    (js/console.log (:score @state))))
+    (update-points! n)))
 
 (defn go-go-collapse!
   "Starts the collapse animation if we need to, returning nil or the animation channel."
@@ -168,11 +196,7 @@
     (if-let [collapse-anim (go-go-collapse!)]
       (go (<! collapse-anim) (try-spawn-piece!))
       (try-spawn-piece!))))
-
-(defn try-gravity!
-  "Move current piece down 1 if possible, else lock the piece."
-  []
-  (let [piece (:piece @state)
+(defn try-gravity!  "Move current piece down 1 if possible, else lock the piece." [] (let [piece (:piece @state)
         [x y] (:position @state)
         board (:board @state)
         ny (inc y)]
