@@ -112,7 +112,7 @@
         cleared-board (remove #(every? cell-filled? %) board)
         n (- (count board) (count cleared-board))
         new-board (into (vec (repeat n empty-row)) cleared-board)
-        points (get-points n)]
+        points (get-points n 1)]
     (swap! state assoc :board new-board)
     (swap! state update-in [:score] + points)
     (js/console.log "Points scored: ")
