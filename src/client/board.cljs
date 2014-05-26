@@ -23,6 +23,7 @@
 ;;------------------------------------------------------------
 
 (def n-rows 22)
+(def n-rows-vis 20.5)
 (def n-cols 10)
 
 (def empty-row       (vec (repeat n-cols 0)))

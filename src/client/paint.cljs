@@ -2,6 +2,7 @@
   (:require
     [client.board :refer [read-board
                           n-rows
+                          n-rows-vis
                           n-cols]]))
 
 ;;------------------------------------------------------------
@@ -29,14 +30,15 @@
   []
   (let [canvas (.getElementById js/document "canvas")]
     (aset canvas "width" (* cell-size n-cols))
-    (aset canvas "height" (* cell-size n-rows))))
+    (aset canvas "height" (* cell-size n-rows-vis))))
 
 (defn draw-cell!
   "Draw the given cell of the given board."
   [ctx x y board]
   (let [color (cell-colors (read-board x y board))
+        y-diff (- n-rows n-rows-vis)
         left (* cell-size x)
-        top  (* cell-size y)]
+        top  (* cell-size (- y y-diff))]
     (aset ctx "fillStyle" color)
     (.fillRect ctx left top cell-size cell-size)))
 
