@@ -1,5 +1,6 @@
 (ns client.core
-  (:require-macros [cljs.core.async.macros :refer [go]])
+  (:require-macros
+    [cljs.core.async.macros :refer [go alt!]])
   (:require
     [client.board :refer [piece-fits?
                           cell-filled?
@@ -36,6 +37,10 @@
                   :flashing-rows #{}
 
                   :score 0}))
+
+; required for pausing/resuming the gravity routine
+(def pause-grav (chan))
+(def resume-grav (chan))
 
 ;;------------------------------------------------------------
 ;; STATE MONITOR
@@ -93,7 +98,8 @@
   "Spawns the given piece at the starting position."
   [piece]
     (swap! state assoc :piece piece
-                       :position start-position))
+                       :position start-position)
+    (put! resume-grav 0))
 
 (defn try-spawn-piece!
   "Checks if new piece can be written to starting position."
@@ -149,6 +155,7 @@
         board (:board @state)]
     (swap! state assoc  :board (write-piece-to-board piece x y board)
                         :piece nil)
+    (put! pause-grav 0)
 
     ; If collapse routine returns a channel...
     ; then wait for it before spawning a new piece.
@@ -156,21 +163,32 @@
       (go (<! collapse-anim) (try-spawn-piece!))
       (try-spawn-piece!))))
 
+(defn try-gravity!
+  "Move current piece down 1 if possible, else lock the piece."
+  []
+  (let [piece (:piece @state)
+        [x y] (:position @state)
+        board (:board @state)
+        ny (inc y)]
+    (if (piece-fits? piece x ny board)
+      (swap! state assoc-in [:position 1] ny)
+      (lock-piece!))))
+
 (defn go-go-gravity!
   "Starts the gravity routine."
   []
+  ; Make sure gravity starts in paused mode.
+  ; Spawning the piece will signal the first "resume".
+  (put! pause-grav 0)
+
   (go
     (loop []
-      (<! (timeout 1000))
-      (when (:piece @state)
-        (let [[x y] (:position @state)
-              piece (:piece @state)
-              board (:board @state)
-              ny (inc y)]
-          (if (piece-fits? piece x ny board)
-            (swap! state assoc-in [:position 1] ny)
-            (lock-piece!))))
-      (recur))))
+      (let [cs [(timeout 1000) pause-grav]  ; channels to listen to (timeout, pause)
+            [_ c] (alts! cs)]               ; get the first channel to receive a value
+        (if (= pause-grav c)                ; if "pause" received, wait for "resume"
+          (<! resume-grav)
+          (try-gravity!))
+        (recur)))))
 
 ;;------------------------------------------------------------
 ;; Input-driven STATE CHANGES
@@ -251,8 +269,8 @@
   (size-canvas!)
   (try-spawn-piece!)
   (add-key-events)
-  (go-go-gravity!)
   (go-go-draw!)
+  (go-go-gravity!)
 
   (repl/connect)
   (connect-socket!)
