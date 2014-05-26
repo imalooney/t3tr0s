@@ -18,7 +18,8 @@
                           n-rows
                           n-cols]]
     [client.rules :refer [get-points
-                          level-up?]]
+                          level-up?
+                          get-level-speed]]
     [client.paint :refer [size-canvas!
                           draw-board!]]
     [client.repl :as repl]
@@ -213,7 +214,8 @@
 
   (go
     (loop []
-      (let [cs [(timeout 1000) pause-grav]  ; channels to listen to (timeout, pause)
+      (let [cs [(timeout (get-level-speed (:level @state))) 
+                pause-grav]                 ; channels to listen to (timeout, pause)
             [_ c] (alts! cs)]               ; get the first channel to receive a value
         (if (= pause-grav c)                ; if "pause" received, wait for "resume"
           (<! resume-grav)
