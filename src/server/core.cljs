@@ -46,14 +46,17 @@
                 (concat [1000])) ; wait 1 second at end of loop
 
         ; convert delays to imagemagick unit (1/100 s)
-        delays (map #(-> % (/ 10) (js/Math.floor)) dts)
+        ; (modern browsers don't support gif delays below 0.02s)
+        dt->delay #(max 2 (-> % (/ 10) js/Math.floor))
+        delays (map dt->delay dts)
 
         ; create imagemagick command
-        outfile (str cwd "/anim.gif")
+        gif-file (str cwd "/anim.gif")
+        cmd-file (str cwd "/anim.sh")
         cmd (join " " (concat
                ["convert"]
                (map-indexed #(str "-delay " %2 " " (fname %1)) delays)
-               ["-layers OptimizeTransparency -loop 0" outfile]))]
+               ["-layers OptimizeTransparency -loop 0" gif-file]))]
 
     (println "Received " (count frames) "frames")
 
@@ -64,12 +67,13 @@
 
     ; Run imagemagick command for generating gif.
     (println cmd)
+    (.writeFile fs cmd-file cmd)
     (exec cmd (fn [error stdout stderr]
                 (println "stdout:\n" stdout)
                 (println "stderr:\n" stderr)
                 (if error
                   (println "ERROR:\n" error)
-                  (println "SUCCESS.  Wrote " outfile))))))
+                  (println "SUCCESS.  Wrote " gif-file))))))
 
 ;;------------------------------------------------------------
 ;; Socket Setup
