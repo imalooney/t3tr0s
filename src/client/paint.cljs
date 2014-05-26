@@ -1,6 +1,8 @@
 (ns client.paint
   (:require
-    [client.board :refer [read-board]]))
+    [client.board :refer [read-board
+                          n-rows
+                          n-cols]]))
 
 ;;------------------------------------------------------------
 ;; PAINTING (for showing the game on a canvas)
@@ -26,8 +28,8 @@
   "Set the size of the canvas."
   []
   (let [canvas (.getElementById js/document "canvas")]
-    (aset canvas "width" (* cell-size 10))
-    (aset canvas "height" (* cell-size 22))))
+    (aset canvas "width" (* cell-size n-cols))
+    (aset canvas "height" (* cell-size n-rows))))
 
 (defn draw-cell!
   "Draw the given cell of the given board."
@@ -43,7 +45,7 @@
   [board]
   (let [canvas (.getElementById js/document "canvas")
         ctx    (.getContext canvas "2d")]
-    (doseq [x (range 10) y (range 22)]
+    (doseq [x (range n-cols) y (range n-rows)]
       (draw-cell! ctx x y board))
     nil))
 

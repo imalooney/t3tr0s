@@ -12,7 +12,9 @@
                           write-piece-to-board
                           create-drawable-board
                           get-filled-row-indices
-                          write-to-board]]
+                          write-to-board
+                          n-rows
+                          n-cols]]
     [client.rules :refer [get-points]]
     [client.paint :refer [size-canvas!
                           draw-board!]]
@@ -81,8 +83,8 @@
   "Kicks off game over routine. (and get to the chopper)"
   []
   (go
-    (doseq [y (reverse (range 22))
-            x (range 10)]
+    (doseq [y (reverse (range n-rows))
+            x (range n-cols)]
       (if (even? x)
         (<! (timeout 2)))
       (swap! state update-in [:board] #(write-to-board x y :I %)))))

@@ -22,9 +22,12 @@
 ;; Board.
 ;;------------------------------------------------------------
 
-(def empty-row       (vec (repeat 10 0)))
-(def highlighted-row (vec (repeat 10 :H)))
-(def empty-board (vec (repeat 22 empty-row)))
+(def n-rows 22)
+(def n-cols 10)
+
+(def empty-row       (vec (repeat n-cols 0)))
+(def highlighted-row (vec (repeat n-rows :H)))
+(def empty-board (vec (repeat n-rows empty-row)))
 
 ; The starting position of all pieces.
 (def start-position [4 2])
@@ -32,7 +35,8 @@
 (defn coord-inside?
   "Determines if the coordinate is inside the board."
   [x y]
-  (and (<= 0 x 9) (<= 0 y 21)))
+  (and (<= 0 x (dec n-cols))
+       (<= 0 y (dec n-rows))))
 
 (def cell-filled? (complement zero?))
 
