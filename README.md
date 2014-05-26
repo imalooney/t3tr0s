@@ -1,6 +1,6 @@
 <img src="public/img/t3tr0s_500w.png">
 
-<img src="http://i.imgur.com/eq19e4b.gif" align="right" width="132px">
+<img src="http://i.imgur.com/F1ehgDk.gif" align="right" width="132px">
 
 We are re-creating Tetris™ in
 [ClojureScript](https://github.com/shaunlebron/ClojureScript-Syntax-in-15-minutes).
@@ -15,6 +15,7 @@ past.  (We are working on the game at least once a week):
 - [DevBlog 2](devblog/day02.md) - basic piece control
 - [DevBlog 3](devblog/day03.md) - gravity, stack, collapse, hard-drop
 - [DevBlog 4](devblog/day04.md) - ghost piece, flash before collapse
+- [DevBlog 5](devblog/day05.md) - game over animation, score
 
 ## Setup
 
