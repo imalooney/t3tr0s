@@ -11,6 +11,7 @@
                           get-drop-pos
                           get-rand-piece
                           write-piece-to-board
+                          write-piece-behind-board
                           create-drawable-board
                           get-filled-row-indices
                           write-to-board
@@ -109,7 +110,12 @@
         board (:board @state)]
     (if (piece-fits? piece x y board)
       (spawn-piece! piece)
-      (go-go-game-over!))))
+      (go
+        ; Show piece that we attempted to spawn, drawn behind the other pieces.
+        ; Then pause before kicking off gameover animation.
+        (swap! state update-in [:board] #(write-piece-behind-board piece x y %))
+        (<! (timeout 1000))
+        (go-go-game-over!)))))
 
 (defn collapse-rows!
   "Collapse all filled rows."

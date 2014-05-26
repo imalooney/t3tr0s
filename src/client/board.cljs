@@ -79,6 +79,14 @@
         coords (:coords piece)]
     (write-coords-to-board coords x y value board)))
 
+(defn write-piece-behind-board
+  "Like write-piece-to-board, but only draws to empty cells, to make it look like it's drawing behind."
+  [piece x y board]
+  (let [value (:name piece)
+        can-write? (fn [[cx cy]] (zero? (read-board (+ x cx) (+ y cy) board)))
+        coords (filter can-write? (:coords piece))]
+    (write-coords-to-board coords x y value board)))
+
 (defn highlight-rows
   "Returns a new board with the given rows highlighted."
   [active-rows board]
