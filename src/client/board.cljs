@@ -5,13 +5,13 @@
 ;;------------------------------------------------------------
 
 (def pieces
-  {:I {:name :I :coords [[0 0] [0 -1] [0 1] [0 2]]}
-   :L {:name :L :coords [[0 0] [0 1] [1 1] [0 -1]]}
-   :J {:name :J :coords [[0 0] [0 -1] [0 1] [-1 1]]}
+  {:I {:name :I :coords [[0 0] [-1 0] [1 0] [2 0]]}
+   :L {:name :L :coords [[0 0] [-1 0] [1 0] [1 -1]]}
+   :J {:name :J :coords [[0 0] [-1 0] [1 0] [-1 -1]]}
    :S {:name :S :coords [[0 0] [-1 0] [0 -1] [1 -1]]}
    :Z {:name :Z :coords [[0 0] [-1 -1] [0 -1] [1 0]]}
-   :O {:name :O :coords [[0 0] [-1 0] [-1 1] [0 1]]}
-   :T {:name :T :coords [[0 0] [-1 0] [1 0] [0 1]]}})
+   :O {:name :O :coords [[0 0] [1 0] [1 -1] [0 -1]]}
+   :T {:name :T :coords [[0 0] [-1 0] [1 0] [0 -1]]}})
 
 (defn get-rand-piece
   "Return a random piece."
