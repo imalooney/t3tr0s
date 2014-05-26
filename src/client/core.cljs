@@ -13,6 +13,7 @@
                           create-drawable-board
                           get-filled-row-indices
                           write-to-board]]
+    [client.rules :refer [get-points]]
     [client.paint :refer [size-canvas!
                           draw-board!]]
     [client.repl :as repl]
@@ -30,7 +31,9 @@
                   :position start-position
                   :board empty-board
 
-                  :flashing-rows #{}}))
+                  :flashing-rows #{}
+
+                  :score 0}))
 
 ;;------------------------------------------------------------
 ;; STATE MONITOR
@@ -108,8 +111,14 @@
   (let [board (:board @state)
         cleared-board (remove #(every? cell-filled? %) board)
         n (- (count board) (count cleared-board))
-        new-board (into (vec (repeat n empty-row)) cleared-board)]
-    (swap! state assoc :board new-board)))
+        new-board (into (vec (repeat n empty-row)) cleared-board)
+        points (get-points n)]
+    (swap! state assoc :board new-board)
+    (swap! state update-in [:score] + points)
+    (js/console.log "Points scored: ")
+    (js/console.log points)
+    (js/console.log "Current Score: ")
+    (js/console.log (:score @state))))
 
 (defn go-go-collapse!
   "Starts the collapse animation if we need to, returning nil or the animation channel."
