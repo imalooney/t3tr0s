@@ -2,6 +2,12 @@
 
 <img src="http://i.imgur.com/F1ehgDk.gif" align="right" width="100px">
 
+Today went well, we started with some refactoring to simplify our state, and in
+the process discovered that it fixed a bug allowing us to rotate the piece
+while rows were collapsing.  Elaine and Luis took the helm on the coding today.
+The game over animation was straight-forward.  We got pretty tired at the end.
+
+
 1. We started today by reviewing a recent splitting of our files:
     * core.cljs (game state)
     * board.cljs (board constants and pure functions)
@@ -39,18 +45,40 @@
           (swap! state update-in [:board] #(write-to-board x y :I %)))))
     ```
 
+1. We added a custom game over map spelling "The End", but discarded it.
+
+1. Sync draws with browser's `requestAnimationFrame` callback:
+
+    ```clj
+    (defn make-redraw-chan
+      "Create a channel that receives a value everytime a redraw is requested."
+      []
+      (let [redraw-chan (chan)
+            request-anim #(.requestAnimationFrame js/window %)]
+        (letfn [(trigger-redraw []
+                  (put! redraw-chan 1)
+                  (request-anim trigger-redraw))]
+          (request-anim trigger-redraw)
+          redraw-chan)))
+
+    (defn go-go-draw!
+      "Kicks off the drawing routine."
+      []
+      (let [redraw-chan (make-redraw-chan)]
+        (go
+          (loop [board nil]
+            (<! redraw-chan)
+            (let [new-board (drawable-board)]
+              (when (not= board new-board)
+                (draw-board! new-board)
+                (if (:recording @vcr)
+                  (record-frame!)))
+              (recur new-board))))))
+    ```
 
 1. We added score state, and incremented it when collapsing rows.
 
     ```clj
-    (def state (atom {:piece (get-rand-piece)
-                      :position start-position
-                      :board empty-board
-
-                      :flashing-rows #{}
-
-                      :score 0}))
-
     (defn collapse-rows!
       "Collapse all filled rows."
       []
