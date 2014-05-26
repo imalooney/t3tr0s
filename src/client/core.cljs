@@ -77,20 +77,18 @@
 ;; Game-driven STATE CHANGES
 ;;------------------------------------------------------------
 
-(defn game-over!
-  "You lost, get to the chopper"
+(defn go-go-game-over!
+  "Kicks off game over routine. (and get to the chopper)"
   []
   (go
     (doseq [y (reverse (range 22))
             x (range 10)]
       (if (even? x)
         (<! (timeout 2)))
-      (let [board (write-to-board x y :I (:board @state))]
-         (swap! state assoc :board board))))
-    )
+      (swap! state update-in [:board] #(write-to-board x y :I %)))))
 
 (defn spawn-piece! 
-  "Spawns a random piece at the starting position."
+  "Spawns the given piece at the starting position."
   [piece]
     (swap! state assoc :piece piece
                        :position start-position))
@@ -103,7 +101,7 @@
         board (:board @state)]
     (if (piece-fits? piece x y board)
       (spawn-piece! piece)
-      (game-over!))))
+      (go-go-game-over!))))
 
 (defn collapse-rows!
   "Collapse all filled rows."
