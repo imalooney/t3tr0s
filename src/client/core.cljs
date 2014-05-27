@@ -27,7 +27,7 @@
     [client.repl :as repl]
     [client.socket :refer [socket connect-socket!]]
     [client.vcr :refer [vcr toggle-record! record-frame!]]
-    [cljs.core.async :refer [put! chan <! timeout]]))
+    [cljs.core.async :refer [put! chan <! timeout unique]]))
 
 (enable-console-print!)
 
@@ -43,7 +43,9 @@
                   :score 0
                   :level 0
                   :level-lines 0
-                  :total-lines 0}))
+                  :total-lines 0
+
+                  :soft-drop false}))
 
 ; required for pausing/resuming the gravity routine
 (def pause-grav (chan))
@@ -189,8 +191,9 @@
   (let [[x y] (:position @state)
         piece (:piece @state)
         board (:board @state)]
-    (swap! state assoc  :board (write-piece-to-board piece x y board)
-                        :piece nil)
+    (swap! state assoc :board (write-piece-to-board piece x y board)
+                       :piece nil
+                       :soft-drop false)
     (put! pause-grav 0)
 
     ; If collapse routine returns a channel...
@@ -202,7 +205,7 @@
         (try-spawn-piece!))
       (try-spawn-piece!))))
 
-(defn try-gravity!
+(defn apply-gravity!
   "Move current piece down 1 if possible, else lock the piece."
   []
   (let [piece (:piece @state)
@@ -222,24 +225,22 @@
 
   (go
     (loop []
-      (let [cs [(timeout (get-level-speed (:level @state))) 
-                pause-grav]                 ; channels to listen to (timeout, pause)
+      (let [soft-speed 25
+            level-speed (get-level-speed (:level @state))
+            speed (if (:soft-drop @state)
+                    (min soft-speed level-speed)
+                    level-speed)
+
+            cs [(timeout speed) pause-grav] ; channels to listen to (timeout, pause)
             [_ c] (alts! cs)]               ; get the first channel to receive a value
         (if (= pause-grav c)                ; if "pause" received, wait for "resume"
           (<! resume-grav)
-          (try-gravity!))
+          (apply-gravity!))
         (recur)))))
 
 ;;------------------------------------------------------------
 ;; Input-driven STATE CHANGES
 ;;------------------------------------------------------------
-
-(def key-codes {:left 37
-                :up 38
-                :right 39
-                :down 40
-                :space 32
-                :shift 16})
 
 (defn try-move!
   "Try moving the current piece to the given offset."
@@ -275,22 +276,44 @@
 (defn add-key-events
   "Add all the key inputs."
   []
-  (.addEventListener js/window "keydown"
-     (fn [e]
-       (if (:piece @state)
-         (let [code (aget e "keyCode")]
-          (cond
-            (= code (:down key-codes))  (do (try-move!  0  1) (.preventDefault e))
-            (= code (:left key-codes))  (do (try-move! -1  0) (.preventDefault e))
-            (= code (:right key-codes)) (do (try-move!  1  0) (.preventDefault e))
-            (= code (:space key-codes)) (do (hard-drop!)      (.preventDefault e))
-            (= code (:up key-codes))    (do (try-rotate!)     (.preventDefault e))))))
-        )
-  (.addEventListener js/window "keyup"
-     (fn [e]
-       (let [code (aget e "keyCode")]
-         (cond
-           (= code (:shift key-codes)) (toggle-record!))))))
+  (let [down-chan (chan)
+        key-names {37 :left
+                   38 :up
+                   39 :right
+                   40 :down
+                   32 :space
+                   16 :shift}
+        key-name #(-> % .-keyCode key-names)]
+
+    (.addEventListener js/window "keydown"
+      (fn [e]
+        (if (:piece @state)
+          (case (key-name e)
+            :down  (do (put! down-chan true) (.preventDefault e))
+            :left  (do (try-move! -1  0)     (.preventDefault e))
+            :right (do (try-move!  1  0)     (.preventDefault e))
+            :space (do (hard-drop!)          (.preventDefault e))
+            :up    (do (try-rotate!)         (.preventDefault e))
+            nil))))
+
+    (.addEventListener js/window "keyup"
+      (fn [e]
+        (case (key-name e)
+          :down  (put! down-chan false)
+          :shift (toggle-record!)
+          nil)))
+
+    ; Listen to the down key, but ignore repeats.
+    (let [c (unique down-chan)]
+      (go
+        (while true
+          (let [on-or-off (<! c)]
+            (swap! state assoc :soft-drop on-or-off)
+
+            ; force gravity to reset
+            (put! pause-grav 0)
+            (put! resume-grav 0)))))))
+
 
 ;;------------------------------------------------------------
 ;; Facilities
