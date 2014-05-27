@@ -99,9 +99,9 @@
    (fn [i row]
      (if (active-rows i) highlighted-row row)) board)))
 
-(defn collapse-rows-from-board
+(defn collapse-rows
   "Returns a new board with the given row indices collapsed."
-  [board rows]
+  [rows board]
   (let [cleared-board (->> board
                            (map-indexed vector)
                            (remove #(rows (first %)))
@@ -110,12 +110,14 @@
         new-board (into (vec (repeat n empty-row)) cleared-board)]
     new-board))
 
-(defn clear-rows-from-board
+(defn clear-rows
   "Return a new board with the given row indices cleared."
-  [board rows]
+  [rows board]
   (if (zero? (count rows))
     board
-    (recur (assoc board (first rows) empty-row) (rest rows))))
+    (let [next-rows (rest rows)
+          next-board (assoc board (first rows) empty-row)]
+      (recur next-rows next-board))))
 
 (defn get-filled-row-indices
   "Get the indices of the filled rows for the given board."
@@ -160,13 +162,11 @@
 
 (defn create-drawable-board
   "Creates a new drawable board, by combining the current piece with the current board."
-  [piece x y board flashing-rows]
+  [piece x y board]
   (if piece
     (let [ghost (assoc piece :name :G)
           gy    (get-drop-pos piece x y board)
           board1 (write-piece-to-board ghost x gy board)
-          board2 (write-piece-to-board piece x y board1)
-          board3 (highlight-rows flashing-rows board2)]
-      board3)
-    (let [board3 (highlight-rows flashing-rows board)]
-      board3)))
+          board2 (write-piece-to-board piece x y board1)]
+      board2)
+    board))

@@ -13,8 +13,9 @@
                           write-piece-behind-board
                           create-drawable-board
                           get-filled-row-indices
-                          clear-rows-from-board
-                          collapse-rows-from-board
+                          clear-rows
+                          collapse-rows
+                          highlight-rows
                           write-to-board
                           n-rows
                           n-cols]]
@@ -39,8 +40,6 @@
                   :position nil
                   :board empty-board
 
-                  :flashing-rows #{}
-
                   :score 0
                   :level 0
                   :level-lines 0
@@ -59,9 +58,8 @@
   []
   (let [{piece :piece
          [x y] :position
-         board :board
-         flashing-rows :flashing-rows} @state]
-    (create-drawable-board piece x y board flashing-rows)))
+         board :board} @state]
+    (create-drawable-board piece x y board)))
 
 (defn make-redraw-chan
   "Create a channel that receives a value everytime a redraw is requested."
@@ -157,7 +155,7 @@
   "Collapse the given row indices."
   [rows]
   (let [n (count rows)
-        board (collapse-rows-from-board (:board @state) rows)]
+        board (collapse-rows rows (:board @state))]
     (swap! state assoc :board board)
     (update-points! n)))
 
@@ -165,19 +163,21 @@
   "Starts the collapse animation if we need to, returning nil or the animation channel."
   []
   (let [board (:board @state)
-        rows (get-filled-row-indices board)]
+        rows (get-filled-row-indices board)
+        flashed-board (highlight-rows rows board)
+        cleared-board (clear-rows rows board)]
 
-    (when (> (count rows) 0)
+    (when-not (zero? (count rows))
       (go
         ; blink n times
         (doseq [i (range 3)]
-          (swap! state assoc :flashing-rows rows)
+          (swap! state assoc :board flashed-board)
           (<! (timeout 170))
-          (swap! state update-in [:flashing-rows] empty)
+          (swap! state assoc :board board)
           (<! (timeout 170)))
 
         ; clear rows to create a gap, and pause
-        (swap! state update-in [:board] clear-rows-from-board rows)
+        (swap! state assoc :board cleared-board)
         (<! (timeout 220))
 
         ; finally collapse
