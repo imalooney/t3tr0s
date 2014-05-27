@@ -3,11 +3,9 @@
     [cljs.core.async.macros :refer [go alt!]])
   (:require
     [client.board :refer [piece-fits?
-                          cell-filled?
                           rotate-piece
                           start-position
                           empty-board
-                          empty-row
                           get-drop-pos
                           get-rand-piece
                           get-rand-diff-piece
@@ -15,6 +13,8 @@
                           write-piece-behind-board
                           create-drawable-board
                           get-filled-row-indices
+                          clear-rows-from-board
+                          collapse-rows-from-board
                           write-to-board
                           n-rows
                           n-cols]]
@@ -154,14 +154,11 @@
     (js/console.log (:score @state))))
 
 (defn collapse-rows!
-  "Collapse all filled rows."
-  []
-  (let [board (:board @state)
-        cleared-board (remove #(every? cell-filled? %) board)
-        n (- (count board) (count cleared-board))
-        new-board (into (vec (repeat n empty-row)) cleared-board)]
-
-    (swap! state assoc :board new-board)
+  "Collapse the given row indices."
+  [rows]
+  (let [n (count rows)
+        board (collapse-rows-from-board (:board @state) rows)]
+    (swap! state assoc :board board)
     (update-points! n)))
 
 (defn go-go-collapse!
@@ -174,16 +171,17 @@
       (go
         ; blink n times
         (doseq [i (range 3)]
+          (swap! state assoc :flashing-rows rows)
+          (<! (timeout 170))
+          (swap! state update-in [:flashing-rows] empty)
+          (<! (timeout 170)))
 
-          (<! (timeout 100))                      ; resume here later
-          (swap! state assoc :flashing-rows rows) ; flash rows
-
-          (<! (timeout 100))                      ; resume here later
-          (swap! state update-in
-                 [:flashing-rows] empty))         ; unflash rows
+        ; clear rows to create a gap, and pause
+        (swap! state update-in [:board] clear-rows-from-board rows)
+        (<! (timeout 220))
 
         ; finally collapse
-        (collapse-rows!)))))
+        (collapse-rows! rows)))))
 
 (defn lock-piece!
   "Lock the current piece into the board."
@@ -198,7 +196,10 @@
     ; If collapse routine returns a channel...
     ; then wait for it before spawning a new piece.
     (if-let [collapse-anim (go-go-collapse!)]
-      (go (<! collapse-anim) (try-spawn-piece!))
+      (go
+        (<! collapse-anim)
+        (<! (timeout 100))
+        (try-spawn-piece!))
       (try-spawn-piece!))))
 
 (defn try-gravity!

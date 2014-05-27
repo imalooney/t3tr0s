@@ -99,6 +99,24 @@
    (fn [i row]
      (if (active-rows i) highlighted-row row)) board)))
 
+(defn collapse-rows-from-board
+  "Returns a new board with the given row indices collapsed."
+  [board rows]
+  (let [cleared-board (->> board
+                           (map-indexed vector)
+                           (remove #(rows (first %)))
+                           (map second))
+        n (count rows)
+        new-board (into (vec (repeat n empty-row)) cleared-board)]
+    new-board))
+
+(defn clear-rows-from-board
+  "Return a new board with the given row indices cleared."
+  [board rows]
+  (if (zero? (count rows))
+    board
+    (recur (assoc board (first rows) empty-row) (rest rows))))
+
 (defn get-filled-row-indices
   "Get the indices of the filled rows for the given board."
   [board]
