@@ -13,6 +13,11 @@
    :O {:name :O :coords [[0 0] [1 0] [1 -1] [0 -1]]}
    :T {:name :T :coords [[0 0] [-1 0] [1 0] [0 -1]]}})
 
+(defn get-rand-diff-piece
+  "Return a random piece different from the given one."
+  [piece]
+  (pieces (rand-nth (keys (dissoc pieces (:name piece))))))
+
 (defn get-rand-piece
   "Return a random piece."
   []

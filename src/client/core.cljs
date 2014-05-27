@@ -10,6 +10,7 @@
                           empty-row
                           get-drop-pos
                           get-rand-piece
+                          get-rand-diff-piece
                           write-piece-to-board
                           write-piece-behind-board
                           create-drawable-board
@@ -33,8 +34,9 @@
 ;; STATE OF THE GAME
 ;;------------------------------------------------------------
 
-(def state (atom {:piece (get-rand-piece)
-                  :position start-position
+(def state (atom {:next-piece nil
+                  :piece nil
+                  :position nil
                   :board empty-board
 
                   :flashing-rows #{}
@@ -110,9 +112,10 @@
 (defn try-spawn-piece!
   "Checks if new piece can be written to starting position."
   []
-  (let [piece (get-rand-piece)
+  (let [piece (or (:next-piece @state) (get-rand-piece))
         [x y] start-position
         board (:board @state)]
+    (swap! state assoc :next-piece (get-rand-diff-piece piece))
     (if (piece-fits? piece x y board)
       (spawn-piece! piece)
       (go
