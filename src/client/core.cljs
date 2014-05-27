@@ -119,7 +119,7 @@
         ; Show piece that we attempted to spawn, drawn behind the other pieces.
         ; Then pause before kicking off gameover animation.
         (swap! state update-in [:board] #(write-piece-behind-board piece x y %))
-        (<! (timeout 1000))
+        (<! (timeout (get-level-speed (:level @state))))
         (go-go-game-over!)))))
 
 (defn update-points!
