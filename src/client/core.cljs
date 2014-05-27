@@ -200,7 +200,11 @@
     (if-let [collapse-anim (go-go-collapse!)]
       (go (<! collapse-anim) (try-spawn-piece!))
       (try-spawn-piece!))))
-(defn try-gravity!  "Move current piece down 1 if possible, else lock the piece." [] (let [piece (:piece @state)
+
+(defn try-gravity!
+  "Move current piece down 1 if possible, else lock the piece."
+  []
+  (let [piece (:piece @state)
         [x y] (:position @state)
         board (:board @state)
         ny (inc y)]
