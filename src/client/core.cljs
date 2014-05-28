@@ -18,11 +18,14 @@
                           highlight-rows
                           write-to-board
                           n-rows
-                          n-cols]]
+                          n-cols
+                          rows-cutoff
+                          next-piece-board]]
     [client.rules :refer [get-points
                           level-up?
                           get-level-speed]]
     [client.paint :refer [size-canvas!
+                          cell-size
                           draw-board!]]
     [client.repl :as repl]
     [client.socket :refer [socket connect-socket!]]
@@ -83,7 +86,7 @@
         (<! redraw-chan)
         (let [new-board (drawable-board)]
           (when (not= board new-board)
-            (draw-board! new-board)
+            (draw-board! "game-canvas" new-board cell-size rows-cutoff)
             (if (:recording @vcr)
               (record-frame!)))
           (recur new-board))))))
@@ -113,9 +116,13 @@
   "Checks if new piece can be written to starting position."
   []
   (let [piece (or (:next-piece @state) (get-rand-piece))
+        next-piece (get-rand-diff-piece piece)
         [x y] start-position
         board (:board @state)]
-    (swap! state assoc :next-piece (get-rand-diff-piece piece))
+
+    (swap! state assoc :next-piece next-piece)
+    (draw-board! "next-canvas" (next-piece-board next-piece) cell-size)
+
     (if (piece-fits? piece x y board)
       (spawn-piece! piece)
       (go
@@ -329,7 +336,10 @@
 ;;------------------------------------------------------------
 
 (defn init []
-  (size-canvas!)
+
+  (size-canvas! "game-canvas" empty-board cell-size rows-cutoff)
+  (size-canvas! "next-canvas" (next-piece-board) cell-size)
+
   (try-spawn-piece!)
   (add-key-events)
   (go-go-draw!)

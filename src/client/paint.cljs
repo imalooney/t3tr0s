@@ -1,9 +1,7 @@
 (ns client.paint
   (:require
     [client.board :refer [read-board
-                          n-rows
-                          n-rows-vis
-                          n-cols]]))
+                          board-size]]))
 
 ;;------------------------------------------------------------
 ;; PAINTING (for showing the game on a canvas)
@@ -27,27 +25,25 @@
 
 (defn size-canvas!
   "Set the size of the canvas."
-  []
-  (let [canvas (.getElementById js/document "canvas")]
-    (aset canvas "width" (* cell-size n-cols))
-    (aset canvas "height" (* cell-size n-rows-vis))))
-
-(defn draw-cell!
-  "Draw the given cell of the given board."
-  [ctx x y board]
-  (let [color (cell-colors (read-board x y board))
-        y-diff (- n-rows n-rows-vis)
-        left (* cell-size x)
-        top  (* cell-size (- y y-diff))]
-    (aset ctx "fillStyle" color)
-    (.fillRect ctx left top cell-size cell-size)))
+  ([id board scale] (size-canvas! id board scale 0))
+  ([id board scale y-cutoff]
+   (let [canvas (.getElementById js/document id)
+         [w h] (board-size board)]
+     (aset canvas "width" (* scale w))
+     (aset canvas "height" (* scale (- h y-cutoff))))))
 
 (defn draw-board!
   "Draw the given board to the canvas."
-  [board]
-  (let [canvas (.getElementById js/document "canvas")
-        ctx    (.getContext canvas "2d")]
-    (doseq [x (range n-cols) y (range n-rows)]
-      (draw-cell! ctx x y board))
-    nil))
+  ([id board scale] (draw-board! id board scale 0))
+  ([id board scale y-cutoff]
+    (let [canvas (.getElementById js/document id)
+          ctx (.getContext canvas "2d")
+          [w h] (board-size board)]
+      (doseq [x (range w) y (range h)]
+        (let [color (cell-colors (read-board x y board))
+              left (* scale x)
+              top  (* scale (- y y-cutoff))]
+          (aset ctx "fillStyle" color)
+          (.fillRect ctx left top scale scale)))
+      nil)))
 

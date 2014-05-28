@@ -27,9 +27,10 @@
 ;; Board.
 ;;------------------------------------------------------------
 
+; conventions for standard board size
 (def n-rows 22)
-(def n-rows-vis 20.5)
 (def n-cols 10)
+(def rows-cutoff 1.5)
 
 (def empty-row       (vec (repeat n-cols 0)))
 (def highlighted-row (vec (repeat n-rows :H)))
@@ -49,6 +50,13 @@
 ;;------------------------------------------------------------
 ;; Pure Functions operating on a board.
 ;;------------------------------------------------------------
+
+(defn board-size
+  "Get the size of the given board as [w h]."
+  [board]
+  (let [w (count (first board))
+        h (count board)]
+    [w h]))
 
 (defn read-board
   "Get the current value from the given board position."
@@ -170,3 +178,20 @@
           board2 (write-piece-to-board piece x y board1)]
       board2)
     board))
+
+;;------------------------------------------------------------
+;; Next piece board generator.
+;;------------------------------------------------------------
+
+(defn next-piece-board
+  "Returns a small board for drawing the next piece."
+  ([] (next-piece-board nil))
+  ([piece]
+    (let [board [[0 0 0 0]
+                 [0 0 0 0]
+                 [0 0 0 0]
+                 [0 0 0 0]]]
+      (if piece
+        (write-piece-to-board piece 1 2 board)
+        board))))
+
