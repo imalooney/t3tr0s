@@ -89,7 +89,7 @@
         (<! redraw-chan)
         (let [new-board (drawable-board)]
           (when (not= board new-board)
-            (draw-board! "game-canvas" new-board cell-size rows-cutoff)
+            (draw-board! "game-canvas" new-board cell-size (:level @state) rows-cutoff)
             (if (:recording @vcr)
               (record-frame!)))
           (recur new-board))))))
@@ -124,7 +124,7 @@
         board (:board @state)]
 
     (swap! state assoc :next-piece next-piece)
-    (draw-board! "next-canvas" (next-piece-board next-piece) cell-size)
+    (draw-board! "next-canvas" (next-piece-board next-piece) cell-size (:level @state))
 
     (if (piece-fits? piece x y board)
       (spawn-piece! piece)

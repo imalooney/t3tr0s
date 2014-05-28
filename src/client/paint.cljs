@@ -7,20 +7,24 @@
 ;; PAINTING (for showing the game on a canvas)
 ;;------------------------------------------------------------
 
-; The size of a cell in pixels.
-(def cell-size 20)
+(def tilemap (let [img (js/Image.)]
+               (aset img "src" "tilemap.png")
+               img))
 
-(def cell-colors
-  { 0 "#333"
-   :I "#0FF"
-   :L "#FA0"
-   :J "#00F"
-   :S "#0F0"
-   :Z "#F00"
-   :O "#FF0"
-   :T "#A0F"
-   :G "#555"  ; ghost piece
-   :H "#DDD"  ; highlighted (filled or about to collapse)
+; The size of a cell in pixels.
+(def cell-size 32)
+
+(def cell-columns
+  { 0 0
+   :I 1
+   :L 2
+   :J 3
+   :S 4
+   :Z 5
+   :O 6
+   :T 7
+   :G 8  ; ghost piece
+   :H 9  ; highlighted (filled or about to collapse)
    })
 
 (defn size-canvas!
@@ -34,16 +38,28 @@
 
 (defn draw-board!
   "Draw the given board to the canvas."
-  ([id board scale] (draw-board! id board scale 0))
-  ([id board scale y-cutoff]
+  ([id board scale level] (draw-board! id board scale level 0))
+  ([id board scale level y-cutoff]
     (let [canvas (.getElementById js/document id)
           ctx (.getContext canvas "2d")
           [w h] (board-size board)]
       (doseq [x (range w) y (range h)]
-        (let [color (cell-colors (read-board x y board))
-              left (* scale x)
-              top  (* scale (- y y-cutoff))]
-          (aset ctx "fillStyle" color)
-          (.fillRect ctx left top scale scale)))
+        (let [; tilemap position
+              row (mod level 10)
+              col (cell-columns (read-board x y board))
+
+              ; source coordinates (on tilemap)
+              sx (* scale col)
+              sy (* scale row)
+              sw scale
+              sh scale
+
+              ; destination coordinates (on canvas)
+              dx (* scale x)
+              dy  (* scale (- y y-cutoff))
+              dw scale
+              dh scale]
+
+          (.drawImage ctx tilemap sx sy sw sh dx dy dw dh)))
       nil)))
 
