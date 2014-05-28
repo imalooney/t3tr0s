@@ -34,6 +34,9 @@
 
 (enable-console-print!)
 
+; alias the jquery variable
+(def $ js/$)
+
 ;;------------------------------------------------------------
 ;; STATE OF THE GAME
 ;;------------------------------------------------------------
@@ -149,16 +152,15 @@
         (js/console.log "leveled up"))
       (swap! state assoc :level-lines level-lines))
 
-    (swap! state update-in [:total-lines] + n)
+    (swap! state update-in [:total-lines] + n))
 
-    (js/console.log "level-lines:" (:level-lines @state))
-    (js/console.log "total-lines:" (:total-lines @state))
-    (js/console.log "level:" (:level @state))
+  (display-points!))
 
-    (js/console.log "Points scored: ")
-    (js/console.log points)
-    (js/console.log "Current Score: ")
-    (js/console.log (:score @state))))
+(defn display-points!
+  []
+  (.html ($ "#score") (str "Score: " (:score @state)))
+  (.html ($ "#level") (str "Level: " (:level @state)))
+  (.html ($ "#lines") (str "Lines: " (:total-lines @state))))
 
 (defn collapse-rows!
   "Collapse the given row indices."
@@ -344,6 +346,8 @@
   (add-key-events)
   (go-go-draw!)
   (go-go-gravity!)
+
+  (display-points!)
 
   (repl/connect)
   (connect-socket!)
