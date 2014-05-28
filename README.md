@@ -1,6 +1,6 @@
 <img src="public/img/t3tr0s_500w.png">
 
-<img src="http://i.imgur.com/5Ua31TR.gif" align="right" width="132px">
+<img src="http://i.imgur.com/HFZOXAu.gif" align="right" width="132px">
 
 We are re-creating Tetris™ in
 [ClojureScript](https://github.com/shaunlebron/ClojureScript-Syntax-in-15-minutes).
@@ -17,6 +17,7 @@ past.  (We are working on the game at least once a week):
 - [DevBlog 4](devblog/day04.md) - ghost piece, flash before collapse
 - [DevBlog 5](devblog/day05.md) - game over animation, score
 - [DevBlog 6](devblog/day06.md) - level speeds, fluid drop, improve collapse animation, etc.
+- [DevBlog 7](devblog/day07.md) - draw next piece, tilemap for themes
 
 ## Setup
 
