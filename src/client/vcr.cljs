@@ -34,7 +34,7 @@
   "Start recording."
   []
   (js/console.log "starting record")
-  (swap! vcr assoc :canvas (.getElementById js/document "canvas")
+  (swap! vcr assoc :canvas (.getElementById js/document "game-canvas")
                    :prev-ms nil
                    :recording true
                    :frames [])
