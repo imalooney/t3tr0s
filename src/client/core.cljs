@@ -50,7 +50,7 @@
                   :board empty-board
 
                   :score 0
-                  :level 3
+                  :level 0
                   :level-lines 0
                   :total-lines 0
 
