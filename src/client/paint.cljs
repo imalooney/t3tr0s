@@ -67,9 +67,9 @@
         (let [; tilemap region
               [img row col] (get-image-region level (read-board x y board))
 
-              ; source coordinates (on tilemap)
-              sx (* scale col)
-              sy (* scale row)
+              ; source coordinates (on (draw-board! "game-canvas" new-board cell-size (:level @state) rows-cutoff))
+              sx (* cell-size col) ; Cell-size is based on tilemap, always extract with that size
+              sy (* cell-size row)
               sw scale
               sh scale
 
@@ -82,3 +82,11 @@
           (.drawImage ctx img sx sy sw sh dx dy dw dh)))
       nil)))
 
+(defn create-opponents!
+  "Draw each opponents board"
+  [boards]
+  (let [arena (.getElementById js/document "arena")] 
+    (doseq [n boards]
+      (let [canvas (.createElement js/document "canvas")]
+       (.appendChild arena canvas)
+       (aset canvas "id" (:id n))))))

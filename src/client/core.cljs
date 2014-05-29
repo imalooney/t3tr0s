@@ -26,7 +26,10 @@
                           get-level-speed]]
     [client.paint :refer [size-canvas!
                           cell-size
-                          draw-board!]]
+                          draw-board!
+                          create-opponents!]]
+    [client.multiplayer :refer [opponents
+                                opponent-scale]]
     [client.repl :as repl]
     [client.socket :refer [socket connect-socket!]]
     [client.vcr :refer [vcr toggle-record! record-frame!]]
@@ -92,6 +95,8 @@
             (draw-board! "game-canvas" new-board cell-size (:level @state) rows-cutoff)
             (if (:recording @vcr)
               (record-frame!)))
+          (doseq [x opponents] ;; Draw opponents
+            (draw-board! (:id x) (:board x) (opponent-scale cell-size) (:level x) rows-cutoff))
           (recur new-board))))))
 
 ;;------------------------------------------------------------
@@ -341,6 +346,9 @@
 
   (size-canvas! "game-canvas" empty-board cell-size rows-cutoff)
   (size-canvas! "next-canvas" (next-piece-board) cell-size)
+  (create-opponents! opponents)
+  (doseq [x opponents]
+    (size-canvas! (:id x) (:board x) (opponent-scale cell-size)))
 
   (try-spawn-piece!)
   (add-key-events)
