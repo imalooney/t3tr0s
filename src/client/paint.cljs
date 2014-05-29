@@ -63,3 +63,13 @@
           (.drawImage ctx tilemap sx sy sw sh dx dy dw dh)))
       nil)))
 
+(defn create-opponents!
+  "Draw each opponents board"
+  [boards]
+  (let [arena (.getElementById js/document "arena")] 
+    (doseq [n boards]
+      (let [canvas (.createElement js/document "canvas")]
+       (.appendChild arena canvas)
+       (aset canvas "width" (* opp-cell n-cols))
+       (aset canvas "height" (* opp-cell n-rows-vis))
+       (aset canvas "id" (:id n))))))

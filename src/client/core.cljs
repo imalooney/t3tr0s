@@ -26,7 +26,9 @@
                           get-level-speed]]
     [client.paint :refer [size-canvas!
                           cell-size
-                          draw-board!]]
+                          draw-board!
+                          create-opponents!]]
+    [client.multiplayer :refer [opponents]]
     [client.repl :as repl]
     [client.socket :refer [socket connect-socket!]]
     [client.vcr :refer [vcr toggle-record! record-frame!]]
@@ -348,6 +350,7 @@
   (go-go-gravity!)
 
   (display-points!)
+  (create-opponents! opponents)
 
   (repl/connect)
   (connect-socket!)
