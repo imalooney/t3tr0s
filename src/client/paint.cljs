@@ -48,9 +48,9 @@
               row (mod level 10)
               col (cell-columns (read-board x y board))
 
-              ; source coordinates (on tilemap)
-              sx (* scale col)
-              sy (* scale row)
+              ; source coordinates (on (draw-board! "game-canvas" new-board cell-size (:level @state) rows-cutoff))
+              sx (* cell-size col) ; Cell-size is based on tilemap, always extract with that size
+              sy (* cell-size row)
               sw scale
               sh scale
 
@@ -70,6 +70,4 @@
     (doseq [n boards]
       (let [canvas (.createElement js/document "canvas")]
        (.appendChild arena canvas)
-       (aset canvas "width" (* opp-cell n-cols))
-       (aset canvas "height" (* opp-cell n-rows-vis))
        (aset canvas "id" (:id n))))))
