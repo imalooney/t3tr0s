@@ -1,11 +1,16 @@
 (ns client.paint
   (:require
     [client.board :refer [read-board
-                          board-size]]))
+                          board-size
+                          piece-type-adj]]))
 
 ;;------------------------------------------------------------
 ;; PAINTING (for showing the game on a canvas)
 ;;------------------------------------------------------------
+
+(def tilemap-tengen (let [img (js/Image.)]
+                      (aset img "src" "tilemap-tengen.png")
+                      img))
 
 (def tilemap (let [img (js/Image.)]
                (aset img "src" "tilemap.png")
@@ -14,7 +19,8 @@
 ; The size of a cell in pixels.
 (def cell-size 32)
 
-(def cell-columns
+(def value-position
+  "An ordering imposed on the possible cell types, used for tilemap position."
   { 0 0
    :I 1
    :L 2
@@ -26,6 +32,20 @@
    :G 8  ; ghost piece
    :H 9  ; highlighted (filled or about to collapse)
    })
+
+(defn get-image-region
+  "Get the tilemap and position for the image of the given cell value and level."
+  [level value]
+  (let [wrap-level (mod level 10)]
+    (if (= wrap-level 2)
+      (let [[k a] (piece-type-adj value)
+            row (value-position k)
+            col a]
+        [tilemap-tengen row col])
+      (let [[k _] (piece-type-adj value)
+            row wrap-level
+            col (value-position k)]
+        [tilemap row col]))))
 
 (defn size-canvas!
   "Set the size of the canvas."
@@ -44,9 +64,8 @@
           ctx (.getContext canvas "2d")
           [w h] (board-size board)]
       (doseq [x (range w) y (range h)]
-        (let [; tilemap position
-              row (mod level 10)
-              col (cell-columns (read-board x y board))
+        (let [; tilemap region
+              [img row col] (get-image-region level (read-board x y board))
 
               ; source coordinates (on tilemap)
               sx (* scale col)
@@ -60,6 +79,6 @@
               dw scale
               dh scale]
 
-          (.drawImage ctx tilemap sx sy sw sh dx dy dw dh)))
+          (.drawImage ctx img sx sy sw sh dx dy dw dh)))
       nil)))
 

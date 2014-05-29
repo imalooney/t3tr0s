@@ -47,7 +47,7 @@
                   :board empty-board
 
                   :score 0
-                  :level 0
+                  :level 3
                   :level-lines 0
                   :total-lines 0
 
@@ -106,7 +106,7 @@
             x (range n-cols)]
       (if (even? x)
         (<! (timeout 2)))
-      (swap! state update-in [:board] #(write-to-board x y :I %)))))
+      (swap! state update-in [:board] #(write-to-board x y "H0" %)))))
 
 (defn spawn-piece! 
   "Spawns the given piece at the starting position."
@@ -135,6 +135,12 @@
         (<! (timeout (get-level-speed (:level @state))))
         (go-go-game-over!)))))
 
+(defn display-points!
+  []
+  (.html ($ "#score") (str "Score: " (:score @state)))
+  (.html ($ "#level") (str "Level: " (:level @state)))
+  (.html ($ "#lines") (str "Lines: " (:total-lines @state))))
+
 (defn update-points!
   [rows-cleared]
   (let [n rows-cleared
@@ -155,12 +161,6 @@
     (swap! state update-in [:total-lines] + n))
 
   (display-points!))
-
-(defn display-points!
-  []
-  (.html ($ "#score") (str "Score: " (:score @state)))
-  (.html ($ "#level") (str "Level: " (:level @state)))
-  (.html ($ "#lines") (str "Lines: " (:total-lines @state))))
 
 (defn collapse-rows!
   "Collapse the given row indices."
