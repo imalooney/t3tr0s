@@ -70,8 +70,8 @@
               ; source coordinates (on (draw-board! "game-canvas" new-board cell-size (:level @state) rows-cutoff))
               sx (* cell-size col) ; Cell-size is based on tilemap, always extract with that size
               sy (* cell-size row)
-              sw scale
-              sh scale
+              sw cell-size
+              sh cell-size
 
               ; destination coordinates (on canvas)
               dx (* scale x)
