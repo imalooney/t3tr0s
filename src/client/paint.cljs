@@ -94,3 +94,10 @@
       (aset canvas "id" id)
       (size-canvas! id empty-board (opponent-scale cell-size))
       )))
+
+(defn delete-opponent-canvas!
+  [id]
+  (let [arena (.getElementById js/document "arena")
+        canvas (.getElementById js/document id)]
+    (if-not (nil? canvas)
+      (.removeChild arena canvas))))

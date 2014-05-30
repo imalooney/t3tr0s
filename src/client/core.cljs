@@ -25,13 +25,14 @@
     [client.rules :refer [get-points
                           level-up?
                           get-level-speed]]
-    [client.paint :refer [create-opponent-canvas!
+    [client.paint :refer [delete-opponent-canvas!
+                          create-opponent-canvas!
                           size-canvas!
                           cell-size
                           draw-board!]]
     [client.multiplayer :refer [opponent-scale]]
     [client.repl :as repl]
-    [client.socket :refer [user-id socket connect-socket!]]
+    [client.socket :refer [socket connect-socket!]]
     [client.vcr :refer [vcr toggle-record! record-frame!]]
     [cljs.core.async :refer [put! chan <! timeout unique]]))
 
@@ -92,9 +93,8 @@
         (<! redraw-chan)
         (let [new-board (drawable-board)]
           (when (not= board new-board)
-            (.emit @socket "board-update" (pr-str {:id @user-id
-                                                   :level (:level @state)
-                                                   :board (:board @state)}))
+            (.emit @socket "board-update" (pr-str {:level (:level @state)
+                                                   :board new-board}))
             (draw-board! "game-canvas" new-board cell-size (:level @state) rows-cutoff)
             (if (:recording @vcr)
               (record-frame!)))
@@ -160,8 +160,7 @@
     (if (level-up? level-lines)
       (do
         (swap! state update-in [:level] inc)
-        (swap! state assoc :level-lines 0)
-        (js/console.log "leveled up"))
+        (swap! state assoc :level-lines 0))
       (swap! state assoc :level-lines level-lines))
 
     (swap! state update-in [:total-lines] + n))
@@ -371,6 +370,7 @@
   (connect-socket!)
 
   (.on @socket "board-update" #(on-opponent-update (read-string %)))
+  (.on @socket "board-delete" delete-opponent-canvas!)
 
   (auto-refresh)
   )

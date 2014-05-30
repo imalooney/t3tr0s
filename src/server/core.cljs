@@ -92,6 +92,7 @@
 (defn init-socket
   "Initialize the web socket."
   [socket]
+  (aset socket "user-id" (gen-player-id!))
 
   ; Emit "refresh" whenever client file changes.
   (.watch fs "public/client.js" #(.emit socket "refresh"))
@@ -99,14 +100,13 @@
   ; Create gif whenever "create-gif" is emitted.
   (.on socket "create-gif" #(create-gif (read-string %)))
 
-  ; Let the connected user know what unique ID they can use
-  ; for sending updates to the server.
-  (.emit socket "establish-id" (gen-player-id!))
-  
   ; When a board update comes in, send it to all other players.
   (.on socket "board-update" (fn [data]
-                               (js/console.log "receiving data from user" (:id (read-string data)))
-                               (.. socket -broadcast (emit data))))
+                               (let [new-data (assoc (read-string data) :id (aget socket "user-id"))]
+                                 (js/console.log "receiving data from user" (:id new-data))
+                                 (.. socket -broadcast (emit "board-update" (pr-str new-data))))))
+
+  (.on socket "disconnect" #(.. socket -broadcast (emit "board-delete" (aget socket "user-id"))))
 
   )
 
