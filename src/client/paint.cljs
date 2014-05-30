@@ -1,6 +1,8 @@
 (ns client.paint
   (:require
-    [client.board :refer [read-board
+    [client.multiplayer :refer [opponent-scale]]
+    [client.board :refer [empty-board
+                          read-board
                           board-size
                           piece-type-adj]]))
 
@@ -82,11 +84,13 @@
           (.drawImage ctx img sx sy sw sh dx dy dw dh)))
       nil)))
 
-(defn create-opponents!
+(defn create-opponent-canvas!
   "Draw each opponents board"
-  [boards]
-  (let [arena (.getElementById js/document "arena")] 
-    (doseq [n boards]
-      (let [canvas (.createElement js/document "canvas")]
-       (.appendChild arena canvas)
-       (aset canvas "id" (:id n))))))
+  [id]
+  (if (nil? (.getElementById js/document id))
+    (let [arena (.getElementById js/document "arena")
+          canvas (.createElement js/document "canvas")]
+      (.appendChild arena canvas)
+      (aset canvas "id" id)
+      (size-canvas! id empty-board (opponent-scale cell-size))
+      )))
