@@ -2,7 +2,7 @@
 {
   "name": "t3tr0s-server",
   "dependencies": {
-    "socket.io" : "0.9.x",
+    "socket.io" : "1.0.x",
     "express" : "4.1.x"
   }
 }
