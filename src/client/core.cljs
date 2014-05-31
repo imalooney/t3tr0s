@@ -2,6 +2,7 @@
   (:require-macros
     [cljs.core.async.macros :refer [go alt!]])
   (:require
+    [cljs.reader :refer [read-string]]
     [client.board :refer [piece-fits?
                           rotate-piece
                           start-position
@@ -24,12 +25,12 @@
     [client.rules :refer [get-points
                           level-up?
                           get-level-speed]]
-    [client.paint :refer [size-canvas!
+    [client.paint :refer [delete-opponent-canvas!
+                          create-opponent-canvas!
+                          size-canvas!
                           cell-size
-                          draw-board!
-                          create-opponents!]]
-    [client.multiplayer :refer [opponents
-                                opponent-scale]]
+                          draw-board!]]
+    [client.multiplayer :refer [opponent-scale]]
     [client.repl :as repl]
     [client.socket :refer [socket connect-socket!]]
     [client.vcr :refer [vcr toggle-record! record-frame!]]
@@ -92,11 +93,11 @@
         (<! redraw-chan)
         (let [new-board (drawable-board)]
           (when (not= board new-board)
+            (.emit @socket "board-update" (pr-str {:level (:level @state)
+                                                   :board new-board}))
             (draw-board! "game-canvas" new-board cell-size (:level @state) rows-cutoff)
             (if (:recording @vcr)
               (record-frame!)))
-          (doseq [x opponents] ;; Draw opponents
-            (draw-board! (:id x) (:board x) (opponent-scale cell-size) (:level x) rows-cutoff))
           (recur new-board))))))
 
 ;;------------------------------------------------------------
@@ -159,8 +160,7 @@
     (if (level-up? level-lines)
       (do
         (swap! state update-in [:level] inc)
-        (swap! state assoc :level-lines 0)
-        (js/console.log "leveled up"))
+        (swap! state assoc :level-lines 0))
       (swap! state assoc :level-lines level-lines))
 
     (swap! state update-in [:total-lines] + n))
@@ -339,6 +339,18 @@
   (.on @socket "refresh" #(.reload js/location)))
 
 ;;------------------------------------------------------------
+;; Opponent drawing
+;;------------------------------------------------------------
+
+(defn on-opponent-update
+  [{:keys [id level board]}]
+
+  (create-opponent-canvas! id)
+
+  (draw-board! id board (opponent-scale cell-size) level)
+  )
+
+;;------------------------------------------------------------
 ;; Entry Point
 ;;------------------------------------------------------------
 
@@ -346,9 +358,6 @@
 
   (size-canvas! "game-canvas" empty-board cell-size rows-cutoff)
   (size-canvas! "next-canvas" (next-piece-board) cell-size)
-  (create-opponents! opponents)
-  (doseq [x opponents]
-    (size-canvas! (:id x) (:board x) (opponent-scale cell-size)))
 
   (try-spawn-piece!)
   (add-key-events)
@@ -359,6 +368,10 @@
 
   (repl/connect)
   (connect-socket!)
+
+  (.on @socket "board-update" #(on-opponent-update (read-string %)))
+  (.on @socket "board-delete" delete-opponent-canvas!)
+
   (auto-refresh)
   )
 

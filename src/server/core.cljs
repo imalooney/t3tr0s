@@ -7,6 +7,16 @@
 
 (def port 1984)
 
+(def player-count
+  "The current number of players connected."
+  (atom 0))
+
+(defn gen-player-id!
+  "Create a new unique player ID."
+  []
+  (swap! player-count inc)
+  @player-count)
+
 ;;------------------------------------------------------------
 ;; Node libraries
 ;;------------------------------------------------------------
@@ -82,12 +92,23 @@
 (defn init-socket
   "Initialize the web socket."
   [socket]
+  (aset socket "user-id" (gen-player-id!))
 
   ; Emit "refresh" whenever client file changes.
   (.watch fs "public/client.js" #(.emit socket "refresh"))
 
   ; Create gif whenever "create-gif" is emitted.
-  (.on socket "create-gif" #(create-gif (read-string %))))
+  (.on socket "create-gif" #(create-gif (read-string %)))
+
+  ; When a board update comes in, send it to all other players.
+  (.on socket "board-update" (fn [data]
+                               (let [new-data (assoc (read-string data) :id (aget socket "user-id"))]
+                                 (js/console.log "receiving data from user" (:id new-data))
+                                 (.. socket -broadcast (emit "board-update" (pr-str new-data))))))
+
+  (.on socket "disconnect" #(.. socket -broadcast (emit "board-delete" (aget socket "user-id"))))
+
+  )
 
 ;;------------------------------------------------------------
 ;; Main
@@ -109,7 +130,6 @@
     (println "listening on port" port "\n")
 
     ; configure sockets
-    (.set io "log level" 1)
     (.sockets.on io "connection" init-socket)))
 
 (set! *main-cli-fn* -main)
