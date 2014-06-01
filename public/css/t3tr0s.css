@@ -1,0 +1,50 @@
+* {
+	font-family: 'VT323';
+}
+
+body {
+	margin-top: 30px;
+	background-color: #000;
+
+}
+
+.next-area {
+	margin: 20px 0;
+}
+
+.next-header {
+	float: left;
+	display: inline-block;
+	margin: 40px 40px 0 0;
+}
+
+.game-stats {
+	margin: 20px 0;
+}
+
+#next-canvas {
+  vertical-align: top;
+}
+
+#scoreboard {
+	background-color: #FFF;
+	margin-top: 50px;
+	margin-right: 40px;
+	float: right;
+	width: 300px;
+	font-size: 35px;
+}
+
+.login {
+	padding: 100px;
+	font-family: 'VT323';
+	font-size: 40px;
+	text-align: center;
+	color: #FFF;
+}
+
+.login_name {
+	font-size: 30px;
+	width: 300px;
+	height: 50px;
+}
