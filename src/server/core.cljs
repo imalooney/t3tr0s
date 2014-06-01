@@ -108,6 +108,13 @@
 
   (.on socket "disconnect" #(.. socket -broadcast (emit "board-delete" (aget socket "user-id"))))
 
+  ;;----------------------------------------------------------
+  ;;  Chat
+  ;;----------------------------------------------------------
+  (.on socket "chat-message" (fn [data]
+                               (js/console.log "receiving data from user"  data)
+                               (.. socket -broadcast (emit "new-message" data))
+                               ))
   )
 
 ;;------------------------------------------------------------

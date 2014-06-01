@@ -24,7 +24,14 @@
               :compiler {
                 :target :nodejs
                 :output-to "server.js"
-                :optimizations :simple}}}}
+                :optimizations :simple}}
+             :chat {
+              :source-paths ["src/chat"]
+              :compiler {
+                :output-to "public/chat.js"
+                :output-dir "public/out/chat"
+                :optimizations :none
+                :source-map true}}}}
 
   :injections [; Rig a (brepl) function to setup an Austin REPL and dump the url to a file.
                ; (This code is immediately executed after starting the repl.)
