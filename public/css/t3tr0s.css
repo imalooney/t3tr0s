@@ -3,9 +3,66 @@
 }
 
 body {
-	margin-top: 30px;
 	background-color: #000;
+}
 
+#container {
+	margin: 0;
+	width: 100%;
+}
+
+/*********** BUTTONS ***********/
+
+.lg-btn-container {
+	width: 200px;
+	margin: 0 auto;
+	padding: 50px;
+}
+
+.lg-btn {
+	font-size: 40px;
+	width: 200px;
+	height: 75px;
+}
+
+/*********** LOGIN PAGE ***********/
+
+.login {
+	padding: 100px;
+	font-size: 40px;
+	text-align: center;
+	color: #FFF;
+}
+
+.login-name {
+	margin: 50px;
+	font-size: 30px;
+	width: 300px;
+	height: 50px;
+}
+
+.login-container {
+	margin: 0 auto;
+	width: 400px;
+}
+
+/*********** HOME PAGE ***********/
+
+.logo {
+	margin: 0 100px 0 100px;
+}
+
+/*********** INDEX PAGE ***********/
+
+#theme-options {
+	width: 100px;
+	position: absolute;
+	left: 0px;
+}
+
+.player-view {
+	width:700px; 
+	margin:0 auto;
 }
 
 .next-area {
@@ -27,24 +84,11 @@ body {
 }
 
 #scoreboard {
-	background-color: #FFF;
+	padding: 10px;
+	background-color: #DDD;
 	margin-top: 50px;
 	margin-right: 40px;
 	float: right;
 	width: 300px;
 	font-size: 35px;
-}
-
-.login {
-	padding: 100px;
-	font-family: 'VT323';
-	font-size: 40px;
-	text-align: center;
-	color: #FFF;
-}
-
-.login_name {
-	font-size: 30px;
-	width: 300px;
-	height: 50px;
 }
