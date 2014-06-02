@@ -1,16 +1,24 @@
 @font-face {
 	font-family: 'VT323';
-	src: url("VT323.woff") format("woff");
+	src: url('VT323.woff') format("woff");
+}
+
+* {
+	/*border: 1px solid red;*/
+	font-family: 'VT323';
 }
 
 body {
 	background-color: #000;
-	font-family: 'VT323';
 }
 
-#container {
-	margin: 0;
+#main-container {
 	width: 100%;
+}
+
+#inner-container {
+	margin: 0 auto;
+	width: 700px;
 }
 
 /*********** BUTTONS ***********/
@@ -18,13 +26,19 @@ body {
 .lg-btn-container {
 	width: 200px;
 	margin: 0 auto;
-	padding: 50px;
+	padding: 30px;
 }
 
 .lg-btn {
 	font-size: 40px;
 	width: 200px;
 	height: 75px;
+}
+
+/*********** HOME PAGE ***********/
+
+.logo {
+	margin: 50px 100px 0 100px;
 }
 
 /*********** LOGIN PAGE ***********/
@@ -46,12 +60,6 @@ body {
 .login-container {
 	margin: 0 auto;
 	width: 400px;
-}
-
-/*********** HOME PAGE ***********/
-
-.logo {
-	margin: 0 100px 0 100px;
 }
 
 /*********** INDEX PAGE ***********/
