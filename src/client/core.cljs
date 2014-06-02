@@ -34,7 +34,8 @@
     [client.repl :as repl]
     [client.socket :refer [socket connect-socket!]]
     [client.vcr :refer [vcr toggle-record! record-frame!]]
-    [cljs.core.async :refer [put! chan <! timeout unique]]))
+    [cljs.core.async :refer [put! chan <! timeout unique]]
+    [client.html :as html]))
 
 (enable-console-print!)
 
@@ -375,4 +376,4 @@
   (auto-refresh)
   )
 
-(.addEventListener js/window "load" init)
+; (.addEventListener js/window "load" init)

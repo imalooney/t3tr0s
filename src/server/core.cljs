@@ -129,7 +129,7 @@
 
     ; configure express app
     (doto app
-      (.get "/" (fn [req res] (.sendfile res "public/index.html")))
+      (.get "/" (fn [req res] (.send res (html/page-shell))))
       (.use (.static express (str js/__dirname "/public"))))
 
     ; start server
