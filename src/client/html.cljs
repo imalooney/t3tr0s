@@ -6,6 +6,21 @@
 (defn by-id [id]
 	(.getElementById js/document id))
 
+(hiccups/defhtml game-page []
+	[:div#inner-container
+		[:div.player-view
+			[:div#canvas-wrap
+				[:canvas#game-canvas]]
+			[:div#scoreboard
+				[:div.next-area
+					[:span.next-header "Next: "]
+					[:canvas#next-canvas]]
+				[:div.game-stats
+					[:div#score]
+					[:div#level]
+					[:div#lines]]]]
+		[:section#arena]])
+
 (hiccups/defhtml login []
 	[:div#inner-container.login
 		[:div.login-container
@@ -24,4 +39,4 @@
 
 (defn ^:export homeInit []
 	(let [container (by-id "main-container")] 
-		(set! (.-innerHTML container) (homepage))))
+		(set! (.-innerHTML container) (game-page))))

@@ -9,7 +9,7 @@
 }
 
 body {
-	background-color: #000;
+	background-color: #111;
 }
 
 #main-container {
@@ -17,7 +17,7 @@ body {
 }
 
 #inner-container {
-	margin: 0 auto;
+	margin: 30px auto;
 	width: 700px;
 }
 
@@ -89,6 +89,12 @@ body {
 	margin: 20px 0;
 }
 
+#canvas-wrap {
+	float: left;
+	padding: 32px;
+	background-color: #444;
+}
+
 #next-canvas {
   vertical-align: top;
 }
@@ -96,9 +102,7 @@ body {
 #scoreboard {
 	padding: 10px;
 	background-color: #DDD;
-	margin-top: 50px;
-	margin-right: 40px;
 	float: right;
-	width: 300px;
+	width: 280px;
 	font-size: 35px;
 }
