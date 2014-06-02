@@ -376,4 +376,4 @@
   (auto-refresh)
   )
 
-; (.addEventListener js/window "load" init)
+(.addEventListener js/window "load" init)

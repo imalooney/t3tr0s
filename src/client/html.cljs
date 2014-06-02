@@ -6,7 +6,14 @@
 (defn by-id [id]
 	(.getElementById js/document id))
 
-(hiccups/defhtml home-page []
+(hiccups/defhtml login []
+	[:div#inner-container.login
+		[:div.login-container
+			[:label "What is your name?"]
+			[:input.login-name {:type "text"}]
+			[:button#submit.lg-btn "OK"]]])
+
+(hiccups/defhtml homepage []
 	[:div#inner-container
 		[:img.logo {:src "img/t3tr0s_500w.png"}]
 		[:div
@@ -17,4 +24,4 @@
 
 (defn ^:export homeInit []
 	(let [container (by-id "main-container")] 
-		(set! (.-innerHTML container) (home-page))))
+		(set! (.-innerHTML container) (homepage))))
