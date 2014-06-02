@@ -4,7 +4,8 @@
 
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [org.clojure/clojurescript "0.0-2202"]
-                 [org.clojure/core.async "0.1.267.0-0d7780-alpha"]]
+                 [org.clojure/core.async "0.1.267.0-0d7780-alpha"]
+                 [hiccups "0.3.0"]]
 
   :plugins [[lein-cljsbuild "1.0.3"]
             [com.cemerick/austin "0.1.4"]]
