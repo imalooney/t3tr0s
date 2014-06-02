@@ -11,7 +11,6 @@
 	  [:meta {:http-equiv "X-UA-Compatible" :content "IE=edge"}]
 	  [:title page-title]
 	  [:meta {:name "viewport" :content "width=device-width"}]
-	  [:link {:href "css/VT323.woff" :rel "stylesheet" :type"text/css"}]
 	  [:link {:rel "stylesheet" :href "css/t3tr0s.css"}]]
 	"<body>")
 
