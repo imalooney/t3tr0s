@@ -1,9 +1,11 @@
-* {
+@font-face {
 	font-family: 'VT323';
+	src: url("VT323.woff") format("woff");
 }
 
 body {
 	background-color: #000;
+	font-family: 'VT323';
 }
 
 #container {
