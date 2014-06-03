@@ -23,6 +23,7 @@
               :source-paths ["src/server"]
               :compiler {
                 :target :nodejs
+                :language-in :ecmascript5
                 :output-to "server.js"
                 :optimizations :simple}}
              :chat {
