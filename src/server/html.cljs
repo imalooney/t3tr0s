@@ -17,9 +17,7 @@
 (hiccups/defhtml footer [js-string]
 	[:script {:src "/socket.io/socket.io.js" :type "text/javascript"}]
 	[:script {:src "jquery-1.11.1.min.js" :type "text/javascript"}]
-	[:script {:src "out/goog/base.js" :type "text/javascript"}]
 	[:script {:src "client.js" :type "text/javascript"}]
-	[:script {:type "text/javascript"} "goog.require('client.core')"]
   [:script js-string]
 	"</body>"
 	"</html>")

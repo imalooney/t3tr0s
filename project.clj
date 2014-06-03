@@ -18,8 +18,7 @@
               :compiler {
                 :output-to "public/client.js"
                 :output-dir "public/out"
-                :optimizations :none
-                :source-map true}}
+                :optimizations :whitespace}}
              :server {
               :source-paths ["src/server"]
               :compiler {
