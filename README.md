@@ -19,6 +19,9 @@ past.  (We are working on the game at least once a week):
 - [DevBlog 6](devblog/day06.md) - level speeds, fluid drop, improve collapse animation, etc.
 - [DevBlog 7](devblog/day07.md) - draw next piece, tilemap for themes
 - [DevBlog 8](devblog/day08.md) - allow connected tiles for richer graphics
+- DevBlog 9 - live board broadcasting
+- DevBlog 10 - chat room, more tilemaps, page layouts
+- DevBlog 11 - page routing, username
 
 ## Setup
 
