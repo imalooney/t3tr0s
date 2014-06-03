@@ -1,4 +1,4 @@
-(ns client.multiplayer)
+(ns client.game.multiplayer)
 
 (defn opponent-scale
   "Provides the opponent boards scale"

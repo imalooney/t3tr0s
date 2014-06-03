@@ -1,4 +1,4 @@
-(ns client.rules)
+(ns client.game.rules)
 
 (defn get-points
   "Determine how many points were scored."

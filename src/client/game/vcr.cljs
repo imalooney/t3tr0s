@@ -1,4 +1,4 @@
-(ns client.vcr
+(ns client.game.vcr
   (:require
     [client.socket :refer [socket]]))
 

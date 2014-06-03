@@ -14,15 +14,14 @@
 	  [:link {:rel "stylesheet" :href "css/t3tr0s.css"}]]
 	"<body>")
 
-(hiccups/defhtml footer [js-string]
+(hiccups/defhtml footer []
 	[:script {:src "/socket.io/socket.io.js" :type "text/javascript"}]
 	[:script {:src "jquery-1.11.1.min.js" :type "text/javascript"}]
 	[:script {:src "client.js" :type "text/javascript"}]
-  [:script js-string]
 	"</body>"
 	"</html>")
 
 (hiccups/defhtml page-shell []
 	(head "T3TR0S")
 	[:div#main-container]
-	(footer "client.html.homeInit();"))
+  (footer))

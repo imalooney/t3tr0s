@@ -1,10 +1,10 @@
-(ns client.paint
+(ns client.game.paint
   (:require
-    [client.multiplayer :refer [opponent-scale]]
-    [client.board :refer [empty-board
-                          read-board
-                          board-size
-                          piece-type-adj]]))
+    [client.game.multiplayer :refer [opponent-scale]]
+    [client.game.board :refer [empty-board
+                               read-board
+                               board-size
+                               piece-type-adj]]))
 
 ;;------------------------------------------------------------
 ;; PAINTING (for showing the game on a canvas)
