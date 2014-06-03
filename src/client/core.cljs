@@ -3,6 +3,7 @@
     client.login
     client.menu
     client.game
+    client.chat
     [client.repl :as repl]
     [client.socket :refer [socket connect-socket!]]))
 
@@ -18,6 +19,7 @@
   (let [page-funcs {""        #(aset js/location "hash" "#/login")
                     "#/"      #(aset js/location "hash" "#/login")
                     "#/login" client.login/init
+                    "#/lobby" client.chat/init
                     "#/menu"  client.menu/init
                     "#/game"  client.game/init}]
     (if-let [f (page-funcs h)]

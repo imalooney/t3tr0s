@@ -1,4 +1,4 @@
-(ns client.menu
+(ns client.chat
 	(:require-macros [hiccups.core :as hiccups])
 	(:require
 		hiccups.runtime))
@@ -9,15 +9,11 @@
 ;; HTML
 ;;------------------------------------------------------------
 
-(hiccups/defhtml menu-html []
+(hiccups/defhtml chat-html []
 	[:div#inner-container
-		[:img.logo {:src "img/t3tr0s_500w.png"}]
-		[:div
-			[:div.lg-btn-container
-				[:button#solo-btn.lg-btn "SOLO"]]
-			[:div.lg-btn-container
-				[:button#lobby-btn.lg-btn "LOBBY"]]]])
-
+   [:div#chat]
+   [:input#msg {:type "text"}]
+   [:input#submit {:type "submit" :value "Send"}]])
 ;;------------------------------------------------------------
 ;; Page initialization.
 ;;------------------------------------------------------------
@@ -26,10 +22,7 @@
   []
 
   ; Initialize page content
-  (.html ($ "#main-container") (menu-html))
-
-  (.click ($ "#solo-btn") #(aset js/location "hash" "#/game"))
-  (.click ($ "#lobby-btn") #(aset js/location "hash" "#/lobby"))
+  (.html ($ "#main-container") (chat-html))
+  (client.chat.core/init)
 
   )
-
