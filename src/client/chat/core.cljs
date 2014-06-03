@@ -1,18 +1,8 @@
-(ns chat.core)
+(ns client.chat.core
+  (:require [client.socket :refer [socket]]))
 
-;;------------------------------------------------------------
-;; Web Socket (for connectin to the server)
-;;------------------------------------------------------------
-
-(def socket (atom nil))
 ; alias the jquery variable
 (def $ js/$)
-
-(defn connect-socket!
-  "Create a web socket connection to the server."
-  []
-  (let [url (.-origin js/location)]
-    (reset! socket (.connect js/io url))))
 
 ;;------------------------------------------------------------
 ;; Chat
@@ -32,15 +22,12 @@
     (.appendChild chat p)))
 
 (defn init 
-  "Starts the chat page" []
-   
-  ;; Start the socket
-  (connect-socket!)
-
+  "Starts the chat page" 
+  []   
   ;; Add listeners
   (.on ($ "#submit") "click" send-message)
   
   ;; Server messages
   (.on @socket "new-message" add-message))
 
-(.addEventListener js/window "load" init)
+
