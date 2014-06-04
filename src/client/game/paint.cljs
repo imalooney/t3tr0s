@@ -37,17 +37,19 @@
 
 (defn get-image-region
   "Get the tilemap and position for the image of the given cell value and level."
-  [level value]
-  (let [wrap-level (mod level 10)]
-    (if (= wrap-level 2)
+  [theme value]
+  (let [wrap-theme (mod theme 10)]
+    (if (= wrap-theme 2)
       (let [[k a] (piece-type-adj value)
             row (value-position k)
             col a]
         [tilemap-tengen row col])
       (let [[k _] (piece-type-adj value)
-            row wrap-level
+            row wrap-theme
             col (value-position k)]
-        [tilemap row col]))))
+        [tilemap row col]))
+    )
+  )
 
 (defn size-canvas!
   "Set the size of the canvas."
@@ -60,14 +62,14 @@
 
 (defn draw-board!
   "Draw the given board to the canvas."
-  ([id board scale level] (draw-board! id board scale level 0))
-  ([id board scale level y-cutoff]
+  ([id board scale level theme] (draw-board! id board scale level theme 0))
+  ([id board scale level theme y-cutoff]
     (let [canvas (.getElementById js/document id)
           ctx (.getContext canvas "2d")
           [w h] (board-size board)]
       (doseq [x (range w) y (range h)]
         (let [; tilemap region
-              [img row col] (get-image-region level (read-board x y board))
+              [img row col] (get-image-region theme (read-board x y board))
 
               ; source coordinates (on (draw-board! "game-canvas" new-board cell-size (:level @state) rows-cutoff))
               sx (* cell-size col) ; Cell-size is based on tilemap, always extract with that size
