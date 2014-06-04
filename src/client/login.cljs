@@ -60,3 +60,7 @@
   (.click ($ "#submit") on-submit)
 
   )
+
+(defn cleanup
+  []
+  nil)

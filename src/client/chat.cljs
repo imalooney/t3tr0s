@@ -26,3 +26,7 @@
   (client.chat.core/init)
 
   )
+
+(defn cleanup
+  []
+  nil)

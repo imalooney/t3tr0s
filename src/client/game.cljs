@@ -40,3 +40,7 @@
   (client.game.core/init)
 
   )
+
+(defn cleanup
+  []
+  nil)

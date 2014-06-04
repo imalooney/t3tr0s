@@ -13,17 +13,34 @@
 ;; URL routing
 ;;------------------------------------------------------------
 
+(def previous-hash (atom nil))
+
+(def pages {"#/login" {:init    client.login/init
+                       :cleanup client.login/cleanup}
+            "#/lobby" {:init    client.chat/init
+                       :cleanup client.chat/cleanup}
+            "#/menu"  {:init    client.menu/init
+                       :cleanup client.menu/cleanup}
+            "#/game"  {:init    client.game/init
+                       :cleanup client.game/cleanup}})
+
 (defn dispatch-hash!
   "Call the appropriate function for the given URL hash."
   [h]
-  (let [page-funcs {""        #(aset js/location "hash" "#/login")
-                    "#/"      #(aset js/location "hash" "#/login")
-                    "#/login" client.login/init
-                    "#/lobby" client.chat/init
-                    "#/menu"  client.menu/init
-                    "#/game"  client.game/init}]
-    (if-let [f (page-funcs h)]
-      (f)
+
+  ; Cleanup previous page if possible.
+  (if-let [cleanup (-> @previous-hash pages :cleanup)]
+    (cleanup))
+  (reset! previous-hash h)
+
+  (if (get #{"" "#/"} h)
+
+    ; Redirect blank hash to login page.
+    (aset js/location "hash" "#/login")
+
+    ; Initialize the new page if possible.
+    (if-let [init (-> h pages :init)]
+      (init)
       (js/console.error "no page called" h))))
 
 (defn enable-hash-routing!
