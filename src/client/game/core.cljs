@@ -44,21 +44,27 @@
 ;; STATE OF THE GAME
 ;;------------------------------------------------------------
 
-(def state (atom {:next-piece nil
-                  :piece nil
-                  :position nil
-                  :board empty-board
+(def state (atom nil))
 
-                  :theme 0
+(defn init-state!
+  "Set the initial state of the game."
+  []
+  (reset! state {:next-piece nil
+                 :piece nil
+                 :position nil
+                 :board empty-board
 
-                  :score 0
-                  :level 0
-                  :level-lines 0
-                  :total-lines 0
+                 :theme 0
 
-                  :soft-drop false
+                 :score 0
+                 :level 0
+                 :level-lines 0
+                 :total-lines 0
 
-                  :quit-chan nil}))
+                 :soft-drop false
+
+                 :game-over false
+                 :quit-chan (chan)}))
 
 ; required for pausing/resuming the gravity routine
 (def pause-grav (chan))
@@ -388,8 +394,7 @@
 
 (defn init []
 
-  ; Create new quit channel (used to stop go-blocks)
-  (swap! state assoc :quit-chan (chan))
+  (init-state!)
 
   (size-canvas! "game-canvas" empty-board cell-size rows-cutoff)
   (size-canvas! "next-canvas" (next-piece-board) cell-size)
