@@ -349,18 +349,18 @@
                      :three (do 
                               (swap! state assoc :theme 2) 
                               (.preventDefault e)
-                              (.html ($ "#theme") "1989")
-                              (.html ($ "#theme-details") "Gameboy"))
+                              (.html ($ "#theme") "1986")
+                              (.html ($ "#theme-details") "Tengen/Atari Arcade"))
                      :four (do 
                              (swap! state assoc :theme 3) 
                              (.preventDefault e)
                              (.html ($ "#theme") "1989")
-                             (.html ($ "#theme-details") "NES"))
+                             (.html ($ "#theme-details") "Gameboy"))
                      :five (do 
                              (swap! state assoc :theme 4) 
                              (.preventDefault e)
-                             (.html ($ "#theme") "1986")
-                             (.html ($ "#theme-details") "Tengen/Atari Arcade"))
+                             (.html ($ "#theme") "1989")
+                             (.html ($ "#theme-details") "NES"))
                      :six (do 
                             (swap! state assoc :theme 5) 
                             (.preventDefault e)
