@@ -250,13 +250,24 @@
             speed (if (:soft-drop @state)
                     (min soft-speed level-speed)
                     level-speed)
+            time-chan (timeout speed)
+            quit-chan (:quit-chan @state)
+            [_ c] (alts! [time-chan pause-grav quit-chan])]
 
-            cs [(timeout speed) pause-grav] ; channels to listen to (timeout, pause)
-            [_ c] (alts! cs)]               ; get the first channel to receive a value
-        (if (= pause-grav c)                ; if "pause" received, wait for "resume"
-          (<! resume-grav)
-          (apply-gravity!))
-        (recur)))))
+        (condp = c
+
+          pause-grav
+          (let [[_ c] (alts! [resume-grav quit-chan])]
+            (if (= c resume-grav)
+              (recur)))
+
+          time-chan
+          (do
+            (apply-gravity!)
+            (recur))
+
+          nil)))))
+
 
 ;;------------------------------------------------------------
 ;; Input-driven STATE CHANGES
