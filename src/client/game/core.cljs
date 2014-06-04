@@ -336,16 +336,57 @@
     (.addEventListener js/window "keydown"
       (fn [e]
         (case (key-name e)
-          :one (do (swap! state assoc :theme 0) (.preventDefault e))
-          :two (do (swap! state assoc :theme 1) (.preventDefault e))
-          :three (do (swap! state assoc :theme 2) (.preventDefault e))
-          :four (do (swap! state assoc :theme 3) (.preventDefault e))
-          :five (do (swap! state assoc :theme 4) (.preventDefault e))
-          :six (do (swap! state assoc :theme 5) (.preventDefault e))
-          :seven (do (swap! state assoc :theme 6) (.preventDefault e))
-          :eight (do (swap! state assoc :theme 7) (.preventDefault e))
-          :nine (do (swap! state assoc :theme 8) (.preventDefault e))
-          :zero (do (swap! state assoc :theme 9) (.preventDefault e))
+          :one (do
+                  (swap! state assoc :theme 0) 
+                  (.preventDefault e)
+                  (.html ($ "#theme") "1984")
+                  (.html ($ "#theme-details") "Electronika 60"))
+          :two (do 
+                  (swap! state assoc :theme 1) 
+                  (.preventDefault e)
+                  (.html ($ "#theme") "1986")
+                  (.html ($ "#theme-details") "MS DOS"))
+          :three (do 
+                  (swap! state assoc :theme 2) 
+                  (.preventDefault e)
+                  (.html ($ "#theme") "1989")
+                  (.html ($ "#theme-details") "Gameboy"))
+          :four (do 
+                  (swap! state assoc :theme 3) 
+                  (.preventDefault e)
+                  (.html ($ "#theme") "1989")
+                  (.html ($ "#theme-details") "NES"))
+          :five (do 
+                  (swap! state assoc :theme 4) 
+                  (.preventDefault e)
+                  (.html ($ "#theme") "1986")
+                  (.html ($ "#theme-details") "Tengen/Atari Arcade"))
+          :six (do 
+                  (swap! state assoc :theme 5) 
+                  (.preventDefault e)
+                  (.html ($ "#theme") "1989")
+                  (.html ($ "#theme-details") "Sega Genesis"))
+          :seven (do 
+                  (swap! state assoc :theme 6) 
+                  (.preventDefault e)
+                  (.html ($ "#theme") "2000")
+                  (.html ($ "#theme-details") "TI-83"))
+          ;; TODO: Reorder themes here
+          :eight (do 
+                  (swap! state assoc :theme 7) 
+                  (.preventDefault e)
+                  (.html ($ "#theme") "1998")
+                  (.html ($ "#theme-details") "Gameboy color"))
+          :nine (do 
+                  (swap! state assoc :theme 8) 
+                  (.preventDefault e)
+                  (.html ($ "#theme") "")
+                  (.html ($ "#theme-details") "this might be made up."))
+          :zero (do 
+                  (swap! state assoc :theme 9) 
+                  (.preventDefault e)
+                  (.html ($ "#theme") "2012")
+                  (.html ($ "#theme-details") "Facebook"))
           nil)
         (if (:piece @state)
           (case (key-name e)

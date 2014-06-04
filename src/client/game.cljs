@@ -12,10 +12,12 @@
 ;;------------------------------------------------------------
 
 (hiccups/defhtml game-html []
-	[:div#inner-container
-		[:div.player-view
-			[:div#canvas-wrap
-				[:canvas#game-canvas]]
+	[:div.player-view
+		[:div#theme-options 
+			"Press keys 0-9 to change your theme."]
+		[:div#canvas-wrap
+			[:canvas#game-canvas]]
+		[:div.right-side
 			[:div#scoreboard
 				[:div.next-area
 					[:span.next-header "Next: "]
@@ -23,7 +25,9 @@
 				[:div.game-stats
 					[:div#score]
 					[:div#level]
-					[:div#lines]]]]
+					[:div#lines]]]
+			[:div#theme "1984"]
+			[:div#theme-details "Electronika 60"]]
 		[:section#arena]])
 
 ;;------------------------------------------------------------
