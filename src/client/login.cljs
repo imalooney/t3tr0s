@@ -27,10 +27,18 @@
     username
     ""))
 
+(defn get-color
+  "Gets the currently stored user color."
+  []
+  (if-let [color (aget js/localStorage "color")]
+    color
+    0))
+
 (defn set-username!
-  "Stores the given username."
+  "Stores the given username and a random color(0-6)"
   [username]
-  (aset js/localStorage "username" username))
+  (aset js/localStorage "username" username)
+  (aset js/localStorage "color" (rand-int 7)))
 
 ;;------------------------------------------------------------
 ;; Events
