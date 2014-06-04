@@ -49,6 +49,8 @@
                   :position nil
                   :board empty-board
 
+                  :theme 0
+
                   :score 0
                   :level 0
                   :level-lines 0
@@ -88,16 +90,18 @@
   []
   (let [redraw-chan (make-redraw-chan)]
     (go
-      (loop [board nil]
+      (loop [board nil theme nil]
         (<! redraw-chan)
-        (let [new-board (drawable-board)]
-          (when (not= board new-board)
+        (let [new-board (drawable-board)
+              new-theme (:theme @state)]
+          (when (or (not= board new-board)
+                    (not= theme new-theme))
             (.emit @socket "board-update" (pr-str {:level (:level @state)
                                                    :board new-board}))
-            (draw-board! "game-canvas" new-board cell-size (:level @state) rows-cutoff)
+            (draw-board! "game-canvas" new-board cell-size (:level @state) new-theme rows-cutoff)
             (if (:recording @vcr)
               (record-frame!)))
-          (recur new-board))))))
+          (recur new-board new-theme))))))
 
 ;;------------------------------------------------------------
 ;; Game-driven STATE CHANGES
@@ -129,7 +133,7 @@
         board (:board @state)]
 
     (swap! state assoc :next-piece next-piece)
-    (draw-board! "next-canvas" (next-piece-board next-piece) cell-size (:level @state))
+    (draw-board! "next-canvas" (next-piece-board next-piece) cell-size (:level @state) (:theme @state))
 
     (if (piece-fits? piece x y board)
       (spawn-piece! piece)
@@ -295,11 +299,34 @@
                    39 :right
                    40 :down
                    32 :space
-                   16 :shift}
+                   16 :shift
+
+                   49 :one
+                   50 :two
+                   51 :three
+                   52 :four
+                   53 :five
+                   54 :six
+                   55 :seven
+                   56 :eight
+                   57 :nine
+                   48 :zero}
         key-name #(-> % .-keyCode key-names)]
 
     (.addEventListener js/window "keydown"
       (fn [e]
+        (case (key-name e)
+          :one (do (swap! state assoc :theme 0) (.preventDefault e))
+          :two (do (swap! state assoc :theme 1) (.preventDefault e))
+          :three (do (swap! state assoc :theme 2) (.preventDefault e))
+          :four (do (swap! state assoc :theme 3) (.preventDefault e))
+          :five (do (swap! state assoc :theme 4) (.preventDefault e))
+          :six (do (swap! state assoc :theme 5) (.preventDefault e))
+          :seven (do (swap! state assoc :theme 6) (.preventDefault e))
+          :eight (do (swap! state assoc :theme 7) (.preventDefault e))
+          :nine (do (swap! state assoc :theme 8) (.preventDefault e))
+          :zero (do (swap! state assoc :theme 9) (.preventDefault e))
+          nil)
         (if (:piece @state)
           (case (key-name e)
             :down  (do (put! down-chan true) (.preventDefault e))
@@ -332,11 +359,11 @@
 ;;------------------------------------------------------------
 
 (defn on-opponent-update
-  [{:keys [id level board]}]
+  [{:keys [id level board theme]}]
 
   (create-opponent-canvas! id)
 
-  (draw-board! id board (opponent-scale cell-size) level)
+  (draw-board! id board (opponent-scale cell-size) level theme)
   )
 
 ;;------------------------------------------------------------
