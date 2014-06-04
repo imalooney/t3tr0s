@@ -30,13 +30,26 @@
   ([user color msg] (let [chat (.getElementById js/document "chat-messages")]
                 (.append ($ chat) (chat-msg-html user color msg)))))
 
+(defn clear-message
+  "Clear the current message in the input field"
+  []
+  (let [input (.getElementById js/document "msg")]
+    (aset input "value" "")))
+
+(defn submit-message
+  "adds a message, sends it and then removes it"
+  []
+  (add-message (get-username) (get-color) (get-message))
+  (send-message)
+  (clear-message))
+
 (defn init 
   "Starts the chat page" 
   []   
   ;; Add listeners
-  (.click ($ "#submit") #(do (add-message (get-username) (get-color) (get-message))
-                             (send-message)))
-  
+  (.click ($ "#submit") submit-message)
+  (.keyup ($ "#msg") #(if (= (.-keyCode %) 13) (submit-message)))
+
   ;; Server messages
   (.on @socket "new-message" #(add-message (read-string %))))
 
