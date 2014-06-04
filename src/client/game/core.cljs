@@ -108,7 +108,7 @@
                         (not= theme new-theme))
                 (.emit @socket "board-update" (pr-str {:level (:level @state)
                                                        :board new-board}))
-                (draw-board! "game-canvas" new-board cell-size (:level @state) new-theme rows-cutoff)
+                (draw-board! "game-canvas" new-board cell-size new-theme rows-cutoff)
                 (if (:recording @vcr)
                   (record-frame!)))
               (recur new-board new-theme))))))))
@@ -143,7 +143,7 @@
         board (:board @state)]
 
     (swap! state assoc :next-piece next-piece)
-    (draw-board! "next-canvas" (next-piece-board next-piece) cell-size (:level @state) (:theme @state))
+    (draw-board! "next-canvas" (next-piece-board next-piece) cell-size (:theme @state))
 
     (if (piece-fits? piece x y board)
       (spawn-piece! piece)
@@ -434,7 +434,7 @@
 
   (create-opponent-canvas! id)
 
-  (draw-board! id board (opponent-scale cell-size) level theme)
+  (draw-board! id board (opponent-scale cell-size) theme)
   )
 
 ;;------------------------------------------------------------

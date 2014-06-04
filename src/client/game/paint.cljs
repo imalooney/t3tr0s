@@ -62,8 +62,8 @@
 
 (defn draw-board!
   "Draw the given board to the canvas."
-  ([id board scale level theme] (draw-board! id board scale level theme 0))
-  ([id board scale level theme y-cutoff]
+  ([id board scale theme] (draw-board! id board scale theme 0))
+  ([id board scale theme y-cutoff]
     (let [canvas (.getElementById js/document id)
           ctx (.getContext canvas "2d")
           [w h] (board-size board)]
