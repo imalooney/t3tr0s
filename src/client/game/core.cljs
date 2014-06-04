@@ -63,7 +63,7 @@
 
                  :soft-drop false
 
-                 :game-over false
+                 :quit false
                  :quit-chan (chan)}))
 
 ; required for pausing/resuming the gravity routine
@@ -88,8 +88,9 @@
   (let [redraw-chan (chan)
         request-anim #(.requestAnimationFrame js/window %)]
     (letfn [(trigger-redraw []
-              (put! redraw-chan 1)
-              (request-anim trigger-redraw))]
+              (when-not (:quit @state)
+                (put! redraw-chan 1)
+                (request-anim trigger-redraw)))]
       (request-anim trigger-redraw)
       redraw-chan)))
 
@@ -331,37 +332,38 @@
                    56 :eight
                    57 :nine
                    48 :zero}
-        key-name #(-> % .-keyCode key-names)]
+        key-name #(-> % .-keyCode key-names)
+        key-down (fn [e]
+                   (case (key-name e)
+                     :one (do (swap! state assoc :theme 0) (.preventDefault e))
+                     :two (do (swap! state assoc :theme 1) (.preventDefault e))
+                     :three (do (swap! state assoc :theme 2) (.preventDefault e))
+                     :four (do (swap! state assoc :theme 3) (.preventDefault e))
+                     :five (do (swap! state assoc :theme 4) (.preventDefault e))
+                     :six (do (swap! state assoc :theme 5) (.preventDefault e))
+                     :seven (do (swap! state assoc :theme 6) (.preventDefault e))
+                     :eight (do (swap! state assoc :theme 7) (.preventDefault e))
+                     :nine (do (swap! state assoc :theme 8) (.preventDefault e))
+                     :zero (do (swap! state assoc :theme 9) (.preventDefault e))
+                     nil)
+                   (if (:piece @state)
+                     (case (key-name e)
+                       :down  (do (put! down-chan true) (.preventDefault e))
+                       :left  (do (try-move! -1  0)     (.preventDefault e))
+                       :right (do (try-move!  1  0)     (.preventDefault e))
+                       :space (do (hard-drop!)          (.preventDefault e))
+                       :up    (do (try-rotate!)         (.preventDefault e))
+                       nil)))
+        key-up (fn [e]
+                 (when-not (:quit @state)
+                   (case (key-name e)
+                     :down  (put! down-chan false)
+                     :shift (toggle-record!)
+                     nil)))]
 
-    (.addEventListener js/window "keydown"
-      (fn [e]
-        (case (key-name e)
-          :one (do (swap! state assoc :theme 0) (.preventDefault e))
-          :two (do (swap! state assoc :theme 1) (.preventDefault e))
-          :three (do (swap! state assoc :theme 2) (.preventDefault e))
-          :four (do (swap! state assoc :theme 3) (.preventDefault e))
-          :five (do (swap! state assoc :theme 4) (.preventDefault e))
-          :six (do (swap! state assoc :theme 5) (.preventDefault e))
-          :seven (do (swap! state assoc :theme 6) (.preventDefault e))
-          :eight (do (swap! state assoc :theme 7) (.preventDefault e))
-          :nine (do (swap! state assoc :theme 8) (.preventDefault e))
-          :zero (do (swap! state assoc :theme 9) (.preventDefault e))
-          nil)
-        (if (:piece @state)
-          (case (key-name e)
-            :down  (do (put! down-chan true) (.preventDefault e))
-            :left  (do (try-move! -1  0)     (.preventDefault e))
-            :right (do (try-move!  1  0)     (.preventDefault e))
-            :space (do (hard-drop!)          (.preventDefault e))
-            :up    (do (try-rotate!)         (.preventDefault e))
-            nil))))
-
-    (.addEventListener js/window "keyup"
-      (fn [e]
-        (case (key-name e)
-          :down  (put! down-chan false)
-          :shift (toggle-record!)
-          nil)))
+    ; Add key events
+    (.addEventListener js/window "keydown" key-down)
+    (.addEventListener js/window "keyup" key-up)
 
     ; Listen to the down key, but ignore repeats.
     (let [uc (unique down-chan)]
@@ -374,7 +376,13 @@
               ; force gravity to reset
               (put! pause-grav 0)
               (put! resume-grav 0)
-              (recur))))))))
+              (recur))))))
+
+    ; Remove key events when quitting
+    (go
+      (<! (:quit-chan @state))
+      (.removeEventListener js/window "keydown" key-down)
+      (.removeEventListener js/window "keyup" key-up))))
 
 ;;------------------------------------------------------------
 ;; Opponent drawing
@@ -412,7 +420,7 @@
 
 (defn cleanup []
 
-  ; Create new quit channel (used to stop go-blocks)
+  (swap! state assoc :quit true)
   (close! (:quit-chan @state))
 
   )
