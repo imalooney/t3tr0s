@@ -43,4 +43,5 @@
 
 (defn cleanup
   []
-  nil)
+  (client.game.core/cleanup)
+  )

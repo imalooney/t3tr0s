@@ -33,7 +33,7 @@
     [client.game.multiplayer :refer [opponent-scale]]
     [client.game.vcr :refer [vcr toggle-record! record-frame!]]
     [client.socket :refer [socket]]
-    [cljs.core.async :refer [put! chan <! timeout unique]]))
+    [cljs.core.async :refer [close! put! chan <! timeout unique alts!]]))
 
 (enable-console-print!)
 
@@ -56,7 +56,9 @@
                   :level-lines 0
                   :total-lines 0
 
-                  :soft-drop false}))
+                  :soft-drop false
+
+                  :quit-chan nil}))
 
 ; required for pausing/resuming the gravity routine
 (def pause-grav (chan))
@@ -91,17 +93,18 @@
   (let [redraw-chan (make-redraw-chan)]
     (go
       (loop [board nil theme nil]
-        (<! redraw-chan)
-        (let [new-board (drawable-board)
-              new-theme (:theme @state)]
-          (when (or (not= board new-board)
-                    (not= theme new-theme))
-            (.emit @socket "board-update" (pr-str {:level (:level @state)
-                                                   :board new-board}))
-            (draw-board! "game-canvas" new-board cell-size (:level @state) new-theme rows-cutoff)
-            (if (:recording @vcr)
-              (record-frame!)))
-          (recur new-board new-theme))))))
+        (let [[_ c] (alts! [(:quit-chan @state) redraw-chan])]
+          (if (= c redraw-chan)
+            (let [new-board (drawable-board)
+                  new-theme (:theme @state)]
+              (when (or (not= board new-board)
+                        (not= theme new-theme))
+                (.emit @socket "board-update" (pr-str {:level (:level @state)
+                                                       :board new-board}))
+                (draw-board! "game-canvas" new-board cell-size (:level @state) new-theme rows-cutoff)
+                (if (:recording @vcr)
+                  (record-frame!)))
+              (recur new-board new-theme))))))))
 
 ;;------------------------------------------------------------
 ;; Game-driven STATE CHANGES
@@ -110,7 +113,7 @@
 (defn go-go-game-over!
   "Kicks off game over routine. (and get to the chopper)"
   []
-  (go
+  (go ;exitable
     (doseq [y (reverse (range n-rows))
             x (range n-cols)]
       (if (even? x)
@@ -137,7 +140,7 @@
 
     (if (piece-fits? piece x y board)
       (spawn-piece! piece)
-      (go
+      (go ;exitable
         ; Show piece that we attempted to spawn, drawn behind the other pieces.
         ; Then pause before kicking off gameover animation.
         (swap! state update-in [:board] #(write-piece-behind-board piece x y %))
@@ -187,7 +190,7 @@
         cleared-board (clear-rows rows board)]
 
     (when-not (zero? (count rows))
-      (go
+      (go ; no need to exit this (just let it finish)
         ; blink n times
         (doseq [i (range 3)]
           (swap! state assoc :board flashed-board)
@@ -344,15 +347,17 @@
           nil)))
 
     ; Listen to the down key, but ignore repeats.
-    (let [c (unique down-chan)]
+    (let [uc (unique down-chan)]
       (go
-        (while true
-          (let [on-or-off (<! c)]
-            (swap! state assoc :soft-drop on-or-off)
+        (loop []
+          (let [[value c] (alts! [(:quit-chan @state) uc])]
+            (when (= c uc)
+              (swap! state assoc :soft-drop value)
 
-            ; force gravity to reset
-            (put! pause-grav 0)
-            (put! resume-grav 0)))))))
+              ; force gravity to reset
+              (put! pause-grav 0)
+              (put! resume-grav 0)
+              (recur))))))))
 
 ;;------------------------------------------------------------
 ;; Opponent drawing
@@ -372,6 +377,9 @@
 
 (defn init []
 
+  ; Create new quit channel (used to stop go-blocks)
+  (swap! state assoc :quit-chan (chan))
+
   (size-canvas! "game-canvas" empty-board cell-size rows-cutoff)
   (size-canvas! "next-canvas" (next-piece-board) cell-size)
 
@@ -386,3 +394,9 @@
   (.on @socket "board-delete" delete-opponent-canvas!)
   )
 
+(defn cleanup []
+
+  ; Create new quit channel (used to stop go-blocks)
+  (close! (:quit-chan @state))
+
+  )
