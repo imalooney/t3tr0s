@@ -63,9 +63,18 @@
   ; 2. Emit game start
   nil)
 
-;;------------------------------------------------------------
+;;------------------------------------------------------------------------------
+;; Socket Events
+;;------------------------------------------------------------------------------
+
+(defn- on-chat-message [msg pid socket]
+  (let [d (assoc (get @players pid) :type "msg" :msg msg)]
+    (js/console.log "Player" pid "said:" msg)
+    (.. socket -broadcast (to "lobby") (emit "new-message" (pr-str d)))))
+
+;;------------------------------------------------------------------------------
 ;; Socket Setup
-;;------------------------------------------------------------
+;;------------------------------------------------------------------------------
 
 (defn init-socket
   "Initialize the web socket."
@@ -113,12 +122,7 @@
             (.leave socket "lobby")))
 
     ; Chat in the lobby.
-    (.on socket "chat-message"
-         #(let [msg %
-                data (assoc (get @players pid) :type "msg" :msg msg)]
-           (js/console.log "Player" pid "said:" msg)
-           (.. socket -broadcast (to "lobby") (emit "new-message" (pr-str data)))
-           ))
+    (.on socket "chat-message" #(on-chat-message % pid socket))
 
     ; Join/leave the game.
     (.on socket "join-game" #(.join socket "game"))
@@ -161,7 +165,7 @@
 
     ; start server
     (.listen server port)
-    (println "listening on port" port "\n")
+    (println "t3tr0s server listening on port" port "\n")
 
     ; configure sockets
     (.sockets.on io "connection" #(init-socket io %))))
