@@ -14,6 +14,10 @@
                       (aset img "src" "tilemap-tengen.png")
                       img))
 
+(def tilemap-gameboy (let [img (js/Image.)]
+                      (aset img "src" "tilemap-gameboy.png")
+                      img))
+
 (def tilemap-gameboy-color (let [img (js/Image.)]
                       (aset img "src" "tilemap-gameboy-color.png")
                       img))
@@ -55,6 +59,11 @@
               row (value-position k)
               col a]
           [tilemap-gameboy-color row col])
+      (and (= wrap-theme 3) (= (subs string-value 0 1) "I"))
+        (let [[k a] (piece-type-adj value)
+              row (value-position k)
+              col a]
+          [tilemap-gameboy row col])
       :else
         (let [[k _] (piece-type-adj value)
               row wrap-theme
