@@ -44,7 +44,13 @@
 ;; STATE OF THE GAME
 ;;------------------------------------------------------------
 
-(def state (atom nil))
+(def battle
+  "Boolean flag signaling whether we are in solo or battle mode."
+  (atom false))
+
+(def state
+  "The state of the game."
+  (atom nil))
 
 (defn init-state!
   "Set the initial state of the game."

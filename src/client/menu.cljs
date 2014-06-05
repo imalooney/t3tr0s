@@ -28,7 +28,7 @@
   ; Initialize page content
   (.html ($ "#main-container") (menu-html))
 
-  (.click ($ "#solo-btn") #(aset js/location "hash" "#/game"))
+  (.click ($ "#solo-btn") #(aset js/location "hash" "#/solo-game"))
   (.click ($ "#lobby-btn") #(aset js/location "hash" "#/lobby"))
 
   )
