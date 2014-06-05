@@ -6,6 +6,10 @@
 
 (def $ js/$)
 
+;; TODO: move this to a dom namespace
+(defn- by-id [id]
+  (.getElementById js/document id))
+
 ;;------------------------------------------------------------------------------
 ;; HTML
 ;;------------------------------------------------------------------------------
@@ -13,9 +17,10 @@
 (hiccups/defhtml login-html []
   [:div#inner-container.login
     [:div.login-container
-      [:label "What is your name?"]
-      [:input.login-name {:type "text"}]
-      [:button#submit.lg-btn "OK"]]])
+      [:form
+        [:label "What is your name?"]
+        [:input#login.login-name {:type "text"}]
+        [:button#submit.lg-btn "OK"]]]])
 
 ;;------------------------------------------------------------------------------
 ;; Username storage.
@@ -51,10 +56,12 @@
 ;; Events
 ;;------------------------------------------------------------------------------
 
+;; TODO: what to do when they don't input a username? validation?
 (defn on-submit
   "Handle the submit event."
-  []
-  (let [input (.val ($ ".login-name"))]
+  [e]
+  (.preventDefault e)
+  (let [input (.val ($ "#login"))]
     (store-login! input)
     (send-login!)
     (aset js/location "hash" "#/menu")))
@@ -63,19 +70,19 @@
 ;; Page Initialization
 ;;------------------------------------------------------------------------------
 
-(defn init
-  []
+(defn init []
 
   ; Initialize page content
   (.html ($ "#main-container") (login-html))
 
   ; Populate username field.
-  (.val ($ ".login-name") (get-username))
+  (.val ($ "#login") (get-username))
 
   ; Set username on button click.
   (.click ($ "#submit") on-submit)
 
-  )
+  ; Put focus on username field.
+  (.focus (by-id "login")))
 
 (defn cleanup
   []
