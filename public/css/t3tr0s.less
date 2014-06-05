@@ -216,30 +216,87 @@ body {
   position: absolute;
 }
 
+@bigBoardWidth: 460px;
+@bigBoardHeight: 600px;
+@littleBoardWidth: 110px;
+@littleBoardTop: (@bigBoardHeight + 20px);
+@littleBoardHeight: 140px;
+@littleBoardRightPadding: 11.5px;
+
 .board-a3a91.place-1 {
-  width: 300px;
+  height: @bigBoardHeight;
+  width: @bigBoardWidth;
   left: 0px;
   top: 0px;
   .transition(0.1s);
 }
 
 .board-a3a91.place-2 {
-  width: 300px;
-  left: 400px;
+  height: @bigBoardHeight;
+  width: @bigBoardWidth;
+  left: (@bigBoardWidth + 40px);
   top: 0px;
   .transition(0.1s);
 }
 
 .board-a3a91.place-3 {
-  width: 100px;
+  height: @littleBoardHeight;
+  width: @littleBoardWidth;
   left: 0px;
-  top: 60px;
+  top: @littleBoardTop;
   .transition(0.1s);
 }
 
 .board-a3a91.place-4 {
-  width: 100px;
-  left: 200px;
-  top: 60px;
+  height: @littleBoardHeight;
+  width: @littleBoardWidth;
+  left: @littleBoardWidth + @littleBoardRightPadding;
+  top: @littleBoardTop;
+  .transition(0.1s);
+}
+
+.board-a3a91.place-5 {
+  height: @littleBoardHeight;
+  width: @littleBoardWidth;
+  left: (2 * @littleBoardWidth) + (2 * @littleBoardRightPadding);
+  top: @littleBoardTop;
+  .transition(0.1s);
+}
+
+.board-a3a91.place-6 {
+  height: @littleBoardHeight;
+  width: @littleBoardWidth;
+  left: (3 * @littleBoardWidth) + (3 * @littleBoardRightPadding);
+  top: @littleBoardTop;
+  .transition(0.1s);
+}
+.board-a3a91.place-7 {
+  height: @littleBoardHeight;
+  width: @littleBoardWidth;
+  left: (4 * @littleBoardWidth) + (4 * @littleBoardRightPadding);
+  top: @littleBoardTop;
+  .transition(0.1s);
+}
+
+.board-a3a91.place-8 {
+  height: @littleBoardHeight;
+  width: @littleBoardWidth;
+  left: (5 * @littleBoardWidth) + (5 * @littleBoardRightPadding);
+  top: @littleBoardTop;
+  .transition(0.1s);
+}
+.board-a3a91.place-9 {
+  height: @littleBoardHeight;
+  width: @littleBoardWidth;
+  left: (6 * @littleBoardWidth) + (6 * @littleBoardRightPadding);
+  top: @littleBoardTop;
+  .transition(0.1s);
+}
+
+.board-a3a91.place-10 {
+  height: @littleBoardHeight;
+  width: @littleBoardWidth;
+  left: (7 * @littleBoardWidth) + (7 * @littleBoardRightPadding);
+  top: @littleBoardTop;
   .transition(0.1s);
 }

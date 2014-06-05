@@ -29,7 +29,15 @@
       [:div#joe.board-a3a91.place-1 "joe board"]
       [:div#james.board-a3a91.place-2 "james board"]
       [:div#jenny.board-a3a91.place-3 "jenny board"]
-      [:div#jill.board-a3a91.place-4 "jill board"]]])
+      [:div#jill.board-a3a91.place-4 "jill board"]
+      [:div.board-a3a91.place-5 "joe board"]
+      [:div.board-a3a91.place-6 "james board"]
+      [:div.board-a3a91.place-7 "jenny board"]
+      [:div.board-a3a91.place-8 "jill board"]
+      [:div.board-a3a91.place-9 "jill board"]
+      [:div.board-a3a91.place-10 "jill board"]
+
+      ]])
 
   ; [:div#inner-container.login
   ;   [:div.login-container
