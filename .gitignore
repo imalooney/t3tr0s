@@ -21,3 +21,5 @@ pom.xml
 .DS_Store
 
 /gif/
+
+/config.json
