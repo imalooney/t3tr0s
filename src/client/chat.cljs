@@ -1,9 +1,11 @@
 (ns client.chat
 	(:require-macros [hiccups.core :as hiccups])
-	(:require
-		hiccups.runtime))
-
-(def $ js/$)
+  (:require
+		hiccups.runtime
+    [client.socket :refer [socket]]
+    [client.login :refer [get-username
+                          get-color]]
+    [cljs.reader :refer [read-string]]))
 
 ;;------------------------------------------------------------
 ;; HTML
@@ -17,24 +19,98 @@
      [:input#msg {:type "text" :placeholder "Type to chat"}]
      [:input#submit {:type "submit" :value "Send"}]]]])
 
-(hiccups/defhtml chat-msg-html [user color msg]
+(hiccups/defhtml chat-msg-html
+  [{:keys [user color msg]}]
   [:p.message
    [:span#user {:class (str "color-" color)}(str user ": ")]
    [:span.txt msg]])
+
+(hiccups/defhtml chat-join-html
+  [{:keys [user color]}]
+  [:p.message
+   [:span#user {:class (str "color-" color)}(str user " joined the lobby")]])
+
+(hiccups/defhtml chat-leave-html
+  [{:keys [user color]}]
+  [:p.message
+   [:span#user {:class (str "color-" color)}(str user " left the lobby")]])
+
+
+; alias the jquery variable
+(def $ js/$)
+
+;;------------------------------------------------------------
+;; Chat
+;;-----------------------------------------------------------
+
+(defn get-message
+  "Gets the latest message in the input field"
+  []
+  (.val ($ "#msg")))
+
+(defn clear-message!
+  "Clear the current message in the input field"
+  []
+  (.val ($ "#msg") ""))
+
+(defn send-message!
+  "Sends a message to the chat"
+  []
+  (.emit @socket "chat-message" (get-message)))
+
+(defn add-message!
+  [msg]
+  (if-let [html (get {"join"  chat-join-html
+                      "leave" chat-leave-html
+                      "msg"   chat-msg-html}
+                     (:type msg))]
+    (.append ($ "#chat-messages") (html msg))))
+
+(defn submit-message!
+  "adds a message, sends it and then removes it"
+  []
+  (let [msg (get-message)]
+    (when-not (= msg "")
+      (add-message! {:type "msg"
+                     :user (get-username)
+                     :color (get-color)
+                     :msg msg})
+      (send-message!)
+      (clear-message!))))
+
+(defn on-new-message
+  [data]
+  (add-message! (read-string data)))
 
 ;;------------------------------------------------------------
 ;; Page initialization.
 ;;------------------------------------------------------------
 
 (defn init
+  "Starts the chat page"
   []
 
-  ; Initialize page content
   (.html ($ "#main-container") (chat-html))
-  (client.chat.core/init)
+
+  ;; Add listeners
+  (.click ($ "#submit") submit-message!)
+  (.keyup ($ "#msg") #(if (= (.-keyCode %) 13) (submit-message!)))
+
+  ;; Join the "lobby" room.
+  (.emit @socket "join-lobby")
+
+  ;; Listen to chat updates.
+  (.on @socket "new-message" on-new-message)
 
   )
 
 (defn cleanup
   []
-  nil)
+
+  ;; Leave the "lobby" room.
+  (.emit @socket "leave-lobby")
+
+  ;; Ignore chat updates.
+  (.removeListener @socket "new-message" on-new-message)
+
+  )

@@ -1,6 +1,7 @@
 (ns client.login
 	(:require-macros [hiccups.core :as hiccups])
   (:require
+    [client.socket :refer [socket]]
 		hiccups.runtime))
 
 (def $ js/$)
@@ -34,11 +35,17 @@
     color
     0))
 
-(defn set-username!
+(defn store-login!
   "Stores the given username and a random color(0-6)"
   [username]
   (aset js/localStorage "username" username)
   (aset js/localStorage "color" (rand-int 7)))
+
+(defn send-login!
+  "Send the login information to the server."
+  []
+  (.emit @socket "update-name" (pr-str {:user (get-username)
+                                        :color (get-color)})))
 
 ;;------------------------------------------------------------
 ;; Events
@@ -48,7 +55,8 @@
   "Handle the submit event."
   []
   (let [input (.val ($ ".login-name"))]
-    (set-username! input)
+    (store-login! input)
+    (send-login!)
     (aset js/location "hash" "#/menu")))
 
 ;;------------------------------------------------------------

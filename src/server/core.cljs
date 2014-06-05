@@ -19,8 +19,12 @@
 ;; Player IDs
 ;;------------------------------------------------------------
 
+(def players
+  "Table of connected players."
+  (atom {}))
+
 (def player-count
-  "The current number of players connected."
+  "Total number of players who have connected since server started."
   (atom 0))
 
 (defn gen-player-id!
@@ -29,34 +33,70 @@
   (swap! player-count inc)
   @player-count)
 
+(def anon-player {:user "Anon" :color 0})
+
 ;;------------------------------------------------------------
 ;; Socket Setup
 ;;------------------------------------------------------------
 
 (defn init-socket
   "Initialize the web socket."
-  [socket]
-  (aset socket "user-id" (gen-player-id!))
+  [io socket]
 
   ; Create gif whenever "create-gif" is emitted.
   (.on socket "create-gif" #(create-gif (read-string %)))
 
-  ; When a board update comes in, send it to all other players.
-  (.on socket "board-update" (fn [data]
-                               (let [new-data (assoc (read-string data) :id (aget socket "user-id"))]
-                                 (js/console.log "receiving data from user" (:id new-data))
-                                 (.. socket -broadcast (emit "board-update" (pr-str new-data))))))
 
-  (.on socket "disconnect" #(.. socket -broadcast (emit "board-delete" (aget socket "user-id"))))
+  (let [pid (gen-player-id!)]
 
-  ;;----------------------------------------------------------
-  ;;  Chat
-  ;;----------------------------------------------------------
-  (.on socket "chat-message" (fn [data]
-                               (js/console.log "receiving data from user"  data)
-                               (.. socket -broadcast (emit "new-message" data))
-                               ))
-  )
+    (js/console.log "Player" pid "connected.")
+
+    ; Add to player table as "Anon" for now.
+    (swap! players assoc pid anon-player)
+
+    ; Request that the client emit an "update-name" message back
+    ; in case the server restarts and we need user info again.
+    (.emit socket "request-name")
+
+    ; Remove player from table when disconnected.
+    (.on socket "disconnect"
+         #(do
+            (js/console.log "Player" pid "disconnected.")
+            (swap! players dissoc pid)))
+
+    ; Update player name when requested.
+    (.on socket "update-name"
+         #(let [data (read-string %)]
+            (js/console.log "Updating player" pid "with" (:user data) (:color data))
+            (swap! players update-in [pid] merge data)))
+
+    ; Join the lobby.
+    (.on socket "join-lobby"
+         #(let [data (assoc (get @players pid) :type "join")]
+            (js/console.log "Player" pid "joined the lobby.")
+            (.. socket -broadcast (to "lobby") (emit "new-message" (pr-str data)))
+            (.join socket "lobby")))
+
+    ; Leave the lobby.
+    (.on socket "leave-lobby"
+         #(let [data (assoc (get @players pid) :type "leave")]
+            (js/console.log "Player" pid "left the lobby.")
+            (.. socket -broadcast (to "lobby") (emit "new-message" (pr-str data)))
+            (.leave socket "lobby")))
+
+    ; Chat in the lobby.
+    (.on socket "chat-message"
+         #(let [msg %
+                data (assoc (get @players pid) :type "msg" :msg msg)]
+           (js/console.log "Player" pid "said:" msg)
+           (.. socket -broadcast (to "lobby") (emit "new-message" (pr-str data)))
+           ))
+
+    ; Join/leave the game.
+    (.on socket "join-game" #(.join socket "game"))
+    (.on socket "leave-game" #(.leave socket "game"))
+
+    ))
 
 ;;------------------------------------------------------------
 ;; Main
@@ -78,6 +118,6 @@
     (println "listening on port" port "\n")
 
     ; configure sockets
-    (.sockets.on io "connection" init-socket)))
+    (.sockets.on io "connection" #(init-socket io %))))
 
 (set! *main-cli-fn* -main)

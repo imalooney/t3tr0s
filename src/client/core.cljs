@@ -1,9 +1,9 @@
 (ns client.core
   (:require
-    client.login
     client.menu
     client.game
     client.chat
+    [client.login :refer [send-login!]]
     [client.repl :as repl]
     [client.socket :refer [socket connect-socket!]]))
 
@@ -59,6 +59,10 @@
 
   ; Make connection to server.
   (connect-socket!)
+
+  ; Send user information to server, and again when requested.
+  (send-login!)
+  (.on @socket "request-name" send-login!)
 
   ; Add custom hash routing.
   (enable-hash-routing!)
