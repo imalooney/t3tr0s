@@ -1,109 +1,99 @@
 @font-face {
-	font-family: 'VT323';
-	src: url('VT323.woff') format("woff");
-}
-
-* {
-	/*border: 1px solid red;*/
-	font-family: 'VT323';
-}
-
-body,html {
-  height: 100%;
-  padding: 0;
-  border: 0;
-  margin: 0;
+  font-family: 'VT323';
+  src: url('VT323.woff') format("woff");
 }
 
 body {
-	background-color: #111;
+  background-color: #111;
+  font-family: 'VT323';
   overflow: hidden;
 }
 
 #main-container {
-	width: 100%;
-	height: 800px;
+  height: 800px;
 }
 
 #inner-container {
-	margin: 30px auto;
-	width: 700px;
+  margin: 30px auto;
+  width: 700px;
 }
 
-/*********** BUTTONS ***********/
+//------------------------------------------------------------------------------
+// Buttons
+//------------------------------------------------------------------------------
 
 .lg-btn-container {
-	width: 200px;
-	margin: 0 auto;
-	padding: 30px;
+  width: 200px;
+  margin: 0 auto;
+  padding: 30px;
 }
 
 .lg-btn {
-	font-size: 40px;
-	width: 200px;
-	height: 75px;
+  font-size: 40px;
+  width: 200px;
+  height: 75px;
 }
 
 /*********** MENU PAGE ***********/
 
 .logo {
-	margin: 50px 100px 0 100px;
+  margin: 50px 100px 0 100px;
 }
 
 /*********** LOGIN PAGE ***********/
 
 .login {
-	padding: 100px;
-	font-size: 40px;
-	text-align: center;
-	color: #FFF;
+  padding: 100px;
+  font-size: 40px;
+  text-align: center;
+  color: #FFF;
 }
 
 .login-name {
-	margin: 50px;
-	font-size: 30px;
-	width: 300px;
-	height: 50px;
+  margin: 50px;
+  font-size: 30px;
+  width: 300px;
+  height: 50px;
 }
 
 .login-container {
-	margin: 0 auto;
-	width: 400px;
+  margin: 0 auto;
+  width: 400px;
 }
 
 /*********** GAME PAGE ***********/
 
 #theme-options {
-	color: white;
-	font-size: 25px;
-	padding-bottom: 15px;
+  color: white;
+  font-size: 25px;
+  padding-bottom: 15px;
 }
 
 .player-view {
-	width:700px; 
-	margin:0 auto;
+  width:700px; 
+  margin:0 auto;
 }
 
 #canvas-wrap {
-	float: left;
-	padding: 18px;
-	background-color: #444;
+  float: left;
+  padding: 18px;
+  background-color: #444;
 }
 
 .right-side {
-	float: right;
-	width: 280px;
-	font-size: 35px;
+  float: right;
+  width: 280px;
+  font-size: 35px;
 }
 
 .next-area {
-	margin: 20px 0;
+  margin: 20px 0;
 }
 
 .next-header {
-	float: left;
-	display: inline-block;
-	margin: 40px 40px 0 0;
+  float: left;
+  display: inline-block;
+  margin: 40px 40px 0 0;
 }
 
 #next-canvas {
@@ -111,25 +101,25 @@ body {
 }
 
 .game-stats {
-	margin: 20px 0;
+  margin: 20px 0;
 }
 
 #scoreboard {
-	padding: 10px;
-	background-color: #DDD;
+  padding: 10px;
+  background-color: #DDD;
 }
 
 #theme {
-	color: white;
-	font-size: 3em;
-	text-align: center;
-	padding-top: 70px;
+  color: white;
+  font-size: 3em;
+  text-align: center;
+  padding-top: 70px;
 }
 
 #theme-details {
-	font-size: 35px;
-	color: white;
-	text-align: center;
+  font-size: 35px;
+  color: white;
+  text-align: center;
 }
 
 /*********** CHAT PAGE ***********/
@@ -207,7 +197,9 @@ body {
   color: #FFFF0A; /* yellow */
 }
 
-/*********** DASHBOARD ***********/
+//------------------------------------------------------------------------------
+// Dashboard
+//------------------------------------------------------------------------------
 
 .dashboard-0e330 {
   color: #fff;
@@ -228,42 +220,26 @@ body {
   width: 300px;
   left: 0px;
   top: 0px;
-
-  -webkit-transition: all 0.1s ease-out;
-  -moz-transition: all 0.1s ease-out;
-  -o-transition: all 0.1s ease-out;
-  transition: all 0.1s ease-out;
+  .transition(0.1s);
 }
 
 .board-a3a91.place-2 {
   width: 300px;
   left: 400px;
   top: 0px;
-
-  -webkit-transition: all 0.1s ease-out;
-  -moz-transition: all 0.1s ease-out;
-  -o-transition: all 0.1s ease-out;
-  transition: all 0.1s ease-out;
+  .transition(0.1s);
 }
 
 .board-a3a91.place-3 {
   width: 100px;
   left: 0px;
   top: 60px;
-
-  -webkit-transition: all 0.1s ease-out;
-  -moz-transition: all 0.1s ease-out;
-  -o-transition: all 0.1s ease-out;
-  transition: all 0.1s ease-out;
+  .transition(0.1s);
 }
 
 .board-a3a91.place-4 {
   width: 100px;
   left: 200px;
   top: 60px;
-
-  -webkit-transition: all 0.1s ease-out;
-  -moz-transition: all 0.1s ease-out;
-  -o-transition: all 0.1s ease-out;
-  transition: all 0.1s ease-out;
+  .transition(0.1s);
 }
