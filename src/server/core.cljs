@@ -1,11 +1,10 @@
 (ns server.core
   (:require
+    [clojure.walk]
     [cljs.reader :refer [read-string]]
     [server.gif :refer [create-gif]]))
 
 (enable-console-print!)
-
-(def port 1984)
 
 ;;------------------------------------------------------------
 ;; Node libraries
@@ -14,6 +13,15 @@
 (def express (js/require "express"))
 (def http    (js/require "http"))
 (def socket  (js/require "socket.io"))
+
+;;------------------------------------------------------------
+;; Config
+;;------------------------------------------------------------
+
+(def config
+  (-> (js/require "./config.json")
+    js->clj
+    clojure.walk/keywordize-keys))
 
 ;;------------------------------------------------------------
 ;; Player IDs
@@ -63,9 +71,18 @@
   ; 2. Emit game start
   nil)
 
-;;------------------------------------------------------------
+;;------------------------------------------------------------------------------
+;; Socket Events
+;;------------------------------------------------------------------------------
+
+(defn- on-chat-message [msg pid socket]
+  (let [d (assoc (get @players pid) :type "msg" :msg msg)]
+    (js/console.log "Player" pid "said:" msg)
+    (.. socket -broadcast (to "lobby") (emit "new-message" (pr-str d)))))
+
+;;------------------------------------------------------------------------------
 ;; Socket Setup
-;;------------------------------------------------------------
+;;------------------------------------------------------------------------------
 
 (defn init-socket
   "Initialize the web socket."
@@ -113,12 +130,7 @@
             (.leave socket "lobby")))
 
     ; Chat in the lobby.
-    (.on socket "chat-message"
-         #(let [msg %
-                data (assoc (get @players pid) :type "msg" :msg msg)]
-           (js/console.log "Player" pid "said:" msg)
-           (.. socket -broadcast (to "lobby") (emit "new-message" (pr-str data)))
-           ))
+    (.on socket "chat-message" #(on-chat-message % pid socket))
 
     ; Join/leave the game.
     (.on socket "join-game" #(.join socket "game"))
@@ -126,7 +138,7 @@
 
     ; Request access to the MC role.
     (.on socket "request-mc"
-         #(if (= % "thepleasure")
+         #(if (= % (:mc-password config))
             (do
               (js/console.log "Player" pid "granted as MC.")
               (.join socket "mc")
@@ -160,8 +172,8 @@
       (.use (.static express (str js/__dirname "/public"))))
 
     ; start server
-    (.listen server port)
-    (println "listening on port" port "\n")
+    (.listen server (:port config))
+    (println "t3tr0s server listening on port" (:port config) "\n")
 
     ; configure sockets
     (.sockets.on io "connection" #(init-socket io %))))

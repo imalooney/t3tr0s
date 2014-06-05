@@ -375,19 +375,19 @@
                      :seven (do 
                               (swap! state assoc :theme 6) 
                               (.preventDefault e)
-                              (.html ($ "#theme") "2000")
-                              (.html ($ "#theme-details") "TI-83"))
+                              (.html ($ "#theme") "1998")
+                              (.html ($ "#theme-details") "Gameboy color"))
                      ;; TODO: Reorder themes here
                      :eight (do 
                               (swap! state assoc :theme 7) 
                               (.preventDefault e)
-                              (.html ($ "#theme") "1998")
-                              (.html ($ "#theme-details") "Gameboy color"))
+                              (.html ($ "#theme") "2000")
+                              (.html ($ "#theme-details") "TI-83"))
                      :nine (do 
                              (swap! state assoc :theme 8) 
                              (.preventDefault e)
-                             (.html ($ "#theme") "")
-                             (.html ($ "#theme-details") "this might be made up."))
+                             (.html ($ "#theme") "2002")
+                             (.html ($ "#theme-details") "Flash"))
                      :zero (do 
                              (swap! state assoc :theme 9) 
                              (.preventDefault e)
