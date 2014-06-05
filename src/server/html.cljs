@@ -16,8 +16,8 @@
 
 (hiccups/defhtml footer []
 	[:script {:src "/socket.io/socket.io.js" :type "text/javascript"}]
-	[:script {:src "jquery-1.11.1.min.js" :type "text/javascript"}]
-	[:script {:src "client.js" :type "text/javascript"}]
+	[:script {:src "/jquery-1.11.1.min.js" :type "text/javascript"}]
+	[:script {:src "/client.js" :type "text/javascript"}]
 	"</body>"
 	"</html>")
 

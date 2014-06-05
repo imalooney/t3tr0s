@@ -1,5 +1,6 @@
 (ns client.core
   (:require
+    client.dashboard
     client.menu
     client.game
     client.chat
@@ -27,7 +28,9 @@
             "#/battle-game" {:init #(do
                                       (reset! client.game.core/battle true)
                                       (client.game/init))
-                             :cleanup client.game/cleanup}})
+                             :cleanup client.game/cleanup}
+            "#/dashboard" {:init client.dashboard/init
+                           :cleanup client.dashboard/cleanup}})
 
 (defn dispatch-hash!
   "Call the appropriate function for the given URL hash."
