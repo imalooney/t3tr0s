@@ -214,3 +214,56 @@ body {
   width: 960px;
   margin: 0 auto;
 }
+
+.boards-ad07f {
+  position: relative;
+}
+
+.board-a3a91 {
+  border: 1px solid white;
+  position: absolute;
+}
+
+.board-a3a91.place-1 {
+  width: 300px;
+  left: 0px;
+  top: 0px;
+
+  -webkit-transition: all 0.1s ease-out;
+  -moz-transition: all 0.1s ease-out;
+  -o-transition: all 0.1s ease-out;
+  transition: all 0.1s ease-out;
+}
+
+.board-a3a91.place-2 {
+  width: 300px;
+  left: 400px;
+  top: 0px;
+
+  -webkit-transition: all 0.1s ease-out;
+  -moz-transition: all 0.1s ease-out;
+  -o-transition: all 0.1s ease-out;
+  transition: all 0.1s ease-out;
+}
+
+.board-a3a91.place-3 {
+  width: 100px;
+  left: 0px;
+  top: 60px;
+
+  -webkit-transition: all 0.1s ease-out;
+  -moz-transition: all 0.1s ease-out;
+  -o-transition: all 0.1s ease-out;
+  transition: all 0.1s ease-out;
+}
+
+.board-a3a91.place-4 {
+  width: 100px;
+  left: 200px;
+  top: 60px;
+
+  -webkit-transition: all 0.1s ease-out;
+  -moz-transition: all 0.1s ease-out;
+  -o-transition: all 0.1s ease-out;
+  transition: all 0.1s ease-out;
+}
