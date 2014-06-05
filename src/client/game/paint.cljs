@@ -54,7 +54,7 @@
               row (value-position k)
               col a]
           [tilemap-tengen row col])
-      (and (= wrap-theme 7) (= (subs string-value 0 1) "I"))
+      (and (= wrap-theme 6) (= (subs string-value 0 1) "I"))
         (let [[k a] (piece-type-adj value)
               row (value-position k)
               col a]
