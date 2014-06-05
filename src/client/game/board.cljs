@@ -153,6 +153,7 @@
 
 (def empty-row       (vec (repeat n-cols 0)))
 (def highlighted-row (vec (concat ["H2"] (repeat (- n-cols 2) "H10") ["H8"])))
+(def game-over-row (vec (repeat n-cols "H0")))
 (def empty-board (vec (repeat n-rows empty-row)))
 
 ; The starting position of all pieces.

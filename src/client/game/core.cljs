@@ -15,6 +15,7 @@
                                create-drawable-board
                                get-filled-row-indices
                                clear-rows
+                               game-over-row
                                collapse-rows
                                highlight-rows
                                write-to-board
@@ -128,12 +129,10 @@
 (defn go-go-game-over!
   "Kicks off game over routine. (and get to the chopper)"
   []
-  (go ;exitable
-    (doseq [y (reverse (range n-rows))
-            x (range n-cols)]
-      (if (even? x)
-        (<! (timeout 2)))
-      (swap! state update-in [:board] #(write-to-board x y "H0" %)))))
+  (go
+    (doseq [y (reverse (range n-rows))]
+      (<! (timeout 10))
+      (swap! state assoc-in [:board y] game-over-row))))
 
 (defn spawn-piece! 
   "Spawns the given piece at the starting position."
