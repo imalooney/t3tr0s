@@ -36,6 +36,34 @@
 (def anon-player {:user "Anon" :color 0})
 
 ;;------------------------------------------------------------
+;; Game Runner
+;;------------------------------------------------------------
+
+(def game-status
+  "Current status of the game (nil :lines or :time)."
+  (atom nil))
+
+(def quit-game-chan
+  "Channel to close in order to halt the current game."
+  (atom nil))
+
+(defn go-go-game-lines!
+  "Start a game.  Winner is first to fill 40 lines."
+  []
+  (js/console.log "TODO: start game lines")
+  ; 1. Emit countdown chat messages
+  ; 2. Emit game start
+  nil)
+
+(defn go-go-game-time!
+  "Start a game.  Winner is highest score after 5 minutes."
+  []
+  (js/console.log "TODO: start game time")
+  ; 1. Emit countdown chat messages
+  ; 2. Emit game start
+  nil)
+
+;;------------------------------------------------------------
 ;; Socket Setup
 ;;------------------------------------------------------------
 
@@ -95,6 +123,24 @@
     ; Join/leave the game.
     (.on socket "join-game" #(.join socket "game"))
     (.on socket "leave-game" #(.leave socket "game"))
+
+    ; Request access to the MC role.
+    (.on socket "request-mc"
+         #(if (= % "thepleasure")
+            (do
+              (js/console.log "Player" pid "granted as MC.")
+              (.join socket "mc")
+              (.emit socket "grant-mc" (pr-str @game-status)))
+            (do
+              (js/console.log "Player" pid "rejected as MC."))))
+
+    ; Leave the MC role.
+    (.on socket "leave-mc"
+         #(.leave socket "mc"))
+
+    ; Start the game
+    (.on socket "start-lines" go-go-game-lines!)
+    (.on socket "start-time" go-go-game-time!)
 
     ))
 

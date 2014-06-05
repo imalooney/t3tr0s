@@ -3,6 +3,7 @@
     client.menu
     client.game
     client.chat
+    client.mc
     [client.login :refer [send-login!]]
     [client.repl :as repl]
     [client.socket :refer [socket connect-socket!]]))
@@ -22,7 +23,9 @@
             "#/menu"  {:init    client.menu/init
                        :cleanup client.menu/cleanup}
             "#/game"  {:init    client.game/init
-                       :cleanup client.game/cleanup}})
+                       :cleanup client.game/cleanup}
+            "#/mc"    {:init    client.mc/init
+                       :cleanup client.mc/cleanup}})
 
 (defn dispatch-hash!
   "Call the appropriate function for the given URL hash."
