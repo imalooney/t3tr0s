@@ -14,6 +14,10 @@
                       (aset img "src" "tilemap-tengen.png")
                       img))
 
+(def tilemap-gameboy-color (let [img (js/Image.)]
+                      (aset img "src" "tilemap-gameboy-color.png")
+                      img))
+
 (def tilemap (let [img (js/Image.)]
                (aset img "src" "tilemap.png")
                img))
@@ -36,18 +40,26 @@
    })
 
 (defn get-image-region
-  "Get the tilemap and position for the image of the given cell value and level."
+  "Get the tilemap and position for the image of the given cell value and theme."
   [theme value]
-  (let [wrap-theme (mod theme 10)]
-    (if (= wrap-theme 2)
-      (let [[k a] (piece-type-adj value)
-            row (value-position k)
-            col a]
-        [tilemap-tengen row col])
-      (let [[k _] (piece-type-adj value)
-            row wrap-theme
-            col (value-position k)]
-        [tilemap row col]))
+  (let [wrap-theme (mod theme 10)
+        string-value (str value)]
+    (cond 
+      (= wrap-theme 2)
+        (let [[k a] (piece-type-adj value)
+              row (value-position k)
+              col a]
+          [tilemap-tengen row col])
+      (and (= wrap-theme 7) (= (subs string-value 0 1) "I"))
+        (let [[k a] (piece-type-adj value)
+              row (value-position k)
+              col a]
+          [tilemap-gameboy-color row col])
+      :else
+        (let [[k _] (piece-type-adj value)
+              row wrap-theme
+              col (value-position k)]
+          [tilemap row col]))
     )
   )
 
