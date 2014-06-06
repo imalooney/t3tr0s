@@ -7,8 +7,8 @@
 
 (defn js-log
   "Log a JavaScript thing."
-  [js-thing]
-  (.log js/console js-thing))
+  [& js-things]
+  (apply (.-log js/console) js-things))
 
 (defn- now []
   (.toTimeString (js/Date.)))
