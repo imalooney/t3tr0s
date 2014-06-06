@@ -121,7 +121,7 @@
         $board ($ (str "#" id " .board-45de4"))]
 
     ;; hide board that are not in the top three
-    (if (< place 3)
+    (if (<= place 3)
       (.css $board "display" "")
       (.css $board "display" "none"))
 
