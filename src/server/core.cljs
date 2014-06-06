@@ -170,8 +170,9 @@
   (swap! players update-in [pid] merge data {:game @game-count})
 
   ; Send top ranked players to the MC.
-  (let [ranks (take 5 (rank-players @game-count @game-mode))]
-    (.. io (to "mc") (emit "update-players" (pr-str ranks))))
+  (let [ranks (take 10 (rank-players @game-count @game-mode))]
+    (.. io (to "dashboard") (emit "update-lead-players" (pr-str ranks))))
+
   )
 
 ;;------------------------------------------------------------------------------
