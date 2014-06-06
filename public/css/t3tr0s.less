@@ -249,9 +249,11 @@ body {
 @bigBoardWidth: 460px;
 @bigBoardHeight: 600px;
 @littleBoardWidth: 110px;
-@littleBoardTop: (@bigBoardHeight + 20px);
+@littleBoardTop: @bigBoardHeight + 20px;
 @littleBoardHeight: 140px;
 @littleBoardRightPadding: 11.5px;
+@bigFontSize: 42px;
+@littleFontSize: 24px;
 
 .board-a3a91.place-1 {
   height: @bigBoardHeight;
@@ -336,50 +338,73 @@ body {
 }
 
 .first-100e1 {
+  font-size: @bigFontSize;
   left: 0px;
   top: 0px;
 }
 
 .second-e09e1 {
+  font-size: @bigFontSize;
   left: (@bigBoardWidth + 40px);
   top: 0px;
 }
 
 .third-deef68 {
-  top: @bigBoardHeight;
+  top: @bigBoardHeight + 20px;
 }
 
 .fourth-a266b {
   left: @littleBoardWidth + @littleBoardRightPadding;
-  top: @bigBoardHeight;
+  top: @bigBoardHeight + 20px;
 }
 
 .fifth-96fe6 {
   left: (2 * @littleBoardWidth) + (2 * @littleBoardRightPadding);
-  top: @bigBoardHeight;
+  top: @bigBoardHeight + 20px;
 }
 
 .sixth-fd905 {
   left: (3 * @littleBoardWidth) + (3 * @littleBoardRightPadding);
-  top: @bigBoardHeight;
+  top: @bigBoardHeight + 20px;
 }
 
 .seventh-84a13 {
   left: (4 * @littleBoardWidth) + (4 * @littleBoardRightPadding);
-  top: @bigBoardHeight;
+  top: @bigBoardHeight + 20px;
 }
 
 .eight-15b29 {
   left: (5 * @littleBoardWidth) + (5 * @littleBoardRightPadding);
-  top: @bigBoardHeight;
+  top: @bigBoardHeight + 20px;
 }
 
 .ninth-780fc {
   left: (6 * @littleBoardWidth) + (6 * @littleBoardRightPadding);
-  top: @bigBoardHeight;
+  top: @bigBoardHeight + 20px;
 }
 
 .tenth-34b19 {
   left: (7 * @littleBoardWidth) + (7 * @littleBoardRightPadding);
-  top: @bigBoardHeight;
+  top: @bigBoardHeight + 20px;
+}
+
+.name-1d96a {
+  margin-left: 35px;
+}
+
+.score-5aeae {
+  bottom: -18px;
+  margin-top: 40px;
+  position: absolute;
+  right: 0px;
+}
+
+.place-1 .name-1d96a {
+  font-size: @bigFontSize;
+  margin-left: 60px;
+}
+
+.place-2 .name-1d96a {
+  font-size: @bigFontSize;
+  margin-left: 75px;
 }
