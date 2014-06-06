@@ -342,11 +342,9 @@ body {
 @littleBoardTop: @bigBoardHeight + 40px;
 @littleBoardHeight: 140px;
 @littleBoardRightPadding: 11.5px;
-@bigFontSize: 64px;
 @littleFontSize: 24px;
-@bigNumberFontSize: 64px;
 
-@littleNumberVerticalSeparation: 90px;
+@rightSideVerticalSeparation: 120px;
 
 @firstPlaceRed: #5388e4;
 @secondPlaceBlue: #da656e;
@@ -412,37 +410,37 @@ body {
 
 .board-a3a91.place-5 {
   left: (3 * @bigBoardWidth);
-  top: @littleNumberVerticalSeparation;
+  top: @rightSideVerticalSeparation;
   .transition(0.1s);
 }
 
 .board-a3a91.place-6 {
   left: (3 * @bigBoardWidth);
-  top: (2 * @littleNumberVerticalSeparation);
+  top: (2 * @rightSideVerticalSeparation);
   .transition(0.1s);
 }
 
 .board-a3a91.place-7 {
   left: (3 * @bigBoardWidth);
-  top: (3 * @littleNumberVerticalSeparation);
+  top: (3 * @rightSideVerticalSeparation);
   .transition(0.1s);
 }
 
 .board-a3a91.place-8 {
   left: (3 * @bigBoardWidth);
-  top: (4 * @littleNumberVerticalSeparation);
+  top: (4 * @rightSideVerticalSeparation);
   .transition(0.1s);
 }
 
 .board-a3a91.place-9 {
   left: (3 * @bigBoardWidth);
-  top: (5 * @littleNumberVerticalSeparation);
+  top: (5 * @rightSideVerticalSeparation);
   .transition(0.1s);
 }
 
 .board-a3a91.place-10 {
   left: (3 * @bigBoardWidth);
-  top: (6 * @littleNumberVerticalSeparation);
+  top: (6 * @rightSideVerticalSeparation);
   .transition(0.1s);
 }
 
@@ -456,55 +454,57 @@ body {
   font-size: 32px;
   left: (3 * @bigBoardWidth);
   position: absolute;
+  height: 52px;
+  width: 52px;
+}
 
-  sup {
-    font-size: 18px;
+.number-86f89 {
+  display: inline-block;
+  margin-top: 12px;
+  margin-left: 4px;
+}
+
+.sup-0f414 {
+  display: inline-block;
+  font-size: 15px;
+  margin-top: 18px;
+  vertical-align: top;
+}
+
+.first-100e1, .second-e09e1, .third-deef68 {
+  height: 80px;
+  top: 0px;
+  width: 80px;
+
+  .sup-0f414 {
+    font-size: 24px;
     margin-top: 4px;
   }
 }
 
-.big-dcc7f {
-  height: 80px;
-  width: 80px;
+.first-100e1 .number-86f89, .second-e09e1 .number-86f89, .third-deef68 .number-86f89 {
+  font-size: 64px;
+}
+
+.first-100e1 .sup-0f414, .second-e09e1 .sup-0f414, .third-deef68 .sup-0f414 {
+  font-size: 24px;
+  margin-top: 26px;
+  vertical-align: top;
 }
 
 .first-100e1 {
-  .big-dcc7f;
   background-color: @firstPlaceRed;
-  font-size: @bigNumberFontSize;
   left: 0px;
-  top: 0px;
-
-  sup {
-    font-size: 24px;
-    margin-top: 4px;
-  }  
 }
 
 .second-e09e1 {
-  .big-dcc7f;
   background-color: @secondPlaceBlue;
-  font-size: @bigNumberFontSize;
   left: @bigBoardWidth;
-  top: 0px;
-
-  sup {
-    font-size: 24px;
-    margin-top: 4px;
-  }  
 }
 
 .third-deef68 {
-  .big-dcc7f;
   background-color: @thirdPlaceGreen;
-  font-size: @bigNumberFontSize;
   left: (2 * @bigBoardWidth);
-  top: 0px;
-
-  sup {
-    font-size: 24px;
-    margin-top: 4px;
-  }  
 }
 
 .fourth-a266b {
@@ -512,51 +512,67 @@ body {
 }
 
 .fifth-96fe6 {
-  top: @littleNumberVerticalSeparation;
+  top: @rightSideVerticalSeparation;
 }
 
 .sixth-fd905 {
-  top: (2 * @littleNumberVerticalSeparation);
+  top: (2 * @rightSideVerticalSeparation);
 }
 
 .seventh-84a13 {
-  top: (3 * @littleNumberVerticalSeparation);
+  top: (3 * @rightSideVerticalSeparation);
 }
 
 .eight-15b29 {
-  top: (4 * @littleNumberVerticalSeparation);
+  top: (4 * @rightSideVerticalSeparation);
 }
 
 .ninth-780fc {
-  top: (5 * @littleNumberVerticalSeparation);
+  top: (5 * @rightSideVerticalSeparation);
 }
 
 .tenth-34b19 {
-  top: (6 * @littleNumberVerticalSeparation);
+  top: (6 * @rightSideVerticalSeparation);
+
+  .number-86f89 {
+    font-size: 28px;
+    margin-left: 0px;
+  }
 }
 
 .name-1d96a {
-  margin-left: 60px;
+  font-size: 24px;
+  margin: 14px 0 0 70px;
 }
 
 .score-5aeae {
-  bottom: -18px;
-  margin-top: 40px;
-  position: absolute;
-  right: 0px;
-}
-
-.place-1 .name-1d96a {
-  font-size: @bigFontSize;
-  margin-left: 60px;
-}
-
-.place-2 .name-1d96a {
-  font-size: @bigFontSize;
-  margin-left: 75px;
+  font-size: 34px;
+  margin-top: 24px;
 }
 
 .canvas-ad036 {
   width: 100%;
   height: 100%;
+}
+
+.place-1 .name-1d96a, .place-2 .name-1d96a, .place-3 .name-1d96a {
+  font-size: 42px;
+  margin: 20px 0 0 100px;
+}
+
+
+//---------------- Game over score board -----------------//
+.table-9be14 {
+  color: white;
+  width: 100%;
+}
+
+.th-147ad {
+  width: 20px;
+}
+
+.tr-cf247 {
+  text-align: center;
+  line-height: 30px;
+  border-bottom: 1px solid rgba(255,255,255,0.5);
 }

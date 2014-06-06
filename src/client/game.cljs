@@ -46,14 +46,25 @@
   [:h1#countdown "Connecting..."])
 
 (hiccups/defhtml gameover-html [ranks]
-  [:h1 "Game over"]
-  [:ol {:style "color:white"}
-    (for [player ranks]
-      [:li
-       (str
-         (:user player) " - "
-         (:score player) " points - "
-         (:total-lines player) " lines")])])
+  [:div#inner-container
+   [:div.chat-logo-e38e3
+    [:img {:src "/../../img/t3tr0s_logo_200w.png" :width "160px"}]
+    [:span.span-4e536 "Game over"]]
+   [:div#chat-messages
+    [:table.table-9be14
+     [:thead
+      [:tr
+       [:th.th-147ad "place"]
+       [:th "name"]
+       [:th "score"]
+       [:th "lines"]]]
+     [:tbody
+      (for [[i player] (map-indexed vector ranks)]
+        [:tr.tr-cf247
+         [:td (str (+ i 1) ".")]
+         [:td {:class (str "color-" (mod i 7))} (:user player)]
+         [:td (:score player)]
+         [:td (:total-lines player)]])]]]])
 
 ;;------------------------------------------------------------
 ;; Page initialization.
