@@ -338,6 +338,8 @@ body {
 // Dashboard
 //------------------------------------------------------------------------------
 
+@animationSpeed: 0.2s;
+
 @dashboardTotalWidth: 1200px;
 @bigBoardWidth: (@dashboardTotalWidth / 4) - 1px;
 @bigBoardPaddingRight: 120px;
@@ -390,63 +392,63 @@ body {
   left: 0px;
   top: 0px;
   width: @bigBoardWidth;
-  .transition(0.1s);
+  .transition(@animationSpeed);
 }
 
 .board-a3a91.place-2 {
   left: @bigBoardWidth;
   top: 0px;
   width: @bigBoardWidth;
-  .transition(0.1s);
+  .transition(@animationSpeed);
 }
 
 .board-a3a91.place-3 {
   left: (2 * @bigBoardWidth);
   top: 0px;
   width: @bigBoardWidth;
-  .transition(0.1s);  
+  .transition(@animationSpeed);  
 }
 
 .board-a3a91.place-4 {
   left: (3 * @bigBoardWidth);
   top: 0px;
-  .transition(0.1s);
+  .transition(@animationSpeed);
 }
 
 .board-a3a91.place-5 {
   left: (3 * @bigBoardWidth);
   top: @rightSideVerticalSeparation;
-  .transition(0.1s);
+  .transition(@animationSpeed);
 }
 
 .board-a3a91.place-6 {
   left: (3 * @bigBoardWidth);
   top: (2 * @rightSideVerticalSeparation);
-  .transition(0.1s);
+  .transition(@animationSpeed);
 }
 
 .board-a3a91.place-7 {
   left: (3 * @bigBoardWidth);
   top: (3 * @rightSideVerticalSeparation);
-  .transition(0.1s);
+  .transition(@animationSpeed);
 }
 
 .board-a3a91.place-8 {
   left: (3 * @bigBoardWidth);
   top: (4 * @rightSideVerticalSeparation);
-  .transition(0.1s);
+  .transition(@animationSpeed);
 }
 
 .board-a3a91.place-9 {
   left: (3 * @bigBoardWidth);
   top: (5 * @rightSideVerticalSeparation);
-  .transition(0.1s);
+  .transition(@animationSpeed);
 }
 
 .board-a3a91.place-10 {
   left: (3 * @bigBoardWidth);
   top: (6 * @rightSideVerticalSeparation);
-  .transition(0.1s);
+  .transition(@animationSpeed);
 }
 
 //------------------------------------------------------------------------------
