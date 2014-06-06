@@ -369,27 +369,29 @@
     (swap! state assoc :theme (int theme))
     "")) ;; TODO: why is this empty string returning here?
 
+(def key-names {
+  37 :left
+  38 :up
+  39 :right
+  40 :down
+  32 :space
+  16 :shift
+
+  49 :one
+  50 :two
+  51 :three
+  52 :four
+  53 :five
+  54 :six
+  55 :seven
+  56 :eight
+  57 :nine
+  48 :zero})
+
 (defn add-key-events
   "Add all the key inputs."
   []
   (let [down-chan (chan)
-        key-names {37 :left
-                   38 :up
-                   39 :right
-                   40 :down
-                   32 :space
-                   16 :shift
-
-                   49 :one
-                   50 :two
-                   51 :three
-                   52 :four
-                   53 :five
-                   54 :six
-                   55 :seven
-                   56 :eight
-                   57 :nine
-                   48 :zero}
         key-name #(-> % .-keyCode key-names)
         key-down (fn [e]
                    (case (key-name e)
