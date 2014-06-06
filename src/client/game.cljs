@@ -64,7 +64,8 @@
          [:td (str (+ i 1) ".")]
          [:td {:class (str "color-" (mod i 7))} (:user player)]
          [:td (:score player)]
-         [:td (:total-lines player)]])]]]])
+         [:td (:total-lines player)]])]]]
+   [:button#game-over-btn.red-btn-2c9ab "LOBBY"]])
 
 ;;------------------------------------------------------------
 ;; Page initialization.
@@ -101,7 +102,8 @@
   (js/console.log "game over")
   (cleanup)
   (let [data (read-string str-data)]
-    (.html ($ "#main-container") (gameover-html data))))
+    (.html ($ "#main-container") (gameover-html data))
+    (.click ($ "#game-over-btn") #(aset js/location "hash" "#/lobby"))))
 
 (defn on-time-left
   "Called when server sends a time-left update."
