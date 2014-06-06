@@ -1,4 +1,4 @@
-<img src="public/img/t3tr0s_500w.png">
+<img src="public/img/logo.png">
 
 <img src="http://i.imgur.com/HFZOXAu.gif" align="right" width="132px">
 
