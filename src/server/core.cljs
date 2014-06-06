@@ -77,7 +77,8 @@
     (doseq [i (reverse (range (inc seconds)))]
       (<! (timeout 1000))
       (js/console.log "countdown:" i)
-      (.. io (to "game") (emit "countdown" i)))
+      (.. io (to "game") (emit "countdown" i))
+      (.. io (to "mc") (emit "countdown" i)))
   ))
 
 (defn go-go-game!

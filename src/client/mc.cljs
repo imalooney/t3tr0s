@@ -14,18 +14,40 @@
 (hiccups/defhtml stop-html []
   [:div#inner-container
     [:div.login-5983e
+      [:label#time-left.timeleft-69be1]
       [:form
         [:button#submit.red-btn-2c9ab "STOP"]]]])
 
 (declare init-start-page!)
+
+(defn on-time-left
+  "Called when receiving time left from server."
+  [i]
+  (.html ($ "#time-left") (str "Stopping in " i)))
+
+(defn on-countdown
+  "Called when receiving countdown till start from server."
+  [i]
+  (.html ($ "#time-left") (str "Starting in " i)))
+
+(defn cleanup-stop-page!
+  "Remove socket listeners specific to the stop page."
+  []
+  (.removeListener @socket "time-left" on-time-left)
+  (.removeListener @socket "countdown" on-countdown)
+  )
 
 (defn init-stop-page!
   "Initialize the start game page."
   []
   (.html ($ "#main-container") (stop-html))
 
+  (.on @socket "time-left" on-time-left)
+  (.on @socket "countdown" on-countdown)
+
   (.click ($ "#submit")
           #(do (.emit @socket "stop-game")
+               (cleanup-stop-page!)
                (init-start-page!))))
 
 ;;------------------------------------------------------------
@@ -105,5 +127,7 @@
 
   ; Destroy socket listeners.
   (.removeListener @socket "grant-mc" on-grant-mc)
+
+  (cleanup-stop-page!)
 
   )
