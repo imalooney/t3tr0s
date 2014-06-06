@@ -34,7 +34,8 @@
           [:div#score.push-down-e2e2a]
           [:div#level.push-down-e2e2a]
           [:div#lines]]
-        [:div.clr-22ff3]]
+        [:div.clr-22ff3]
+       [:div.time-left-1369c]]
       [:div.change-theme-6bd50 "Press keys 0-9 to change your theme"]
       [:div#theme]
       [:div#theme-details]]
@@ -107,15 +108,22 @@
 
 (defn on-time-left
   "Called when server sends a time-left update."
-  [s]
-  (js/console.log "time left:" s)
+  [total-seconds]
+  (let [m (js/Math.floor (/ total-seconds 60))
+        s (mod total-seconds 60)
+        s-str (if (< s 10) (str "0" s) s)
+        time-str (str m ":" s-str)]
+    (js/console.log m s s-str time-str)
 
-  ; Use this as a mechanism for starting the game
-  ; if the players join late.  Otherwise, they
-  ; would never leave the countdown screen.
-  (if-not @initialized
-    (init-game))
-  )
+    (.html ($ ".time-left-1369c") (str "Time Left: " time-str))
+
+    ; Use this as a mechanism for starting the game
+    ; if the players join late.  Otherwise, they
+    ; would never leave the countdown screen.
+    (if-not @initialized
+      (init-game))
+
+    ))
 
 (defn init
   []
