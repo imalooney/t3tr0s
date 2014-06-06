@@ -32,7 +32,7 @@
     :pid 0
     :board test-board1
     :theme 0
-    :score 282372 }
+    :score 23586 }
   { :user "Shaun"
     :pid 1
     :board test-board2
@@ -129,7 +129,7 @@
     (.addClass $el (str "place-" place))
 
     (.html ($ (str "#" id " .name-1d96a")) (:user itm))
-    (.html ($ (str "#" id " .score-5aeae")) (:score itm))
+    (.html ($ (str "#" id " .score-5aeae")) (util/format-number (:score itm)))
     
     (draw-board! (str "canvas-" id) (:board itm) cell-size (:theme itm) rows-cutoff)
 

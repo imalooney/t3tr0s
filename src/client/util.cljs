@@ -21,3 +21,8 @@
         (.toString (bit-or (* 16 (.random js/Math)) 0) 16)
         x))
     "00000000-0000-4000-0000-000000000000")))
+
+;; TODO: replace this with goog.i18n.NumberFormat?
+;; http://tinyurl.com/mekjre8
+(defn format-number [n]
+  (clojure.string/replace (str n) #"\B(?=(\d{3})+(?!\d))" ","))
