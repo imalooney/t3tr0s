@@ -2,7 +2,7 @@
   (:require-macros
     [cljs.core.async.macros :refer [go]])
   (:require
-    [cljs.core.async :refer [<! timeout]]
+    [cljs.core.async :refer [<! timeout alts! chan]]
     [clojure.walk]
     [cljs.reader :refer [read-string]]
     [server.gif :refer [create-gif]]))
@@ -50,13 +50,25 @@
 ;; Game Runner
 ;;------------------------------------------------------------
 
-(def game-status
-  "Current status of the game (nil :lines or :time)."
+(def game-count
+  "Number of games started since server started (used to identify games)"
+  (atom 0))
+
+(def game-mode
+  "The current game mode is nil, :lines, or :time"
   (atom nil))
 
 (def quit-game-chan
   "Channel to close in order to halt the current game."
-  (atom nil))
+  (atom (chan)))
+
+(defn rank-players
+  "Get players for the given game sorted by rank for the given mode."
+  [game-id mode]
+  (->> (vals @players)
+       (filter #(= game-id (:game %)))
+       (sort-by :score)
+       (reverse)))
 
 (defn go-go-countdown!
   "Start the countdown"
@@ -68,24 +80,70 @@
       (.. io (to "game") (emit "countdown" i)))
   ))
 
-(defn go-go-game-lines!
-  "Start a game.  Winner is first to fill 40 lines."
-  [io]
-  (js/console.log "Starting the game (line race).")
-  (.. io (to "lobby") (emit "start-game"))
-  (go
-    (<! (go-go-countdown! io 5)))
-  nil)
+(defn go-go-game!
+  "Start a game."
+  [io mode]
 
-(defn go-go-game-time!
-  "Start a game.  Winner is highest score after 5 minutes."
-  [io]
-  (js/console.log "Starting the game (time attack).")
+  ; Set the game mode.
+  (swap! game-mode mode)
+
+  ; Update the game count to uniquely identify current game.
+  (swap! game-count inc)
+
+  ; Log the game start.
+  (js/console.log "Starting the game:" (name mode) @game-count)
+
+  ; Make lobby players navigate to a countdown screen.
   (.. io (to "lobby") (emit "start-game"))
+
   (go
-    (<! (go-go-countdown! io 5)))
-  ; 2. Emit game start
-  nil)
+
+    ; Kick off and wait for the countdown for game start.
+    (<! (go-go-countdown! io 5))
+
+    ; Emit a message for every second left until game over.
+    (if (= mode :time)
+      (loop [s 60]
+
+        (js/console.log "time left:" s)
+
+        (.. io (to "game") (emit "time-left" s))
+        (.. io (to "mc") (emit "time-left" s))
+
+        (if-not (zero? s)
+
+          ; Wait for either the timer or the quit channel.
+          (let [t (timeout 1000)
+                q @quit-game-chan
+                [_ c] (alts! [t q])]
+            (if (= c t)
+              (recur (dec s)))))))
+
+    ; Calculate final ranks.
+    (let [ranks (rank-players @game-count @game-mode)]
+
+      ; Show ranks on server console.
+      (js/console.log "RANKS")
+      (doseq [r ranks]
+        (js/console.log (:user r) " - "
+                        (:score r) " points - "
+                        (:total-lines r) " lines"))
+
+      ; Emit a game over message with ranks to players.
+      (.. io (to "game") (emit "game-over"
+                               (pr-str ranks)))
+
+      ; Emit a game over message with final ranks to MC.
+      (.. io (to "mc") (emit "game-over"
+                             (pr-str ranks))))
+    
+    ; Clear the game mode when done.
+    (reset! game-mode nil)
+
+    (js/console.log "Game ended.")
+
+    )
+  )
 
 ;;------------------------------------------------------------------------------
 ;; Socket Events
@@ -95,6 +153,21 @@
   (let [d (assoc (get @players pid) :type "msg" :msg msg)]
     (js/console.log "Player" pid "said:" msg)
     (.. socket -broadcast (to "lobby") (emit "new-message" (pr-str d)))))
+
+(defn- on-update-player
+  "Called when player sends an updated state."
+  [data pid socket io]
+
+  (js/console.log "Player" pid "updated.")
+
+  ; Merge in the updated data into the player structure.
+  ; Also update the game id, so we know which players are in the current game.
+  (swap! players update-in [pid] merge data {:game @game-count})
+
+  ; Send top ranked players to the MC.
+  (let [ranks (take 5 (rank-players @game-count @game-mode))]
+    (.. io (to "mc") (emit "update-players" (pr-str ranks))))
+  )
 
 ;;------------------------------------------------------------------------------
 ;; Socket Setup
@@ -111,6 +184,9 @@
   (let [pid (gen-player-id!)]
 
     (js/console.log "Player" pid "connected.")
+
+    ; Attach player id to socket.
+    (aset socket "pid" pid)
 
     ; Add to player table as "Anon" for now.
     (swap! players assoc pid anon-player)
@@ -152,13 +228,17 @@
     (.on socket "join-game" #(.join socket "game"))
     (.on socket "leave-game" #(.leave socket "game"))
 
+    ; Receive the update from the player.
+    (.on socket "update-player"
+         #(on-update-player (read-string %) pid socket io))
+
     ; Request access to the MC role.
     (.on socket "request-mc"
          #(if (= % (:mc-password config))
             (do
               (js/console.log "Player" pid "granted as MC.")
               (.join socket "mc")
-              (.emit socket "grant-mc" (pr-str @game-status)))
+              (.emit socket "grant-mc" (pr-str @game-mode)))
             (do
               (js/console.log "Player" pid "rejected as MC."))))
 
@@ -167,8 +247,8 @@
          #(.leave socket "mc"))
 
     ; Start the game
-    (.on socket "start-lines" #(go-go-game-lines! io))
-    (.on socket "start-time" #(go-go-game-time! io))
+    (.on socket "start-lines" #(go-go-game! io :line))
+    (.on socket "start-time" #(go-go-game! io :time))
 
     ))
 

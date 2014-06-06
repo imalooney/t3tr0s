@@ -1,6 +1,7 @@
 (ns client.game
 	(:require-macros [hiccups.core :as hiccups])
 	(:require
+    [cljs.reader :refer [read-string]]
 		hiccups.runtime
     [client.socket :refer [socket]]
     client.game.core
@@ -53,6 +54,16 @@
 (hiccups/defhtml countdown-html []
   [:h1#countdown "Connecting..."])
 
+(hiccups/defhtml gameover-html [ranks]
+  [:h1 "Game over"]
+  [:ol {:style "color:white"}
+    (for [player ranks]
+      [:li
+       (str
+         (:user player) " - "
+         (:score player) " points - "
+         (:total-lines player) " lines")])])
+
 ;;------------------------------------------------------------
 ;; Page initialization.
 ;;------------------------------------------------------------
@@ -79,6 +90,21 @@
   (.on @socket "countdown" on-countdown)
   )
 
+(declare cleanup)
+
+(defn on-game-over
+  "Called when game over message received from server."
+  [str-data]
+  (js/console.log "game over")
+  (cleanup)
+  (let [data (read-string str-data)]
+    (.html ($ "#main-container") (gameover-html data))))
+
+(defn on-time-left
+  "Called when server sends a time-left update."
+  [s]
+  (js/console.log "time left:" s))
+
 (defn init
   []
 
@@ -94,6 +120,9 @@
     (init-countdown)
     (init-game))
 
+  (.on @socket "game-over" on-game-over)
+  (.on @socket "time-left" on-time-left)
+
   )
 
 (defn cleanup
@@ -107,6 +136,9 @@
 
   ; Shutdown the game facilities.
   (client.game.core/cleanup)
+
+  (.removeListener @socket "game-over" on-game-over)
+  (.removeListener @socket "time-left" on-time-left)
 
   )
 

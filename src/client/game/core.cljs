@@ -77,6 +77,13 @@
 (def pause-grav (chan))
 (def resume-grav (chan))
 
+(defn try-publish-score!
+  "Inform the server of our current state."
+  []
+  (if @battle
+    (.emit @socket "update-player"
+           (pr-str (select-keys @state [:total-lines :score])))))
+
 ;;------------------------------------------------------------
 ;; STATE MONITOR
 ;;------------------------------------------------------------
@@ -114,8 +121,10 @@
                   next-piece (:next-piece @state)]
               (when (or (not= board new-board)
                         (not= theme new-theme))
-                (.emit @socket "board-update" (pr-str {:level (:level @state)
-                                                       :board new-board}))
+                #_(if @battle
+                    (.emit @socket "board-update"
+                           (pr-str {:level (:level @state)
+                                    :board new-board})))
                 (draw-board! "game-canvas" new-board cell-size new-theme rows-cutoff)
                 (draw-board! "next-canvas" (next-piece-board next-piece) cell-size new-theme)
                 (if (:recording @vcr)
@@ -182,7 +191,11 @@
         (swap! state assoc :level-lines 0))
       (swap! state assoc :level-lines level-lines))
 
-    (swap! state update-in [:total-lines] + n))
+    (swap! state update-in [:total-lines] + n)
+
+    (try-publish-score!)
+
+    )
 
   (display-points!))
 
@@ -460,9 +473,8 @@
   (go-go-gravity!)
 
   (display-points!)
+  (try-publish-score!)
 
-  (.on @socket "board-update" #(on-opponent-update (read-string %)))
-  (.on @socket "board-delete" delete-opponent-canvas!)
   )
 
 (defn cleanup []
