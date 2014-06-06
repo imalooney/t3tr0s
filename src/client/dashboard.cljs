@@ -90,6 +90,9 @@
     [:div.score-5aeae]])
 
 (hiccups/defhtml dashboard-html []
+  [:div.header-d680b
+    [:img {:src "/img/t3tr0s_logo_200w.png" :alt ""}]
+    [:h1.title-d49ea "Scoreboard"]]
   [:div.dashboard-0e330
     [:button#btn1 "Test 1"]
     [:button#btn2 "Test 2"]
