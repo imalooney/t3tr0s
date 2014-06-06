@@ -14,7 +14,7 @@
     [:div.logo-31d54]
     [:div.menu-cd25d
       [:button#solo-btn.green-btn-f67eb "SOLO"]
-      [:button#battle-btn.blue-btn-41e23 "BATTLE"]]])
+      [:button#lobby-btn.blue-btn-41e23 "BATTLE"]]])
 
 ;;------------------------------------------------------------
 ;; Page initialization.
