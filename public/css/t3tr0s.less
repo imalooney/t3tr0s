@@ -5,6 +5,10 @@
   font-style: normal;
 }
 
+::-webkit-scrollbar {
+  background: transparent;
+}
+
 body {
   background-color: #111;
   font-family: 'visitor1';
@@ -115,7 +119,7 @@ body {
   font-size: 50px;
   width: 300px;
   height: 50px;
-  color: #000;
+  color: #111;
   background-color: #FFF;
   padding: 20px 15px;
 }
@@ -193,6 +197,17 @@ body {
 // Chat
 //------------------------------------------------------------------------------
 
+.chat-logo-e38e3 {
+  color: #FFF;
+  font-size: 30px;
+  border-bottom: 2px solid rgba(255,255,255,0.5);
+  padding-bottom: 20px;
+}
+
+.span-4e536 {
+  margin-left: 20px;
+}
+
 #chat {
   color: #FFF;
   position: absolute;
@@ -204,35 +219,28 @@ body {
 #chat-input {
   position: fixed;
   bottom: 0px;
-  width: 700px;
+  width: 800px;
 }
 
 #chat-input > * {
-  padding: 0;
   margin: 0;
   border: 0;
-  font-size: 2em;
-  border: 5px inset;
-  box-sizing: border-box;
 }
 
 #msg {
-  width: 600px;
-  height: 80px;
+  width: 500px;
+  font-size: 30px;
+  color: #111;
+  padding: 20px 20px;
+  height: 50px;
+  margin: 16px;
 }
 
-// #submit {
-//   width: 100px;
-//   height: 80px;
-//   background-color: #C00;
-//   color: #FFF;
-//   border-color: #D00;
-// }
-
 #chat-messages {
+  padding-left: 20px;
   overflow-y: scroll;
   height: 600px;
-  width: 700px;
+  width: 740px;
   position: relative;
 }
 
@@ -240,30 +248,36 @@ body {
   font-size: 1.5em;
 }
 
+.message {
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.3);
+}
+
 .txt {
   font-size: 1.2em;
+  color: #FFF;
 }
 
 .color-0 {
-  color: #9100FE; /* purple */
+  color: #4680e3; /* blue */
 }
 .color-1 {
-  color: #8CFFFF; /* turquoise */
+  color: #c64c57; /* red */
 }
 .color-2 {
-  color: #ECA900; /* orange */
+  color: #acdc5a; /* green */
 }
 .color-3 {
-  color: #0000DD; /* blue */
+  color: #f7d252; /* yellow */
 }
 .color-4 {
-  color: #8EFF25; /* green */
+  color: #cc6fc4; /* purple */
 }
 .color-5 {
-  color: #DD0000; /* red */
+  color: #63d1fb; /* cyan */
 }
 .color-6 {
-  color: #FFFF0A; /* yellow */
+  color: #f5a03e; /* orange */
 }
 
 //------------------------------------------------------------------------------
