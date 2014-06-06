@@ -71,3 +71,10 @@ If you want to record a GIF of gameplay:
 - <http://www.tetrisfriends.com/help/tips_appendix.php>
 - <http://tetris.wikia.com/wiki/Tetris_Guideline>
 
+## License
+
+All code licensed under the terms of the [MIT License](https://github.com/imalooney/t3tr0s/blob/master/LICENSE).
+
+The image files of past versions of the games (ie: the tilemap files) belong to their respective copyright holders.
+
+Tetris is a registered trademark of The Tetris Company.
