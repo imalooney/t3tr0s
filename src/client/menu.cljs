@@ -13,8 +13,8 @@
   [:div#inner-container
     [:div.logo-31d54]
     [:div.menu-cd25d
-      [:button.green-btn-f67eb "SOLO"]
-      [:button.blue-btn-41e23 "BATTLE"]]])
+      [:button#solo-btn.green-btn-f67eb "SOLO"]
+      [:button#battle-btn.blue-btn-41e23 "BATTLE"]]])
 
 ;;------------------------------------------------------------
 ;; Page initialization.
