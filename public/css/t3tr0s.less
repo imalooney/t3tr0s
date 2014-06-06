@@ -342,11 +342,10 @@ body {
 @littleBoardTop: @bigBoardHeight + 40px;
 @littleBoardHeight: 140px;
 @littleBoardRightPadding: 11.5px;
-@bigFontSize: 64px;
 @littleFontSize: 24px;
 @bigNumberFontSize: 64px;
 
-@littleNumberVerticalSeparation: 90px;
+@rightSideVerticalSeparation: 120px;
 
 @firstPlaceRed: #5388e4;
 @secondPlaceBlue: #da656e;
@@ -412,37 +411,37 @@ body {
 
 .board-a3a91.place-5 {
   left: (3 * @bigBoardWidth);
-  top: @littleNumberVerticalSeparation;
+  top: @rightSideVerticalSeparation;
   .transition(0.1s);
 }
 
 .board-a3a91.place-6 {
   left: (3 * @bigBoardWidth);
-  top: (2 * @littleNumberVerticalSeparation);
+  top: (2 * @rightSideVerticalSeparation);
   .transition(0.1s);
 }
 
 .board-a3a91.place-7 {
   left: (3 * @bigBoardWidth);
-  top: (3 * @littleNumberVerticalSeparation);
+  top: (3 * @rightSideVerticalSeparation);
   .transition(0.1s);
 }
 
 .board-a3a91.place-8 {
   left: (3 * @bigBoardWidth);
-  top: (4 * @littleNumberVerticalSeparation);
+  top: (4 * @rightSideVerticalSeparation);
   .transition(0.1s);
 }
 
 .board-a3a91.place-9 {
   left: (3 * @bigBoardWidth);
-  top: (5 * @littleNumberVerticalSeparation);
+  top: (5 * @rightSideVerticalSeparation);
   .transition(0.1s);
 }
 
 .board-a3a91.place-10 {
   left: (3 * @bigBoardWidth);
-  top: (6 * @littleNumberVerticalSeparation);
+  top: (6 * @rightSideVerticalSeparation);
   .transition(0.1s);
 }
 
@@ -456,55 +455,40 @@ body {
   font-size: 32px;
   left: (3 * @bigBoardWidth);
   position: absolute;
+  height: 50px;
+  width: 50px;
 
   sup {
-    font-size: 18px;
+    font-size: 16px;
     margin-top: 4px;
   }
 }
 
-.big-dcc7f {
+.first-100e1, .second-e09e1, .third-deef68 {
+  font-size: @bigNumberFontSize;
   height: 80px;
+  top: 0px;
   width: 80px;
+
+  sup {
+    font-size: 24px;
+    margin-top: 4px;
+  }
 }
 
 .first-100e1 {
-  .big-dcc7f;
   background-color: @firstPlaceRed;
-  font-size: @bigNumberFontSize;
   left: 0px;
-  top: 0px;
-
-  sup {
-    font-size: 24px;
-    margin-top: 4px;
-  }  
 }
 
 .second-e09e1 {
-  .big-dcc7f;
   background-color: @secondPlaceBlue;
-  font-size: @bigNumberFontSize;
   left: @bigBoardWidth;
-  top: 0px;
-
-  sup {
-    font-size: 24px;
-    margin-top: 4px;
-  }  
 }
 
 .third-deef68 {
-  .big-dcc7f;
   background-color: @thirdPlaceGreen;
-  font-size: @bigNumberFontSize;
   left: (2 * @bigBoardWidth);
-  top: 0px;
-
-  sup {
-    font-size: 24px;
-    margin-top: 4px;
-  }  
 }
 
 .fourth-a266b {
@@ -512,51 +496,45 @@ body {
 }
 
 .fifth-96fe6 {
-  top: @littleNumberVerticalSeparation;
+  top: @rightSideVerticalSeparation;
 }
 
 .sixth-fd905 {
-  top: (2 * @littleNumberVerticalSeparation);
+  top: (2 * @rightSideVerticalSeparation);
 }
 
 .seventh-84a13 {
-  top: (3 * @littleNumberVerticalSeparation);
+  top: (3 * @rightSideVerticalSeparation);
 }
 
 .eight-15b29 {
-  top: (4 * @littleNumberVerticalSeparation);
+  top: (4 * @rightSideVerticalSeparation);
 }
 
 .ninth-780fc {
-  top: (5 * @littleNumberVerticalSeparation);
+  top: (5 * @rightSideVerticalSeparation);
 }
 
 .tenth-34b19 {
-  top: (6 * @littleNumberVerticalSeparation);
+  top: (6 * @rightSideVerticalSeparation);
 }
 
 .name-1d96a {
-  margin-left: 60px;
+  font-size: 24px;
+  margin: 14px 0 0 70px;
 }
 
 .score-5aeae {
-  bottom: -18px;
-  margin-top: 40px;
-  position: absolute;
-  right: 0px;
-}
-
-.place-1 .name-1d96a {
-  font-size: @bigFontSize;
-  margin-left: 60px;
-}
-
-.place-2 .name-1d96a {
-  font-size: @bigFontSize;
-  margin-left: 75px;
+  font-size: 34px;
+  margin-top: 24px;
 }
 
 .canvas-ad036 {
   width: 100%;
   height: 100%;
+}
+
+.place-1 .name-1d96a, .place-2 .name-1d96a, .place-3 .name-1d96a {
+  font-size: 42px;
+  margin: 20px 0 0 100px;
 }
