@@ -5,7 +5,8 @@
     [cljs.core.async :refer [<! timeout alts! close! chan]]
     [clojure.walk]
     [cljs.reader :refer [read-string]]
-    [server.gif :refer [create-gif]]))
+    [server.gif :refer [create-gif]]
+    [server.util :as util]))
 
 (enable-console-print!)
 
@@ -76,7 +77,7 @@
   (go
     (doseq [i (reverse (range (inc seconds)))]
       (<! (timeout 1000))
-      (js/console.log "countdown:" i)
+      (util/js-log "countdown:" i)
       (.. io (to "game") (emit "countdown" i))
       (.. io (to "mc") (emit "countdown" i)))
   ))
@@ -96,7 +97,7 @@
   (swap! game-count inc)
 
   ; Log the game start.
-  (js/console.log "Starting the game:" (name mode) @game-count)
+  (util/js-log "Starting the game:" (name mode) @game-count)
 
   ; Make lobby players navigate to a countdown screen.
   (.. io (to "lobby") (emit "start-game"))
@@ -110,7 +111,7 @@
     (if (= mode :time)
       (loop [s 60]
 
-        (js/console.log "time left:" s)
+        (util/js-log "time left:" s)
 
         (.. io (to "game") (emit "time-left" s))
         (.. io (to "mc") (emit "time-left" s))
@@ -128,9 +129,9 @@
     (let [ranks (rank-players @game-count @game-mode)]
 
       ; Show ranks on server console.
-      (js/console.log "RANKS")
+      (util/js-log "RANKS")
       (doseq [r ranks]
-        (js/console.log (:user r) " - "
+        (util/js-log (:user r) " - "
                         (:score r) " points - "
                         (:total-lines r) " lines"))
 
@@ -145,7 +146,7 @@
     ; Clear the game mode when done.
     (reset! game-mode nil)
 
-    (js/console.log "Game ended.")
+    (util/js-log "Game ended.")
 
     )
   )
@@ -156,14 +157,14 @@
 
 (defn- on-chat-message [msg pid socket]
   (let [d (assoc (get @players pid) :type "msg" :msg msg)]
-    (js/console.log "Player" pid "said:" msg)
+    (util/js-log "Player" pid "said:" msg)
     (.. socket -broadcast (to "lobby") (emit "new-message" (pr-str d)))))
 
 (defn- on-update-player
   "Called when player sends an updated state."
   [data pid socket io]
 
-  (js/console.log "Player" pid "updated.")
+  (util/js-log "Player" pid "updated.")
 
   ; Merge in the updated data into the player structure.
   ; Also update the game id, so we know which players are in the current game.
@@ -188,7 +189,7 @@
 
   (let [pid (gen-player-id!)]
 
-    (js/console.log "Player" pid "connected.")
+    (util/js-log "Player" pid "connected.")
 
     ; Attach player id to socket.
     (aset socket "pid" pid)
@@ -203,26 +204,26 @@
     ; Remove player from table when disconnected.
     (.on socket "disconnect"
          #(do
-            (js/console.log "Player" pid "disconnected.")
+            (util/js-log "Player" pid "disconnected.")
             (swap! players dissoc pid)))
 
     ; Update player name when requested.
     (.on socket "update-name"
          #(let [data (read-string %)]
-            (js/console.log "Updating player" pid "with" (:user data) (:color data))
+            (util/js-log "Updating player" pid "with" (:user data) (:color data))
             (swap! players update-in [pid] merge data)))
 
     ; Join the lobby.
     (.on socket "join-lobby"
          #(let [data (assoc (get @players pid) :type "join")]
-            (js/console.log "Player" pid "joined the lobby.")
+            (util/js-log "Player" pid "joined the lobby.")
             (.. socket -broadcast (to "lobby") (emit "new-message" (pr-str data)))
             (.join socket "lobby")))
 
     ; Leave the lobby.
     (.on socket "leave-lobby"
          #(let [data (assoc (get @players pid) :type "leave")]
-            (js/console.log "Player" pid "left the lobby.")
+            (util/js-log "Player" pid "left the lobby.")
             (.. socket -broadcast (to "lobby") (emit "new-message" (pr-str data)))
             (.leave socket "lobby")))
 
@@ -245,11 +246,11 @@
     (.on socket "request-mc"
          #(if (= % (:mc-password config))
             (do
-              (js/console.log "Player" pid "granted as MC.")
+              (util/js-log "Player" pid "granted as MC.")
               (.join socket "mc")
               (.emit socket "grant-mc" (pr-str @game-mode)))
             (do
-              (js/console.log "Player" pid "rejected as MC."))))
+              (util/js-log "Player" pid "rejected as MC."))))
 
     ; Leave the MC role.
     (.on socket "leave-mc"
