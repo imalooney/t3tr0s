@@ -32,7 +32,7 @@
     :pid 0
     :board test-board1
     :theme 0
-    :score 282372 }
+    :score 23586 }
   { :user "Shaun"
     :pid 1
     :board test-board2
@@ -117,15 +117,20 @@
   (create-board-if-needed! (get @ids (:pid itm)))
   (let [place (+ idx 1)
         id (get @ids (:pid itm))
-        $el ($ (by-id id))]
+        $el ($ (by-id id))
+        $board ($ (str "#" id " .board-45de4"))]
+
+    ;; hide board that are not in the top three
+    (if (< place 3)
+      (.css $board "display" "")
+      (.css $board "display" "none"))
 
     (.removeClass $el place-classes)
     (.addClass $el (str "place-" place))
 
     (.html ($ (str "#" id " .name-1d96a")) (:user itm))
-    (.html ($ (str "#" id " .score-5aeae")) (:score itm))
-    (js/console.log (:score itm))
-
+    (.html ($ (str "#" id " .score-5aeae")) (util/format-number (:score itm)))
+    
     (draw-board! (str "canvas-" id) (:board itm) cell-size (:theme itm) rows-cutoff)
 
     ))
