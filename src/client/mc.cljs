@@ -1,9 +1,9 @@
 (ns client.mc
-	(:require-macros [hiccups.core :as hiccups])
+  (:require-macros [hiccups.core :as hiccups])
   (:require
     [cljs.reader :refer [read-string]]
     [client.socket :refer [socket]]
-		hiccups.runtime))
+    hiccups.runtime))
 
 (def $ js/$)
 
