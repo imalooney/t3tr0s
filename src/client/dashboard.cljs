@@ -204,6 +204,16 @@
   (let [data (read-string str-data)]
     (reset! leaders data)))
 
+(defn on-time-left
+  [total-seconds]
+  (let [m (js/Math.floor (/ total-seconds 60))
+        s (mod total-seconds 60)
+        s-str (if (< s 10) (str "0" s) s)
+        time-str (str m ":" s-str)]
+    (js/console.log m s s-str time-str)
+    (.html ($ ".time-left-eb709") (str "Time Left: " time-str))
+  ))
+
 ;;------------------------------------------------------------------------------
 ;; Page Initialization / Cleanup
 ;;------------------------------------------------------------------------------
@@ -218,7 +228,9 @@
   (.emit @socket "join-dashboard")
 
   (.on @socket "leader-update" on-leader-update)
+  (.on @socket "time-left" on-time-left)
 
+  (on-time-left 0)
   )
 
 (defn cleanup
@@ -227,5 +239,6 @@
   (.emit @socket "leave-dashboard")
 
   (.removeListener @socket "leader-update" on-leader-update)
+  (.removeListener @socket "time-left" on-time-left)
 
   )
