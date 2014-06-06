@@ -68,13 +68,23 @@
                      (:type msg))]
     (.append ($ "#chat-messages") (html msg))))
 
+(defn scroll-at-bottom?
+  "lets us know if the scroll is all the way to the bottom"
+  []
+  (let [chat (.getElementById js/document "chat-messages")
+        msg-height (.prop (.first ($ ".message")) "offsetHeight")
+        chat-visible-height (.-offsetHeight chat)
+        chat-total-height (.-scrollHeight chat)
+        scroll-position (.-scrollTop chat)]
+    (<=  (- chat-total-height chat-visible-height msg-height) scroll-position)))
+
 (defn scroll-chat-area
   "Scrolls the chat area to display the newest message"
-  []
+  [override]
   (let [chat-area ($ "#chat-messages")
         scroll-config (js-obj "scrollTop" (.prop chat-area "scrollHeight"))]
-    (.stop chat-area)
-    (.animate chat-area scroll-config)))
+    (if (or (scroll-at-bottom?) override)
+      (.animate chat-area scroll-config))))
 
 (defn submit-message!
   "adds a message, sends it, removes it and scrolls the chat area"
@@ -87,12 +97,13 @@
                      :msg msg})
       (send-message!)
       (clear-message!)
-      (scroll-chat-area))))
+      (scroll-chat-area true))))
 
 (defn on-new-message
   "Called when we receive a chat message from the server."
   [data]
-  (add-message! (read-string data)))
+  (add-message! (read-string data))
+  (scroll-chat-area false))
 
 (defn on-start-game
   "Called when we receive the go-ahead from the server to start the game."
@@ -105,7 +116,6 @@
   (aset js/location "hash" "#/battle-game")
 
   )
-
 ;;------------------------------------------------------------
 ;; Page initialization.
 ;;------------------------------------------------------------

@@ -5,9 +5,9 @@
   font-style: normal;
 }
 
-::-webkit-scrollbar {
-  background: transparent;
-}
+// ::-webkit-scrollbar {
+  // background: transparent;
+// }
 
 body {
   background-color: #111;
@@ -256,7 +256,7 @@ body {
 }
 
 #chat-input {
-  position: fixed;
+  position: relative;
   bottom: 0px;
   width: 800px;
 }
@@ -276,24 +276,25 @@ body {
 }
 
 #chat-messages {
-  padding-left: 20px;
   overflow-y: scroll;
-  height: 600px;
-  width: 740px;
+  height: 500px;
   position: relative;
 }
 
 #user {
-  font-size: 1.5em;
+  font-size: 1em;
 }
 
 .message {
-  padding-bottom: 10px;
+  margin: 0;
+  padding: 20px 0 20px 25px;
   border-bottom: 1px solid rgba(255,255,255,0.3);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .txt {
-  font-size: 1.2em;
+  font-size: 1em;
   color: #FFF;
 }
 
