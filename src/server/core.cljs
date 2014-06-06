@@ -175,7 +175,7 @@
 
   ; Merge in the updated data into the player structure.
   ; Also update the game id, so we know which players are in the current game.
-  (swap! players update-in [pid] merge data {:game @game-count})
+  (swap! players update-in [pid] merge data {:game @game-count :pid pid})
 
   )
 

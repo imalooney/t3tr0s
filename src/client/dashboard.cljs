@@ -210,7 +210,6 @@
         s (mod total-seconds 60)
         s-str (if (< s 10) (str "0" s) s)
         time-str (str m ":" s-str)]
-    (js/console.log m s s-str time-str)
     (.html ($ ".time-left-eb709") (str "Time Left: " time-str))
   ))
 
