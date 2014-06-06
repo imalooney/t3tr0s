@@ -116,6 +116,7 @@
 
         (.. io (to "game") (emit "time-left" s))
         (.. io (to "mc") (emit "time-left" s))
+        (.. io (to "dashboard") (emit "time-left" s))
         (.. io (to "lobby") (emit "start-game"))
 
         (if-not (zero? s)
