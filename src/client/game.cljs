@@ -1,7 +1,7 @@
 (ns client.game
-	(:require-macros [hiccups.core :as hiccups])
-	(:require
-		hiccups.runtime
+  (:require-macros [hiccups.core :as hiccups])
+  (:require
+    hiccups.runtime
     [client.socket :refer [socket]]
     client.game.core
     ))
@@ -13,42 +13,42 @@
 ;;------------------------------------------------------------
 
 (hiccups/defhtml game-html []
-	[:div.player-view
-		[:div#theme-options 
-			"Press keys 0-9 to change your theme."]
-		[:div#canvas-wrap
-			[:canvas#game-canvas]]
-		[:div.right-side
-			[:div#scoreboard
-				[:div.next-area
-					[:span.next-header "Next: "]
-					[:canvas#next-canvas]]
-				[:div.game-stats
-					[:div#score]
-					[:div#level]
-					[:div#lines]]]
-			[:div#theme "1984"]
-			[:div#theme-details "Electronika 60"]]
-		[:section#arena]])
+  [:div.player-view
+    [:div#theme-options 
+      "Press keys 0-9 to change your theme."]
+    [:div#canvas-wrap
+      [:canvas#game-canvas]]
+    [:div.right-side
+      [:div#scoreboard
+        [:div.next-area
+          [:span.next-header "Next: "]
+          [:canvas#next-canvas]]
+        [:div.game-stats
+          [:div#score]
+          [:div#level]
+          [:div#lines]]]
+      [:div#theme "1984"]
+      [:div#theme-details "Electronika 60"]]
+    [:section#arena]])
 
-(hiccups/defhtml game-html []
-	[:div.player-view
-		[:div#theme-options 
-			"Press keys 0-9 to change your theme."]
-		[:div#canvas-wrap
-			[:canvas#game-canvas]]
-		[:div.right-side
-			[:div#scoreboard
-				[:div.next-area
-					[:span.next-header "Next: "]
-					[:canvas#next-canvas]]
-				[:div.game-stats
-					[:div#score]
-					[:div#level]
-					[:div#lines]]]
-			[:div#theme "1984"]
-			[:div#theme-details "Electronika 60"]]
-		[:section#arena]])
+(hiccups/defhtml game-html2 []
+  [:div.player-view
+    [:div#theme-options 
+      "Press keys 0-9 to change your theme."]
+    [:div#canvas-wrap
+      [:canvas#game-canvas]]
+    [:div.right-side
+      [:div#scoreboard
+        [:div.next-area
+          [:span.next-header "Next: "]
+          [:canvas#next-canvas]]
+        [:div.game-stats
+          [:div#score]
+          [:div#level]
+          [:div#lines]]]
+      [:div#theme "1984"]
+      [:div#theme-details "Electronika 60"]]
+    [:section#arena]])
 
 (hiccups/defhtml countdown-html []
   [:h1#countdown "Connecting..."])
