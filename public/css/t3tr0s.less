@@ -1,11 +1,14 @@
 @font-face {
-  font-family: 'VT323';
-  src: url('VT323.woff') format("woff");
+  font-family: 'visitor1';
+  src: url('visitor1.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
 }
 
 body {
   background-color: #111;
-  font-family: 'VT323';
+  font-family: 'visitor1';
+  letter-spacing: 2px;
   overflow: hidden;
 }
 
@@ -15,7 +18,7 @@ body {
 
 #inner-container {
   margin: 30px auto;
-  width: 700px;
+  width: 800px;
 }
 
 //------------------------------------------------------------------------------
@@ -28,40 +31,58 @@ body {
   padding: 30px;
 }
 
-.lg-btn {
+.red-btn-2c9ab {
+  background: url('/img/send_button.jpg') no-repeat;
+  background-size: 179px auto;
   font-size: 40px;
-  width: 200px;
-  height: 75px;
+  width: 184px;
+  height: 92px;
+  margin-top: 40px;
 }
 
-/*********** MENU PAGE ***********/
+//------------------------------------------------------------------------------
+// Menu
+//------------------------------------------------------------------------------
 
-.logo {
-  margin: 50px 100px 0 100px;
+.logo-31d54 {
+  background: url('/img/t3tr0s_logo_850w.png') no-repeat;
+  background-size: 600px auto;
+  width: 600px;
+  height: 130px;
+  margin: 100px auto 0 auto;
 }
 
-/*********** LOGIN PAGE ***********/
+//------------------------------------------------------------------------------
+// Login
+//------------------------------------------------------------------------------
 
-.login {
-  padding: 100px;
-  font-size: 40px;
+.login-5983e {
+  padding: 70px;
+  font-size: 25px;
   text-align: center;
   color: #FFF;
-}
-
-.login-name {
-  margin: 50px;
-  font-size: 30px;
-  width: 300px;
-  height: 50px;
-}
-
-.login-container {
   margin: 0 auto;
+  width: 600px;
+}
+
+.input-4a3e3 {
+  float: left;
   width: 400px;
 }
 
-/*********** GAME PAGE ***********/
+.input-48f1f {
+  margin: 16px;
+  font-size: 50px;
+  width: 300px;
+  height: 50px;
+  color: #000;
+  background-color: #FFF;
+  padding: 20px 15px;
+}
+
+//------------------------------------------------------------------------------
+// Game
+//------------------------------------------------------------------------------
 
 #theme-options {
   color: white;
@@ -122,7 +143,9 @@ body {
   text-align: center;
 }
 
-/*********** CHAT PAGE ***********/
+//------------------------------------------------------------------------------
+// Chat
+//------------------------------------------------------------------------------
 
 #chat {
   color: #FFF;
@@ -152,13 +175,13 @@ body {
   height: 80px;
 }
 
-#submit {
-  width: 100px;
-  height: 80px;
-  background-color: #C00;
-  color: #FFF;
-  border-color: #D00;
-}
+// #submit {
+//   width: 100px;
+//   height: 80px;
+//   background-color: #C00;
+//   color: #FFF;
+//   border-color: #D00;
+// }
 
 #chat-messages {
   overflow-y: scroll;
