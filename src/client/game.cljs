@@ -63,7 +63,7 @@
         [:tr.tr-cf247
          [:td (str (+ i 1) ".")]
          [:td {:class (str "color-" (mod i 7))} (:user player)]
-         [:td (util/number-format (:score player))]
+         [:td (util/format-number (:score player))]
          [:td (:total-lines player)]])]]]
    [:button#game-over-btn.red-btn-2c9ab "LOBBY"]])
 
