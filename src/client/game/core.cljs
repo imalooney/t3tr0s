@@ -145,10 +145,14 @@
                   next-piece (:next-piece @state)]
               (when (or (not= board new-board)
                         (not= theme new-theme))
-                #_(if @battle
-                    (.emit @socket "board-update"
-                           (pr-str {:level (:level @state)
-                                    :board new-board})))
+
+                ; NOTE: Comment the following form out if we
+                ;       do not want to send the player screen to the server.
+                (if @battle
+                  (.emit @socket "update-player"
+                         (pr-str {:theme (:theme @state)
+                                  :board new-board})))
+
                 (draw-board! "game-canvas" new-board cell-size new-theme rows-cutoff)
                 (draw-board! "next-canvas" (next-piece-board next-piece) cell-size new-theme)
                 (if (:recording @vcr)
