@@ -334,10 +334,45 @@ body {
 // Dashboard
 //------------------------------------------------------------------------------
 
+@dashboardTotalWidth: 1200px;
+@bigBoardWidth: (@dashboardTotalWidth / 4) - 1px;
+@bigBoardPaddingRight: 120px;
+@littleBoardWidth: 110px;
+@bigBoardHeight: 40px;
+@littleBoardTop: @bigBoardHeight + 40px;
+@littleBoardHeight: 140px;
+@littleBoardRightPadding: 11.5px;
+@bigFontSize: 64px;
+@littleFontSize: 24px;
+@bigNumberFontSize: 64px;
+
+@littleNumberVerticalSeparation: 90px;
+
+@firstPlaceRed: #5388e4;
+@secondPlaceBlue: #da656e;
+@thirdPlaceGreen: #eccd59;
+@littleNumberGreen: #a1d846;
+
 .dashboard-0e330 {
   color: #fff;
-  width: 960px;
+  width: @dashboardTotalWidth;
   margin: 0 auto;
+}
+
+.header-d680b {
+  margin: 0 auto;
+  padding: 30px 0;
+  text-align: center;
+  width: @dashboardTotalWidth;
+}
+
+.title-d49ea {
+  color: #fff;
+  display: inline-block;
+  font-size: 48px;
+  margin: 0 0 0 24px;
+  padding: 0;
+  vertical-align: top;
 }
 
 .boards-ad07f {
@@ -348,151 +383,160 @@ body {
   position: absolute;
 }
 
-@dashboardWidth: 960px;
-@bigBoardWidth: 460px;
-@bigBoardHeight: 600px;
-@littleBoardWidth: 110px;
-@littleBoardTop: @bigBoardHeight + 40px;
-@littleBoardHeight: 140px;
-@littleBoardRightPadding: 11.5px;
-@bigFontSize: 42px;
-@littleFontSize: 24px;
-
 .board-a3a91.place-1 {
-  height: @bigBoardHeight;
-  width: @bigBoardWidth;
   left: 0px;
   top: 0px;
+  width: @bigBoardWidth;
   .transition(0.1s);
 }
 
 .board-a3a91.place-2 {
-  height: @bigBoardHeight;
-  width: @bigBoardWidth;
-  left: (@bigBoardWidth + 40px);
+  left: @bigBoardWidth;
   top: 0px;
+  width: @bigBoardWidth;
   .transition(0.1s);
 }
 
 .board-a3a91.place-3 {
-  height: @littleBoardHeight;
-  width: @littleBoardWidth;
-  left: 0px;
-  top: @littleBoardTop;
-  .transition(0.1s);
+  left: (2 * @bigBoardWidth);
+  top: 0px;
+  width: @bigBoardWidth;
+  .transition(0.1s);  
 }
 
 .board-a3a91.place-4 {
-  height: @littleBoardHeight;
-  width: @littleBoardWidth;
-  left: @littleBoardWidth + @littleBoardRightPadding;
-  top: @littleBoardTop;
+  left: (3 * @bigBoardWidth);
+  top: 0px;
   .transition(0.1s);
 }
 
 .board-a3a91.place-5 {
-  height: @littleBoardHeight;
-  width: @littleBoardWidth;
-  left: (2 * @littleBoardWidth) + (2 * @littleBoardRightPadding);
-  top: @littleBoardTop;
+  left: (3 * @bigBoardWidth);
+  top: @littleNumberVerticalSeparation;
   .transition(0.1s);
 }
 
 .board-a3a91.place-6 {
-  height: @littleBoardHeight;
-  width: @littleBoardWidth;
-  left: (3 * @littleBoardWidth) + (3 * @littleBoardRightPadding);
-  top: @littleBoardTop;
+  left: (3 * @bigBoardWidth);
+  top: (2 * @littleNumberVerticalSeparation);
   .transition(0.1s);
 }
+
 .board-a3a91.place-7 {
-  height: @littleBoardHeight;
-  width: @littleBoardWidth;
-  left: (4 * @littleBoardWidth) + (4 * @littleBoardRightPadding);
-  top: @littleBoardTop;
+  left: (3 * @bigBoardWidth);
+  top: (3 * @littleNumberVerticalSeparation);
   .transition(0.1s);
 }
 
 .board-a3a91.place-8 {
-  height: @littleBoardHeight;
-  width: @littleBoardWidth;
-  left: (5 * @littleBoardWidth) + (5 * @littleBoardRightPadding);
-  top: @littleBoardTop;
+  left: (3 * @bigBoardWidth);
+  top: (4 * @littleNumberVerticalSeparation);
   .transition(0.1s);
 }
+
 .board-a3a91.place-9 {
-  height: @littleBoardHeight;
-  width: @littleBoardWidth;
-  left: (6 * @littleBoardWidth) + (6 * @littleBoardRightPadding);
-  top: @littleBoardTop;
+  left: (3 * @bigBoardWidth);
+  top: (5 * @littleNumberVerticalSeparation);
   .transition(0.1s);
 }
 
 .board-a3a91.place-10 {
-  height: @littleBoardHeight;
-  width: @littleBoardWidth;
-  left: (7 * @littleBoardWidth) + (7 * @littleBoardRightPadding);
-  top: @littleBoardTop;
+  left: (3 * @bigBoardWidth);
+  top: (6 * @littleNumberVerticalSeparation);
   .transition(0.1s);
 }
 
+//------------------------------------------------------------------------------
+// Dashboard Numbers
+//------------------------------------------------------------------------------
+
 .num-2b782 {
+  background-color: @littleNumberGreen;
+  color: #000;
+  font-size: 32px;
+  left: (3 * @bigBoardWidth);
   position: absolute;
+
+  sup {
+    font-size: 18px;
+    margin-top: 4px;
+  }
+}
+
+.big-dcc7f {
+  height: 80px;
+  width: 80px;
 }
 
 .first-100e1 {
-  font-size: @bigFontSize;
+  .big-dcc7f;
+  background-color: @firstPlaceRed;
+  font-size: @bigNumberFontSize;
   left: 0px;
   top: 0px;
+
+  sup {
+    font-size: 24px;
+    margin-top: 4px;
+  }  
 }
 
 .second-e09e1 {
-  font-size: @bigFontSize;
-  left: (@bigBoardWidth + 40px);
+  .big-dcc7f;
+  background-color: @secondPlaceBlue;
+  font-size: @bigNumberFontSize;
+  left: @bigBoardWidth;
   top: 0px;
+
+  sup {
+    font-size: 24px;
+    margin-top: 4px;
+  }  
 }
 
 .third-deef68 {
-  top: @littleBoardTop;
+  .big-dcc7f;
+  background-color: @thirdPlaceGreen;
+  font-size: @bigNumberFontSize;
+  left: (2 * @bigBoardWidth);
+  top: 0px;
+
+  sup {
+    font-size: 24px;
+    margin-top: 4px;
+  }  
 }
 
 .fourth-a266b {
-  left: @littleBoardWidth + @littleBoardRightPadding;
-  top: @littleBoardTop;
+  top: 0px;
 }
 
 .fifth-96fe6 {
-  left: (2 * @littleBoardWidth) + (2 * @littleBoardRightPadding);
-  top: @littleBoardTop;
+  top: @littleNumberVerticalSeparation;
 }
 
 .sixth-fd905 {
-  left: (3 * @littleBoardWidth) + (3 * @littleBoardRightPadding);
-  top: @littleBoardTop;
+  top: (2 * @littleNumberVerticalSeparation);
 }
 
 .seventh-84a13 {
-  left: (4 * @littleBoardWidth) + (4 * @littleBoardRightPadding);
-  top: @littleBoardTop;
+  top: (3 * @littleNumberVerticalSeparation);
 }
 
 .eight-15b29 {
-  left: (5 * @littleBoardWidth) + (5 * @littleBoardRightPadding);
-  top: @littleBoardTop;
+  top: (4 * @littleNumberVerticalSeparation);
 }
 
 .ninth-780fc {
-  left: (6 * @littleBoardWidth) + (6 * @littleBoardRightPadding);
-  top: @littleBoardTop;
+  top: (5 * @littleNumberVerticalSeparation);
 }
 
 .tenth-34b19 {
-  left: (7 * @littleBoardWidth) + (7 * @littleBoardRightPadding);
-  top: @littleBoardTop;
+  top: (6 * @littleNumberVerticalSeparation);
 }
 
 .name-1d96a {
-  margin-left: 35px;
+  margin-left: 60px;
 }
 
 .score-5aeae {
@@ -510,18 +554,4 @@ body {
 .place-2 .name-1d96a {
   font-size: @bigFontSize;
   margin-left: 75px;
-}
-
-.place-10 .name-1d96a {
-  margin-left: 40px;
-}
-
-.board-45de4 {
-  border: 1px solid white;
-  height: 120px;
-}
-
-.place-1 .board-45de4, .place-2 .board-45de4 {
-  border: 1px solid white;
-  height: 560px;
 }
