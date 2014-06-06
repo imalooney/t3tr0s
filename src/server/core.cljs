@@ -2,7 +2,7 @@
   (:require-macros
     [cljs.core.async.macros :refer [go]])
   (:require
-    [cljs.core.async :refer [<! timeout alts! chan]]
+    [cljs.core.async :refer [<! timeout alts! close! chan]]
     [clojure.walk]
     [cljs.reader :refer [read-string]]
     [server.gif :refer [create-gif]]))
@@ -60,7 +60,7 @@
 
 (def quit-game-chan
   "Channel to close in order to halt the current game."
-  (atom (chan)))
+  (atom nil))
 
 (defn rank-players
   "Get players for the given game sorted by rank for the given mode."
@@ -84,8 +84,12 @@
   "Start a game."
   [io mode]
 
+
+  ; Create new quit channel for this game.
+  (reset! quit-game-chan (chan))
+
   ; Set the game mode.
-  (swap! game-mode mode)
+  (reset! game-mode mode)
 
   ; Update the game count to uniquely identify current game.
   (swap! game-count inc)
@@ -251,8 +255,13 @@
          #(.leave socket "mc"))
 
     ; Start the game
-    (.on socket "start-lines" #(go-go-game! io :line))
-    (.on socket "start-time" #(go-go-game! io :time))
+    #_(.on socket "start-lines" #(if-not @game-mode (go-go-game! io :line)))
+    (.on socket "start-time" #(if-not @game-mode (go-go-game! io :time)))
+
+    ; Stop the game.
+    (.on socket "stop-game"
+         #(if (and @game-mode @quit-game-chan)
+            (close! @quit-game-chan)))
 
     ))
 

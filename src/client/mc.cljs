@@ -8,36 +8,24 @@
 (def $ js/$)
 
 ;;------------------------------------------------------------
-;; Score Monitor page
+;; Stop Game page
 ;;------------------------------------------------------------
 
-(hiccups/defhtml score-html []
-	[:div#inner-container
-   [:div#chat
-    [:div#chat-messages]]])
+(hiccups/defhtml stop-html []
+	[:div#inner-container.login
+		[:div.login-container
+      [:button#submit-stop-game.lg-btn "Stop"]]])
 
-(hiccups/defhtml score-line-html
-  [{:keys [rank user color score]}]
-  [:p.message
-   [:span.txt rank]
-   [:span#user {:class (str "color-" color)} user]
-   [:span.txt score]])
+(declare init-start-page!)
 
-(defn on-score-update
-  "Callback for handling the score update."
-  [str-data]
-  (let [scores (read-string str-data)]
-    (.html ($ "#chat-messages")
-           (str (map score-line-html scores)))))
-
-(defn init-score-page!
-  "Initialize the score page."
+(defn init-stop-page!
+  "Initialize the start game page."
   []
-  (.html ($ "#main-container") (score-html))
+  (.html ($ "#main-container") (stop-html))
 
-  ; Update the score table when needed.
-  (.on @socket "score-update" on-score-update)
-  )
+  (.click ($ "#submit-stop-game")
+          #(do (.emit @socket "stop-game")
+               (init-start-page!))))
 
 ;;------------------------------------------------------------
 ;; Start Game page
@@ -54,12 +42,9 @@
   []
   (.html ($ "#main-container") (start-html))
 
-  (.click ($ "#submit-start-lines")
-          #(do (.emit @socket "start-lines")
-               (init-score-page!)))
   (.click ($ "#submit-start-time")
           #(do (.emit @socket "start-time")
-               (init-score-page!))))
+               (init-stop-page!))))
 
 ;;------------------------------------------------------------
 ;; Password page
@@ -76,7 +61,7 @@
   "Callback for handling the MC access grant."
   [str-data]
   (if-let [game-running (read-string str-data)]
-     (init-score-page!)
+     (init-stop-page!)
      (init-start-page!)))
 
 (defn init-password-page!
@@ -89,7 +74,7 @@
           #(.emit @socket "request-mc"
                   (.val ($ "#password"))))
 
-  ; Render either the score page or the start page
+  ; Render either the stop page or the start page
   ; when access as MC is granted.
   (.on @socket "grant-mc" on-grant-mc))
 
@@ -110,6 +95,5 @@
 
   ; Destroy socket listeners.
   (.removeListener @socket "grant-mc" on-grant-mc)
-  (.removeListener @socket "score-update" on-score-update)
 
   )
