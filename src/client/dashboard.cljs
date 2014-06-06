@@ -8,6 +8,8 @@
 ;; - hide empty boards that are not in the leaderboard 10
 ;; - more efficient board updating code?
 
+(declare board)
+
 (def $ js/jQuery)
 
 ;; TODO: move this to a util namespace
