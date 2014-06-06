@@ -1,7 +1,7 @@
 (ns client.menu
-	(:require-macros [hiccups.core :as hiccups])
-	(:require
-		hiccups.runtime))
+  (:require-macros [hiccups.core :as hiccups])
+  (:require
+    hiccups.runtime))
 
 (def $ js/$)
 
@@ -10,13 +10,11 @@
 ;;------------------------------------------------------------
 
 (hiccups/defhtml menu-html []
-	[:div#inner-container
-		[:img.logo {:src "img/t3tr0s_500w.png"}]
-		[:div
-			[:div.lg-btn-container
-				[:button#solo-btn.lg-btn "SOLO"]]
-			[:div.lg-btn-container
-				[:button#lobby-btn.lg-btn "LOBBY"]]]])
+  [:div#inner-container
+    [:div.logo-31d54]
+    [:div.menu-cd25d
+      [:button#solo-btn.green-btn-f67eb "SOLO"]
+      [:button#battle-btn.blue-btn-41e23 "BATTLE"]]])
 
 ;;------------------------------------------------------------
 ;; Page initialization.
