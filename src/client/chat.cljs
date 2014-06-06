@@ -79,8 +79,21 @@
       (clear-message!))))
 
 (defn on-new-message
+  "Called when we receive a chat message from the server."
   [data]
   (add-message! (read-string data)))
+
+(defn on-start-game
+  "Called when we receive the go-ahead from the server to start the game."
+  []
+
+  ; Join the "game" room to receive game-related messages.
+  (.emit @socket "join-game")
+
+  ; Navigate to the battle page.
+  (aset js/location "hash" "#/battle-game")
+
+  )
 
 ;;------------------------------------------------------------
 ;; Page initialization.
@@ -102,6 +115,8 @@
   ;; Listen to chat updates.
   (.on @socket "new-message" on-new-message)
 
+  (.on @socket "start-game" on-start-game)
+
   )
 
 (defn cleanup
@@ -112,5 +127,8 @@
 
   ;; Ignore chat updates.
   (.removeListener @socket "new-message" on-new-message)
+
+  ;; Ignore start game message.
+  (.removeListener @socket "start-game" on-start-game)
 
   )
