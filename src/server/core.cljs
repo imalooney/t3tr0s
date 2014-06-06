@@ -228,6 +228,10 @@
     (.on socket "join-game" #(.join socket "game"))
     (.on socket "leave-game" #(.leave socket "game"))
 
+    ; Join/leave the dashboard.
+    (.on socket "join-dashboard" #(.join socket "dashboard"))
+    (.on socket "leave-dashboard" #(.leave socket "dashboard"))
+
     ; Receive the update from the player.
     (.on socket "update-player"
          #(on-update-player (read-string %) pid socket io))

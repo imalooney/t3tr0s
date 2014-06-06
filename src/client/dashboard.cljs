@@ -1,6 +1,7 @@
 (ns client.dashboard
   (:require-macros [hiccups.core :as hiccups])
   (:require
+    [cljs.reader :refer [read-string]]
     [client.socket :refer [socket]]
     hiccups.runtime))
 
@@ -216,11 +217,11 @@
 ;; Socket Events
 ;;------------------------------------------------------------------------------
 
-; (defn send-login!
-;   "Send the login information to the server."
-;   []
-;   (.emit @socket "update-name" (pr-str {:user (get-username)
-;                                         :color (get-color)})))
+(defn on-leader-update
+  [str-data]
+  (let [data (read-string str-data)]
+    nil)
+  )
 
 ;;------------------------------------------------------------------------------
 ;; Events
@@ -245,8 +246,18 @@
   (.html ($ "#main-container") (dashboard-html))
   (add-events)
   (swap! leaders identity)
+
+  (.emit @socket "join-dashboard")
+
+  (.on @socket "leader-update" on-leader-update)
+
   )
 
 (defn cleanup
   []
-  nil)
+
+  (.emit @socket "leave-dashboard")
+
+  (.removeListener @socket "leader-update" on-leader-update)
+
+  )
