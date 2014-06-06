@@ -119,6 +119,10 @@
         (.. io (to "dashboard") (emit "time-left" s))
         (.. io (to "lobby") (emit "start-game"))
 
+        ; Send top ranked players to the MC.
+        (let [ranks (take 10 (rank-players @game-count @game-mode))]
+          (.. io (to "dashboard") (emit "leader-update" (pr-str ranks))))
+
         (if-not (zero? s)
 
           ; Wait for either the timer or the quit channel.
@@ -172,10 +176,6 @@
   ; Merge in the updated data into the player structure.
   ; Also update the game id, so we know which players are in the current game.
   (swap! players update-in [pid] merge data {:game @game-count})
-
-  ; Send top ranked players to the MC.
-  (let [ranks (take 10 (rank-players @game-count @game-mode))]
-    (.. io (to "dashboard") (emit "leader-update" (pr-str ranks))))
 
   )
 
