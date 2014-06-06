@@ -23,6 +23,8 @@
 (defn init
   []
 
+  (client.core/set-color-background!)
+
   ; Initialize page content
   (.html ($ "#main-container") (menu-html))
 

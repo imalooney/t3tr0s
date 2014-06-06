@@ -239,6 +239,7 @@
 ;;------------------------------------------------------------------------------
 
 (defn init []
+  (client.core/set-bw-background!)
   (.html ($ "#main-container") (dashboard-html))
   (add-events)
   (swap! leaders identity)

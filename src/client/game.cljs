@@ -82,6 +82,8 @@
 (defn init
   []
 
+  (client.core/set-bw-background!)
+
   ; NOTE: we cannot join a BATTLE-GAME by simply navigating
   ; to its URL.  It must be joined from the lobby, where
   ; we emit a "join-game" message.

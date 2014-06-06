@@ -103,6 +103,8 @@
   "Starts the chat page"
   []
 
+  (client.core/set-bw-background!)
+
   (.html ($ "#main-container") (chat-html))
 
   ;; Add listeners
