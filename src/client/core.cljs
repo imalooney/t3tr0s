@@ -11,9 +11,21 @@
 
 (enable-console-print!)
 
-;;------------------------------------------------------------
+(def $ js/jQuery)
+
+(defn set-color-background! []
+  (doto ($ "body")
+    (.removeClass "bw-e2019")
+    (.addClass "color-c025c")))
+
+(defn set-bw-background! []
+  (doto ($ "body")
+    (.removeClass "color-c025c")
+    (.addClass "bw-e2019")))
+
+;;------------------------------------------------------------------------------
 ;; URL routing
-;;------------------------------------------------------------
+;;------------------------------------------------------------------------------
 
 (def previous-hash (atom nil))
 

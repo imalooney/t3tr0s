@@ -15,12 +15,14 @@
 ;;------------------------------------------------------------------------------
 
 (hiccups/defhtml login-html []
-  [:div#inner-container.login
-    [:div.login-container
+  [:div#inner-container
+    [:div.logo-31d54]
+    [:div.login-5983e
       [:form
-        [:label "What is your name?"]
-        [:input#login.login-name {:type "text"}]
-        [:button#submit.lg-btn "OK"]]]])
+        [:div.input-4a3e3
+          [:label.label-66a3b "What is your name?"]
+          [:input#login.input-48f1f {:type "text"}]]
+        [:button#submit.red-btn-2c9ab "OK"]]]])
 
 ;;------------------------------------------------------------------------------
 ;; Username storage.
@@ -71,6 +73,8 @@
 ;;------------------------------------------------------------------------------
 
 (defn init []
+
+  (client.core/set-color-background!)
 
   ; Initialize page content
   (.html ($ "#main-container") (login-html))

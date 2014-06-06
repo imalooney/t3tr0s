@@ -330,6 +330,22 @@
     (swap! state assoc :position [x ny])
     (lock-piece!)))
 
+(defn change-theme!
+  "Changes the boards theme"
+  [theme year platform event]
+  (.preventDefault event)
+  (swap! state assoc :theme theme)
+  (.html ($ "#theme") year)
+  (.html ($ "#theme-details") platform)
+  (aset js/localStorage "theme" theme))
+
+(defn load-theme!
+  "Loads a theme if theres one saved in localStorage"
+  []
+  (if-let [theme (aget js/localStorage "theme")]
+    (swap! state assoc :theme theme)
+    ""))
+
 (defn add-key-events
   "Add all the key inputs."
   []
@@ -354,57 +370,16 @@
         key-name #(-> % .-keyCode key-names)
         key-down (fn [e]
                    (case (key-name e)
-                     :one (do
-                            (swap! state assoc :theme 0) 
-                            (.preventDefault e)
-                            (.html ($ "#theme") "1984")
-                            (.html ($ "#theme-details") "Electronika 60"))
-                     :two (do 
-                            (swap! state assoc :theme 1) 
-                            (.preventDefault e)
-                            (.html ($ "#theme") "1986")
-                            (.html ($ "#theme-details") "MS DOS"))
-                     :three (do 
-                              (swap! state assoc :theme 2) 
-                              (.preventDefault e)
-                              (.html ($ "#theme") "1986")
-                              (.html ($ "#theme-details") "Tengen/Atari Arcade"))
-                     :four (do 
-                             (swap! state assoc :theme 3) 
-                             (.preventDefault e)
-                             (.html ($ "#theme") "1989")
-                             (.html ($ "#theme-details") "Gameboy"))
-                     :five (do 
-                             (swap! state assoc :theme 4) 
-                             (.preventDefault e)
-                             (.html ($ "#theme") "1989")
-                             (.html ($ "#theme-details") "NES"))
-                     :six (do 
-                            (swap! state assoc :theme 5) 
-                            (.preventDefault e)
-                            (.html ($ "#theme") "1989")
-                            (.html ($ "#theme-details") "Sega Genesis"))
-                     :seven (do 
-                              (swap! state assoc :theme 6) 
-                              (.preventDefault e)
-                              (.html ($ "#theme") "1998")
-                              (.html ($ "#theme-details") "Gameboy color"))
-                     ;; TODO: Reorder themes here
-                     :eight (do 
-                              (swap! state assoc :theme 7) 
-                              (.preventDefault e)
-                              (.html ($ "#theme") "2000")
-                              (.html ($ "#theme-details") "TI-83"))
-                     :nine (do 
-                             (swap! state assoc :theme 8) 
-                             (.preventDefault e)
-                             (.html ($ "#theme") "2002")
-                             (.html ($ "#theme-details") "Flash"))
-                     :zero (do 
-                             (swap! state assoc :theme 9) 
-                             (.preventDefault e)
-                             (.html ($ "#theme") "2012")
-                             (.html ($ "#theme-details") "Facebook"))
+                     :one   (change-theme! 0 "1984" "Electronika 60" e)
+                     :two   (change-theme! 1 "1986" "MS DOS" e)
+                     :three (change-theme! 2 "1986" "Tengen/Atari Arcade" e)
+                     :four  (change-theme! 3 "1989" "Gameboy" e)
+                     :five  (change-theme! 4 "1989" "NES" e)
+                     :six   (change-theme! 5 "1989" "Sega Genesis" e)
+                     :seven (change-theme! 6 "1998" "Gameboy color" e)
+                     :eight (change-theme! 7 "2000" "TI-83" e)
+                     :nine  (change-theme! 8 "2002" "Flash" e)
+                     :zero  (change-theme! 9 "2012" "Facebook" e)
                      nil)
                    (if (:piece @state)
                      (case (key-name e)
@@ -463,7 +438,8 @@
 (defn init []
 
   (init-state!)
-
+  (load-theme!)
+    
   (size-canvas! "game-canvas" empty-board cell-size rows-cutoff)
   (size-canvas! "next-canvas" (next-piece-board) cell-size)
 

@@ -13,11 +13,13 @@
 
 (hiccups/defhtml chat-html []
 	[:div#inner-container
-   [:div#chat
+    [:div.chat-logo-e38e3
+      [:img {:src "/../../img/t3tr0s_logo_200w.png" :width "160px"}]
+      [:span.span-4e536 "Waiting to play..."]]
     [:div#chat-messages]
     [:div#chat-input
-     [:input#msg {:type "text" :placeholder "Type to chat"}]
-     [:input#submit {:type "submit" :value "Send"}]]]])
+      [:input#msg {:type "text" :placeholder "Type to chat..."}]
+      [:input#submit.red-btn-2c9ab {:type "submit" :value "Send"}]]])
 
 (hiccups/defhtml chat-msg-html
   [{:keys [user color msg]}]
@@ -66,8 +68,16 @@
                      (:type msg))]
     (.append ($ "#chat-messages") (html msg))))
 
+(defn scroll-chat-area
+  "Scrolls the chat area to display the newest message"
+  []
+  (let [chat-area ($ "#chat-messages")
+        scroll-config (js-obj "scrollTop" (.prop chat-area "scrollHeight"))]
+    (.stop chat-area)
+    (.animate chat-area scroll-config)))
+
 (defn submit-message!
-  "adds a message, sends it and then removes it"
+  "adds a message, sends it, removes it and scrolls the chat area"
   []
   (let [msg (get-message)]
     (when-not (= msg "")
@@ -76,7 +86,8 @@
                      :color (get-color)
                      :msg msg})
       (send-message!)
-      (clear-message!))))
+      (clear-message!)
+      (scroll-chat-area))))
 
 (defn on-new-message
   "Called when we receive a chat message from the server."
@@ -102,6 +113,8 @@
 (defn init
   "Starts the chat page"
   []
+
+  (client.core/set-bw-background!)
 
   (.html ($ "#main-container") (chat-html))
 

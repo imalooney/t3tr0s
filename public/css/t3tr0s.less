@@ -1,12 +1,33 @@
 @font-face {
-  font-family: 'VT323';
-  src: url('VT323.woff') format("woff");
+  font-family: 'visitor1';
+  src: url('visitor1.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+::-webkit-scrollbar {
+  background: transparent;
 }
 
 body {
   background-color: #111;
-  font-family: 'VT323';
+  font-family: 'visitor1';
+  letter-spacing: 2px;
   overflow: hidden;
+}
+
+.color-c025c {
+  background-image: url("/img/t3tr0s_color_bg.png");
+  background-repeat: repeat-x;
+  background-position: bottom;
+  background-attachment: fixed;
+}
+
+.bw-e2019 {
+  background-image: url("/img/t3tr0s_bw_bg.png");
+  background-repeat: repeat-x;
+  background-position: bottom;
+  background-attachment: fixed;
 }
 
 #main-container {
@@ -15,7 +36,7 @@ body {
 
 #inner-container {
   margin: 30px auto;
-  width: 700px;
+  width: 800px;
 }
 
 //------------------------------------------------------------------------------
@@ -28,40 +49,84 @@ body {
   padding: 30px;
 }
 
-.lg-btn {
+.red-btn-2c9ab {
+  background: url('/img/send_button.jpg') no-repeat;
+  background-size: 179px auto;
   font-size: 40px;
-  width: 200px;
-  height: 75px;
-}
-
-/*********** MENU PAGE ***********/
-
-.logo {
-  margin: 50px 100px 0 100px;
-}
-
-/*********** LOGIN PAGE ***********/
-
-.login {
-  padding: 100px;
-  font-size: 40px;
-  text-align: center;
+  width: 184px;
+  height: 92px;
+  margin-top: 40px;
   color: #FFF;
 }
 
-.login-name {
-  margin: 50px;
-  font-size: 30px;
-  width: 300px;
-  height: 50px;
+.blue-btn-41e23 {
+  background: url('/img/battle_button.jpg') no-repeat;
+  background-size: 179px auto;
+  font-size: 40px;
+  width: 184px;
+  height: 92px;
+  margin: 30px;
+  color: #FFF;
 }
 
-.login-container {
+.green-btn-f67eb {
+  background: url('/img/solo_button.jpg') no-repeat;
+  background-size: 179px auto;
+  font-size: 40px;
+  width: 184px;
+  height: 92px;
+  margin: 30px;
+  color: #FFF;
+}
+
+//------------------------------------------------------------------------------
+// Menu
+//------------------------------------------------------------------------------
+
+.logo-31d54 {
+  background: url('/img/t3tr0s_logo_850w.png') no-repeat;
+  background-size: 600px auto;
+  width: 600px;
+  height: 130px;
+  margin: 100px auto 0 auto;
+}
+
+.menu-cd25d {
+  margin: 70px auto;
+  width: 500px;
+}
+
+//------------------------------------------------------------------------------
+// Login
+//------------------------------------------------------------------------------
+
+.login-5983e {
+  padding: 70px;
+  font-size: 25px;
+  text-align: center;
+  color: #FFF;
   margin: 0 auto;
+  width: 600px;
+}
+
+.input-4a3e3 {
+  float: left;
   width: 400px;
 }
 
-/*********** GAME PAGE ***********/
+.input-48f1f {
+  margin: 16px;
+  font-size: 50px;
+  width: 300px;
+  height: 50px;
+  color: #111;
+  background-color: #FFF;
+  padding: 20px 15px;
+}
+
+//------------------------------------------------------------------------------
+// Game
+//------------------------------------------------------------------------------
 
 #countdown {
   text-align: center;
@@ -80,10 +145,11 @@ body {
   margin:0 auto;
 }
 
-#canvas-wrap {
+.wrap-3b65f {
   float: left;
-  padding: 18px;
-  background-color: #444;
+  padding: 10px;
+  background-color: #fff;
+  .box-shadow(10px 10px 0px 0px rgba(66, 66, 66, 0.5));
 }
 
 .right-side {
@@ -128,7 +194,20 @@ body {
   text-align: center;
 }
 
-/*********** CHAT PAGE ***********/
+//------------------------------------------------------------------------------
+// Chat
+//------------------------------------------------------------------------------
+
+.chat-logo-e38e3 {
+  color: #FFF;
+  font-size: 30px;
+  border-bottom: 2px solid rgba(255,255,255,0.5);
+  padding-bottom: 20px;
+}
+
+.span-4e536 {
+  margin-left: 20px;
+}
 
 #chat {
   color: #FFF;
@@ -141,35 +220,28 @@ body {
 #chat-input {
   position: fixed;
   bottom: 0px;
-  width: 700px;
+  width: 800px;
 }
 
 #chat-input > * {
-  padding: 0;
   margin: 0;
   border: 0;
-  font-size: 2em;
-  border: 5px inset;
-  box-sizing: border-box;
 }
 
 #msg {
-  width: 600px;
-  height: 80px;
-}
-
-#submit {
-  width: 100px;
-  height: 80px;
-  background-color: #C00;
-  color: #FFF;
-  border-color: #D00;
+  width: 500px;
+  font-size: 30px;
+  color: #111;
+  padding: 20px 20px;
+  height: 50px;
+  margin: 16px;
 }
 
 #chat-messages {
+  padding-left: 20px;
   overflow-y: scroll;
   height: 600px;
-  width: 700px;
+  width: 740px;
   position: relative;
 }
 
@@ -177,30 +249,36 @@ body {
   font-size: 1.5em;
 }
 
+.message {
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.3);
+}
+
 .txt {
   font-size: 1.2em;
+  color: #FFF;
 }
 
 .color-0 {
-  color: #9100FE; /* purple */
+  color: #4680e3; /* blue */
 }
 .color-1 {
-  color: #8CFFFF; /* turquoise */
+  color: #c64c57; /* red */
 }
 .color-2 {
-  color: #ECA900; /* orange */
+  color: #acdc5a; /* green */
 }
 .color-3 {
-  color: #0000DD; /* blue */
+  color: #f7d252; /* yellow */
 }
 .color-4 {
-  color: #8EFF25; /* green */
+  color: #cc6fc4; /* purple */
 }
 .color-5 {
-  color: #DD0000; /* red */
+  color: #63d1fb; /* cyan */
 }
 .color-6 {
-  color: #FFFF0A; /* yellow */
+  color: #f5a03e; /* orange */
 }
 
 //------------------------------------------------------------------------------
@@ -218,7 +296,6 @@ body {
 }
 
 .board-a3a91 {
-  border: 1px solid white;
   position: absolute;
 }
 
@@ -226,9 +303,11 @@ body {
 @bigBoardWidth: 460px;
 @bigBoardHeight: 600px;
 @littleBoardWidth: 110px;
-@littleBoardTop: (@bigBoardHeight + 20px);
+@littleBoardTop: @bigBoardHeight + 40px;
 @littleBoardHeight: 140px;
 @littleBoardRightPadding: 11.5px;
+@bigFontSize: 42px;
+@littleFontSize: 24px;
 
 .board-a3a91.place-1 {
   height: @bigBoardHeight;
@@ -313,50 +392,87 @@ body {
 }
 
 .first-100e1 {
+  font-size: @bigFontSize;
   left: 0px;
   top: 0px;
 }
 
 .second-e09e1 {
+  font-size: @bigFontSize;
   left: (@bigBoardWidth + 40px);
   top: 0px;
 }
 
 .third-deef68 {
-  top: @bigBoardHeight;
+  top: @littleBoardTop;
 }
 
 .fourth-a266b {
   left: @littleBoardWidth + @littleBoardRightPadding;
-  top: @bigBoardHeight;
+  top: @littleBoardTop;
 }
 
 .fifth-96fe6 {
   left: (2 * @littleBoardWidth) + (2 * @littleBoardRightPadding);
-  top: @bigBoardHeight;
+  top: @littleBoardTop;
 }
 
 .sixth-fd905 {
   left: (3 * @littleBoardWidth) + (3 * @littleBoardRightPadding);
-  top: @bigBoardHeight;
+  top: @littleBoardTop;
 }
 
 .seventh-84a13 {
   left: (4 * @littleBoardWidth) + (4 * @littleBoardRightPadding);
-  top: @bigBoardHeight;
+  top: @littleBoardTop;
 }
 
 .eight-15b29 {
   left: (5 * @littleBoardWidth) + (5 * @littleBoardRightPadding);
-  top: @bigBoardHeight;
+  top: @littleBoardTop;
 }
 
 .ninth-780fc {
   left: (6 * @littleBoardWidth) + (6 * @littleBoardRightPadding);
-  top: @bigBoardHeight;
+  top: @littleBoardTop;
 }
 
 .tenth-34b19 {
   left: (7 * @littleBoardWidth) + (7 * @littleBoardRightPadding);
-  top: @bigBoardHeight;
+  top: @littleBoardTop;
+}
+
+.name-1d96a {
+  margin-left: 35px;
+}
+
+.score-5aeae {
+  bottom: -18px;
+  margin-top: 40px;
+  position: absolute;
+  right: 0px;
+}
+
+.place-1 .name-1d96a {
+  font-size: @bigFontSize;
+  margin-left: 60px;
+}
+
+.place-2 .name-1d96a {
+  font-size: @bigFontSize;
+  margin-left: 75px;
+}
+
+.place-10 .name-1d96a {
+  margin-left: 40px;
+}
+
+.board-45de4 {
+  border: 1px solid white;
+  height: 120px;
+}
+
+.place-1 .board-45de4, .place-2 .board-45de4 {
+  border: 1px solid white;
+  height: 560px;
 }
