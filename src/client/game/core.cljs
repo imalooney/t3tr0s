@@ -41,6 +41,22 @@
 ; alias the jquery variable
 (def $ js/$)
 
+;;------------------------------------------------------------------------------
+;; Themes
+;;------------------------------------------------------------------------------
+
+(def themes {
+  0 {:year "1984" :platform "Electronika 60"}
+  1 {:year "1986" :platform "MS DOS"}
+  2 {:year "1986" :platform "Tengen/Atari Arcade"}
+  3 {:year "1989" :platform "Gameboy"}
+  4 {:year "1989" :platform "NES"}
+  5 {:year "1989" :platform "Sega Genesis"}
+  6 {:year "1998" :platform "Gameboy color"}
+  7 {:year "2000" :platform "TI-83"}
+  8 {:year "2002" :platform "Flash"}
+  9 {:year "2012" :platform "Facebook"}})
+
 ;;------------------------------------------------------------
 ;; STATE OF THE GAME
 ;;------------------------------------------------------------
@@ -52,6 +68,14 @@
 (def state
   "The state of the game."
   (atom nil))
+
+(defn- update-theme [_ _ _ new-state]
+  (let [theme-num (:theme new-state)
+        theme (get themes theme-num)]
+    (.html ($ "#theme") (:year theme))
+    (.html ($ "#theme-details") (:platform theme))))
+
+(add-watch state :theme-change update-theme)
 
 (defn init-state!
   "Set the initial state of the game."
@@ -335,16 +359,15 @@
   [theme year platform event]
   (.preventDefault event)
   (swap! state assoc :theme theme)
-  (.html ($ "#theme") year)
-  (.html ($ "#theme-details") platform)
+  ;; TODO: set this in the atom watcher?
   (aset js/localStorage "theme" theme))
 
 (defn load-theme!
   "Loads a theme if theres one saved in localStorage"
   []
   (if-let [theme (aget js/localStorage "theme")]
-    (swap! state assoc :theme theme)
-    ""))
+    (swap! state assoc :theme (int theme))
+    "")) ;; TODO: why is this empty string returning here?
 
 (defn add-key-events
   "Add all the key inputs."
@@ -370,6 +393,7 @@
         key-name #(-> % .-keyCode key-names)
         key-down (fn [e]
                    (case (key-name e)
+                    ;; TODO: remove this - replace with themes value
                      :one   (change-theme! 0 "1984" "Electronika 60" e)
                      :two   (change-theme! 1 "1986" "MS DOS" e)
                      :three (change-theme! 2 "1986" "Tengen/Atari Arcade" e)
@@ -449,14 +473,10 @@
   (go-go-gravity!)
 
   (display-points!)
-  (try-publish-score!)
+  (try-publish-score!))
 
-  )
 
 (defn cleanup []
-
   (swap! state assoc :quit true)
   (if (:quit-chan @state)
-    (close! (:quit-chan @state)))
-
-  )
+    (close! (:quit-chan @state))))

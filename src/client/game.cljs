@@ -14,42 +14,27 @@
 ;;------------------------------------------------------------
 
 (hiccups/defhtml game-html []
+  [:div.top-62e29
+    [:img {:src "/img/t3tr0s_logo_200w.png" :alt ""}]]
   [:div.player-view
-    [:div#theme-options 
-      "Press keys 0-9 to change your theme."]
     [:div.wrap-3b65f
       [:canvas#game-canvas]]
-    [:div.right-side
-      [:div#scoreboard
-        [:div.next-area
-          [:span.next-header "Next: "]
+    [:div.right-1d870
+      [:div.scoreboard-d49ce
+        [:div.left-5c06b
+          [:div.next-df9e7 "Next"]
           [:canvas#next-canvas]]
-        [:div.game-stats
-          [:div#score]
-          [:div#level]
-          [:div#lines]]]
-      [:div#theme "1984"]
-      [:div#theme-details "Electronika 60"]]
+        [:div.right-6aa51
+          [:div#score.push-down-e2e2a]
+          [:div#level.push-down-e2e2a]
+          [:div#lines]]
+        [:div.clr-22ff3]]
+      [:div.change-theme-6bd50 "Press keys 0-9 to change your theme"]
+      [:div#theme]
+      [:div#theme-details]]
+      ; [:div#theme "1984"]
+      ; [:div#theme-details "Electronika 60"]]
     [:section#arena]])
-
-; (hiccups/defhtml game-html2 []
-;   [:div.player-view
-;     [:div#theme-options 
-;       "Press keys 0-9 to change your theme."]
-;     [:div#canvas-wrap
-;       [:canvas#game-canvas]]
-;     [:div.right-side
-;       [:div#scoreboard
-;         [:div.next-area
-;           [:span.next-header "Next: "]
-;           [:canvas#next-canvas]]
-;         [:div.game-stats
-;           [:div#score]
-;           [:div#level]
-;           [:div#lines]]]
-;       [:div#theme "1984"]
-;       [:div#theme-details "Electronika 60"]]
-;     [:section#arena]])
 
 (hiccups/defhtml countdown-html []
   [:h1#countdown "Connecting..."])
