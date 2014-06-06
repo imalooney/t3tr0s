@@ -419,7 +419,7 @@
                  (when-not (:quit @state)
                    (case (key-name e)
                      :down  (put! down-chan false)
-                     :shift (toggle-record!)
+                     ;:shift (toggle-record!)
                      nil)))]
 
     ; Add key events
