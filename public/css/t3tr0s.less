@@ -343,7 +343,6 @@ body {
 @littleBoardHeight: 140px;
 @littleBoardRightPadding: 11.5px;
 @littleFontSize: 24px;
-@bigNumberFontSize: 64px;
 
 @rightSideVerticalSeparation: 120px;
 
@@ -455,25 +454,42 @@ body {
   font-size: 32px;
   left: (3 * @bigBoardWidth);
   position: absolute;
-  height: 50px;
-  width: 50px;
+  height: 52px;
+  width: 52px;
+}
 
-  sup {
-    font-size: 16px;
-    margin-top: 4px;
-  }
+.number-86f89 {
+  display: inline-block;
+  margin-top: 12px;
+  margin-left: 4px;
+}
+
+.sup-0f414 {
+  display: inline-block;
+  font-size: 15px;
+  margin-top: 18px;
+  vertical-align: top;
 }
 
 .first-100e1, .second-e09e1, .third-deef68 {
-  font-size: @bigNumberFontSize;
   height: 80px;
   top: 0px;
   width: 80px;
 
-  sup {
+  .sup-0f414 {
     font-size: 24px;
     margin-top: 4px;
   }
+}
+
+.first-100e1 .number-86f89, .second-e09e1 .number-86f89, .third-deef68 .number-86f89 {
+  font-size: 64px;
+}
+
+.first-100e1 .sup-0f414, .second-e09e1 .sup-0f414, .third-deef68 .sup-0f414 {
+  font-size: 24px;
+  margin-top: 26px;
+  vertical-align: top;
 }
 
 .first-100e1 {
@@ -517,6 +533,11 @@ body {
 
 .tenth-34b19 {
   top: (6 * @rightSideVerticalSeparation);
+
+  .number-86f89 {
+    font-size: 28px;
+    margin-left: 0px;
+  }
 }
 
 .name-1d96a {

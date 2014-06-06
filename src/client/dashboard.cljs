@@ -98,16 +98,36 @@
     [:button#btn2 "Test 2"]
     [:h2.time-left-eb709 "Time Left: 2:32"]
     [:div#boardsContainer.boards-ad07f
-      [:div.num-2b782.first-100e1 "1" [:sup "st"]]
-      [:div.num-2b782.second-e09e1 "2" [:sup "nd"]]
-      [:div.num-2b782.third-deef68 "3" [:sup "rd"]]
-      [:div.num-2b782.fourth-a266b "4" [:sup "th"]]
-      [:div.num-2b782.fifth-96fe6 "5" [:sup "th"]]
-      [:div.num-2b782.sixth-fd905 "6" [:sup "th"]]
-      [:div.num-2b782.seventh-84a13 "7" [:sup "th"]]
-      [:div.num-2b782.eight-15b29 "8" [:sup "th"]]
-      [:div.num-2b782.ninth-780fc "9" [:sup "th"]]
-      [:div.num-2b782.tenth-34b19 "10" [:sup "th"]]]])
+      [:div.num-2b782.first-100e1
+        [:span.number-86f89 "1"]
+        [:span.sup-0f414 "st"]]
+      [:div.num-2b782.second-e09e1
+        [:span.number-86f89 "2"]
+        [:span.sup-0f414 "nd"]]
+      [:div.num-2b782.third-deef68 
+        [:span.number-86f89 "3"]
+        [:span.sup-0f414 "rd"]]
+      [:div.num-2b782.fourth-a266b
+        [:span.number-86f89 "4"]
+        [:span.sup-0f414 "th"]]
+      [:div.num-2b782.fifth-96fe6
+        [:span.number-86f89 "5"]
+        [:span.sup-0f414 "th"]]
+      [:div.num-2b782.sixth-fd905
+        [:span.number-86f89 "6"]
+        [:span.sup-0f414 "th"]]
+      [:div.num-2b782.seventh-84a13
+        [:span.number-86f89 "7"]
+        [:span.sup-0f414 "th"]]
+      [:div.num-2b782.eight-15b29
+        [:span.number-86f89 "8"]
+        [:span.sup-0f414 "th"]]
+      [:div.num-2b782.ninth-780fc
+        [:span.number-86f89 "9"]
+        [:span.sup-0f414 "th"]]
+      [:div.num-2b782.tenth-34b19
+        [:span.number-86f89 "10"]
+        [:span.sup-0f414 "th"]]]])
 
 ;;------------------------------------------------------------------------------
 ;; Socket Events
