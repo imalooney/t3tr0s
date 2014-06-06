@@ -66,8 +66,16 @@
                      (:type msg))]
     (.append ($ "#chat-messages") (html msg))))
 
+(defn scroll-chat-area
+  "Scrolls the chat area to display the newest message"
+  []
+  (let [chat-area ($ "#chat-messages")
+        scroll-config (js-obj "scrollTop" (.prop chat-area "scrollHeight"))]
+    (.stop chat-area)
+    (.animate chat-area scroll-config)))
+
 (defn submit-message!
-  "adds a message, sends it and then removes it"
+  "adds a message, sends it, removes it and scrolls the chat area"
   []
   (let [msg (get-message)]
     (when-not (= msg "")
@@ -76,7 +84,8 @@
                      :color (get-color)
                      :msg msg})
       (send-message!)
-      (clear-message!))))
+      (clear-message!)
+      (scroll-chat-area))))
 
 (defn on-new-message
   "Called when we receive a chat message from the server."
