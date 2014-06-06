@@ -12,9 +12,10 @@
 ;;------------------------------------------------------------
 
 (hiccups/defhtml stop-html []
-	[:div#inner-container.login
-		[:div.login-container
-      [:button#submit-stop-game.lg-btn "Stop"]]])
+  [:div#inner-container
+    [:div.login-5983e
+      [:form
+        [:button#submit.red-btn-2c9ab "STOP"]]]])
 
 (declare init-start-page!)
 
@@ -23,7 +24,7 @@
   []
   (.html ($ "#main-container") (stop-html))
 
-  (.click ($ "#submit-stop-game")
+  (.click ($ "#submit")
           #(do (.emit @socket "stop-game")
                (init-start-page!))))
 
@@ -32,17 +33,17 @@
 ;;------------------------------------------------------------
 
 (hiccups/defhtml start-html []
-	[:div#inner-container.login
-		[:div.login-container
-			[:button#submit-start-lines.lg-btn "Start - 40 lines"]
-      [:button#submit-start-time.lg-btn "Start - 5 minutes"]]])
+  [:div#inner-container
+    [:div.login-5983e
+      [:form
+        [:button#submit.green-btn-f67eb "START"]]]])
 
 (defn init-start-page!
   "Initialize the start game page."
   []
   (.html ($ "#main-container") (start-html))
 
-  (.click ($ "#submit-start-time")
+  (.click ($ "#submit")
           #(do (.emit @socket "start-time")
                (init-stop-page!))))
 
@@ -51,11 +52,13 @@
 ;;------------------------------------------------------------
 
 (hiccups/defhtml password-html []
-	[:div#inner-container.login
-		[:div.login-container
-			[:label "MC password:"]
-			[:input#password.login-name {:type "password"}]
-			[:button#submit-pass.lg-btn "OK"]]])
+  [:div#inner-container
+    [:div.login-5983e
+      [:form
+        [:div.input-4a3e3
+          [:label.label-66a3b "MC password:"]
+          [:input#password.input-48f1f {:type "password"}]]
+        [:button#submit.red-btn-2c9ab "OK"]]]])
 
 (defn on-grant-mc
   "Callback for handling the MC access grant."
@@ -70,9 +73,14 @@
   (.html ($ "#main-container") (password-html))
 
   ; Request access as MC when user submits password.
-  (.click ($ "#submit-pass")
+  (.click ($ "#submit")
           #(.emit @socket "request-mc"
                   (.val ($ "#password"))))
+
+  ; Allow pressing enter to submit.
+  (.keyup ($ "#password")
+          #(if (= (.-keyCode %) 13)
+             (.click ($ "submit"))))
 
   ; Render either the stop page or the start page
   ; when access as MC is granted.
@@ -84,6 +92,8 @@
 
 (defn init
   []
+  (client.core/set-bw-background!)
+
   (init-password-page!)
   )
 
