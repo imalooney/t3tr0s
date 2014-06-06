@@ -10,6 +10,12 @@
 (def $ js/$)
 
 ;;------------------------------------------------------------
+;; Initialization flag
+;;------------------------------------------------------------
+
+(def initialized (atom false))
+
+;;------------------------------------------------------------
 ;; HTML
 ;;------------------------------------------------------------
 
@@ -58,6 +64,7 @@
   []
   (.html ($ "#main-container") (game-html))
   (client.game.core/init)
+  (reset! initialized true)
   )
 
 (defn on-countdown
@@ -88,27 +95,32 @@
 (defn on-time-left
   "Called when server sends a time-left update."
   [s]
-  (js/console.log "time left:" s))
+  (js/console.log "time left:" s)
+
+  ; Use this as a mechanism for starting the game
+  ; if the players join late.  Otherwise, they
+  ; would never leave the countdown screen.
+  (if-not @initialized
+    (init-game))
+  )
 
 (defn init
   []
 
-  (client.core/set-bw-background!)
+  (reset! initialized false)
 
-  ; NOTE: we cannot join a BATTLE-GAME by simply navigating
-  ; to its URL.  It must be joined from the lobby, where
-  ; we emit a "join-game" message.
+  (client.core/set-bw-background!)
 
   ; Only show the countdown if we are in a battle game
   ; so we can wait for the game to start.
-  ; NOTE: this prevents the player from rejoining a game
-  ;       which is what we want.
   (if @client.game.core/battle
-    (init-countdown)
+    (do
+      ; Join the "game" room to receive game-related messages.
+      (.emit @socket "join-game")
+      (.on @socket "game-over" on-game-over)
+      (.on @socket "time-left" on-time-left)
+      (init-countdown))
     (init-game))
-
-  (.on @socket "game-over" on-game-over)
-  (.on @socket "time-left" on-time-left)
 
   )
 
@@ -118,14 +130,13 @@
   ; Leave the game room.
   (.emit @socket "leave-game")
 
-  ; Ignore the countdown messages.
-  (.removeListener @socket "countdown" on-countdown)
-
   ; Shutdown the game facilities.
   (client.game.core/cleanup)
 
+  ; Ignore the game messages.
   (.removeListener @socket "game-over" on-game-over)
   (.removeListener @socket "time-left" on-time-left)
+  (.removeListener @socket "countdown" on-countdown)
 
   )
 

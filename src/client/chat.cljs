@@ -109,9 +109,6 @@
   "Called when we receive the go-ahead from the server to start the game."
   []
 
-  ; Join the "game" room to receive game-related messages.
-  (.emit @socket "join-game")
-
   ; Navigate to the battle page.
   (aset js/location "hash" "#/battle-game")
 

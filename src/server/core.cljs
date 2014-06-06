@@ -78,6 +78,7 @@
     (doseq [i (reverse (range (inc seconds)))]
       (<! (timeout 1000))
       (util/js-log "countdown:" i)
+      (.. io (to "lobby") (emit "start-game"))
       (.. io (to "game") (emit "countdown" i))
       (.. io (to "mc") (emit "countdown" i)))
   ))
@@ -115,6 +116,7 @@
 
         (.. io (to "game") (emit "time-left" s))
         (.. io (to "mc") (emit "time-left" s))
+        (.. io (to "lobby") (emit "start-game"))
 
         (if-not (zero? s)
 
