@@ -161,8 +161,8 @@
     [:img {:src "/img/t3tr0s_logo_200w.png" :alt ""}]
     [:h1.title-d49ea "Scoreboard"]]
   [:div.dashboard-0e330
-    [:button#btn-shuffle "SHUFFLE"]
-    [:h2.time-left-eb709 "Time Left: 2:32"]
+    [:button#btn-shuffle {:style "display:none"} "SHUFFLE"]
+    [:h2.time-left-eb709 {:style "display:none"} "Time Left: 2:32"]
     [:div#boardsContainer.boards-ad07f
       [:div.num-2b782.first-100e1
         [:span.number-86f89 "1"]
