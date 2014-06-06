@@ -110,7 +110,7 @@
 
     ; Emit a message for every second left until game over.
     (if (= mode :time)
-      (loop [s 60]
+      (loop [s (* 5 60)]
 
         (util/js-log "time left:" s)
 
