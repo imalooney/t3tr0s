@@ -1,11 +1,11 @@
 (ns client.game
-	(:require-macros [hiccups.core :as hiccups])
-	(:require
+  (:require-macros [hiccups.core :as hiccups])
+  (:require
     [cljs.reader :refer [read-string]]
-		hiccups.runtime
+    hiccups.runtime
     [client.socket :refer [socket]]
     client.game.core
-    ))
+    [client.util :as util]))
 
 (def $ js/$)
 
@@ -63,7 +63,7 @@
         [:tr.tr-cf247
          [:td (str (+ i 1) ".")]
          [:td {:class (str "color-" (mod i 7))} (:user player)]
-         [:td (:score player)]
+         [:td (util/number-format (:score player))]
          [:td (:total-lines player)]])]]]
    [:button#game-over-btn.red-btn-2c9ab "LOBBY"]])
 
