@@ -2,6 +2,7 @@
   (:require-macros
     [cljs.core.async.macros :refer [go alt!]])
   (:require
+    [client.util :as util]
     [cljs.reader :refer [read-string]]
     [client.game.board :refer [piece-fits?
                                rotate-piece
@@ -199,7 +200,7 @@
 
 (defn display-points!
   []
-  (.html ($ "#score") (str "Score: " (:score @state)))
+  (.html ($ "#score") (str "Score: " (util/format-number (:score @state))))
   (.html ($ "#level") (str "Level: " (:level @state)))
   (.html ($ "#lines") (str "Lines: " (:total-lines @state))))
 
