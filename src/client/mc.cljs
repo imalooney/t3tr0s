@@ -7,6 +7,9 @@
 
 (def $ js/$)
 
+(defn- by-id [id]
+  (.getElementById js/document id))
+
 ;;------------------------------------------------------------
 ;; Stop Game page
 ;;------------------------------------------------------------
@@ -15,8 +18,7 @@
   [:div#inner-container
     [:div.login-5983e
       [:label#time-left.timeleft-69be1]
-      [:form
-        [:button#submit.red-btn-2c9ab "STOP"]]]])
+      [:button#stopBtn.red-btn-2c9ab "STOP"]]])
 
 (declare init-start-page!)
 
@@ -45,7 +47,7 @@
   (.on @socket "time-left" on-time-left)
   (.on @socket "countdown" on-countdown)
 
-  (.click ($ "#submit")
+  (.click ($ "#stopBtn")
           #(do (.emit @socket "stop-game")
                (cleanup-stop-page!)
                (init-start-page!))))
@@ -57,15 +59,14 @@
 (hiccups/defhtml start-html []
   [:div#inner-container
     [:div.login-5983e
-      [:form
-        [:button#submit.green-btn-f67eb "START"]]]])
+      [:button#startBtn.green-btn-f67eb "START"]]])
 
 (defn init-start-page!
   "Initialize the start game page."
   []
   (.html ($ "#main-container") (start-html))
 
-  (.click ($ "#submit")
+  (.click ($ "#startBtn")
           #(do (.emit @socket "start-time")
                (init-stop-page!))))
 
@@ -80,7 +81,11 @@
         [:div.input-4a3e3
           [:label.label-66a3b "MC password:"]
           [:input#password.input-48f1f {:type "password"}]]
-        [:button#submit.red-btn-2c9ab "OK"]]]])
+        [:button#submitPasswordBtn.red-btn-2c9ab "OK"]]]])
+
+(defn- click-login-as-mc [e]
+  (.preventDefault e)
+  (.emit @socket "request-mc" (.val ($ "#password"))))
 
 (defn on-grant-mc
   "Callback for handling the MC access grant."
@@ -95,18 +100,14 @@
   (.html ($ "#main-container") (password-html))
 
   ; Request access as MC when user submits password.
-  (.click ($ "#submit")
-          #(.emit @socket "request-mc"
-                  (.val ($ "#password"))))
-
-  ; Allow pressing enter to submit.
-  (.keyup ($ "#password")
-          #(if (= (.-keyCode %) 13)
-             (.click ($ "submit"))))
+  (.click ($ "#submitPasswordBtn") click-login-as-mc)
 
   ; Render either the stop page or the start page
   ; when access as MC is granted.
-  (.on @socket "grant-mc" on-grant-mc))
+  (.on @socket "grant-mc" on-grant-mc)
+
+  ; Put focus on the password field.
+  (.focus (by-id "password")))
 
 ;;------------------------------------------------------------
 ;; Main page intializer.
