@@ -1,6 +1,7 @@
 (ns client.dashboard
   (:require-macros [hiccups.core :as hiccups])
   (:require
+    [client.util :as util]
     [cljs.reader :refer [read-string]]
     [client.socket :refer [socket]]
     hiccups.runtime))
@@ -13,31 +14,9 @@
 
 (def $ js/jQuery)
 
-;; TODO: move this to a util namespace
-(defn log [& things]
-  (js/console.log
-    (->> things
-         (map pr-str)
-         (clojure.string/join " "))))
-
-(defn js-log [thing]
-  (.log js/console thing))
-
 ;;------------------------------------------------------------------------------
 ;; Username to UUID Mapping
 ;;------------------------------------------------------------------------------
-
-;; TODO: move this to a util namespace
-;; http://tinyurl.com/lz3bpg6
-(defn- uuid []
-  (apply
-   str
-   (map
-    (fn [x]
-      (if (= x \0)
-        (.toString (bit-or (* 16 (.random js/Math)) 0) 16)
-        x))
-    "00000000-0000-4000-0000-000000000000")))
 
 (def ids 
   "Stores a mapping of username --> UUID for use as DOM ids"
@@ -47,7 +26,7 @@
   "creates a mapping of username --> UUID in the ids atom if one does not already exist"
   [n]
   (if-not (get @ids n)
-    (swap! ids #(assoc % n (uuid)))))
+    (swap! ids #(assoc % n (util/uuid)))))
 
 (defn- by-id [id]
   (.getElementById js/document id))
