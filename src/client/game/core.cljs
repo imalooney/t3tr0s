@@ -468,6 +468,7 @@
 (defn cleanup []
 
   (swap! state assoc :quit true)
-  (close! (:quit-chan @state))
+  (if (:quit-chan @state)
+    (close! (:quit-chan @state)))
 
   )

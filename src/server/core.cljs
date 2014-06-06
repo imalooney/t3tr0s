@@ -1,5 +1,8 @@
 (ns server.core
+  (:require-macros
+    [cljs.core.async.macros :refer [go]])
   (:require
+    [cljs.core.async :refer [<! timeout]]
     [clojure.walk]
     [cljs.reader :refer [read-string]]
     [server.gif :refer [create-gif]]))
@@ -55,19 +58,32 @@
   "Channel to close in order to halt the current game."
   (atom nil))
 
+(defn go-go-countdown!
+  "Start the countdown"
+  [io seconds]
+  (go
+    (doseq [i (reverse (range (inc seconds)))]
+      (<! (timeout 1000))
+      (js/console.log "countdown:" i)
+      (.. io (to "game") (emit "countdown" i)))
+  ))
+
 (defn go-go-game-lines!
   "Start a game.  Winner is first to fill 40 lines."
-  []
-  (js/console.log "TODO: start game lines")
-  ; 1. Emit countdown chat messages
-  ; 2. Emit game start
+  [io]
+  (js/console.log "Starting the game (line race).")
+  (.. io (to "lobby") (emit "start-game"))
+  (go
+    (<! (go-go-countdown! io 5)))
   nil)
 
 (defn go-go-game-time!
   "Start a game.  Winner is highest score after 5 minutes."
-  []
-  (js/console.log "TODO: start game time")
-  ; 1. Emit countdown chat messages
+  [io]
+  (js/console.log "Starting the game (time attack).")
+  (.. io (to "lobby") (emit "start-game"))
+  (go
+    (<! (go-go-countdown! io 5)))
   ; 2. Emit game start
   nil)
 
@@ -151,8 +167,8 @@
          #(.leave socket "mc"))
 
     ; Start the game
-    (.on socket "start-lines" go-go-game-lines!)
-    (.on socket "start-time" go-go-game-time!)
+    (.on socket "start-lines" #(go-go-game-lines! io))
+    (.on socket "start-time" #(go-go-game-time! io))
 
     ))
 
