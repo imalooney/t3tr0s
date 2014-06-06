@@ -14,9 +14,71 @@
 ;; - hide empty boards that are not in the leaderboard 10
 ;; - more efficient board updating code?
 
+(def test-board1
+  [[0 0 0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0 0 0] [0 0 0 0 "O6" "O12" 0 0 0 0] [0 0 0 0 "O3" "O9" 0 0 0 0] [0 0 0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0 0 0] [0 0 0 0 "G6" "G12" 0 0 0 0] [0 0 0 0 "G3" "G9" 0 0 0 0] [0 0 0 0 0 "L4" 0 0 0 0] [0 0 0 "L2" "L10" "L9" 0 0 0 0] [0 0 0 0 "T4" 0 0 0 0 0] [0 0 0 "T2" "T11" "T8" 0 0 0 0] ["J4" 0 0 0 0 "J4" 0 0 0 0] ["J3" "J10" "J8" 0 0 "J3" "J10" "J8" 0 0] [0 "O6" "O12" 0 0 0 "Z2" "Z12" 0 0] [0 "O3" "O9" 0 0 "J4" 0 "Z3" "Z8" 0] [0 0 "L4" 0 0 "J3" "J10" "J8" 0 0] ["L2" "L10" "L9" 0 0 0 "I2" "I10" "I10" "I8"] [0 "O6" "O12" 0 0 "Z2" "Z12" 0 0 0] [0 "O3" "O9" 0 0 0 "Z3" "Z8" 0 0]])
+
+(def test-board2
+  [[0 0 0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0 0 0] [0 0 0 0 "S6" "S8" 0 0 0 0] [0 0 0 "S2" "S9" 0 0 0 0 0] [0 0 0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0 0 0] [0 "Z4" 0 0 "G6" "G8" 0 0 0 0] ["Z6" "Z9" 0 "G2" "G9" "L4" 0 0 "T4" 0] ["Z1" 0 "S6" "S8" 0 "L5" 0 "T2" "T11" "T8"] ["J4" "S2" "S9" 0 0 "L3" "L8" "L4" 0 0] ["J3" "J10" "J8" 0 0 "L2" "L10" "L9" 0 0] [0 "T4" 0 0 0 0 0 "Z2" "Z12" 0] ["T2" "T11" "T8" 0 0 0 0 "L4" "Z3" "Z8"] [0 0 "O6" "O12" 0 "L2" "L10" "L9" 0 0] [0 "T4" "O3" "O9" 0 0 "Z2" "Z12" 0 0] ["T2" "T11" "T8" 0 0 0 0 "Z3" "Z8" 0]])
+
+(def test-board3
+  [[0 0 0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0 0 0] [0 0 0 0 "T4" 0 0 0 0 0] [0 0 0 "T2" "T11" "T8" 0 0 0 0] [0 0 0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0 0 0] [0 0 0 0 "G4" 0 0 0 0 0] [0 "S6" "S8" "G2" "G11" "G8" 0 0 0 0] ["S2" "S9" 0 0 "L4" 0 0 0 0 0] ["Z2" "Z12" 0 0 "L5" 0 0 0 0 0] [0 "Z3" "Z8" 0 "L3" "L8" 0 0 0 0] [0 "O6" "O12" 0 0 "I2" "I10" "I10" "I8" 0] [0 "O3" "O9" "S6" "S8" 0 "S6" "S8" 0 0] [0 "J4" "S2" "S9" 0 "S2" "S9" "T4" 0 0] [0 "J3" "J10" "J8" 0 0 "T2" "T11" "T8" 0]])
+
 (declare board)
 
 (def $ js/jQuery)
+
+(def test-leaders [
+  { :user "Chris"
+    :pid 0
+    :board test-board1
+    :theme 0
+    :score 282372 }
+  { :user "Shaun"
+    :pid 1
+    :board test-board2
+    :theme 1
+    :score 232323 }
+  { :user "Elaine"
+    :pid 2
+    :board test-board3
+    :theme 2
+    :score 232323 }
+  { :user "Luis"
+    :pid 3
+    :board test-board1
+    :theme 3
+    :score 88 }
+  { :user "Phil"
+    :pid 4
+    :board test-board2
+    :theme 4
+    :score 8282 }
+  { :user "Rose"
+    :pid 5
+    :board test-board3
+    :theme 5
+    :score 746289 }
+  { :user "Brian"
+    :pid 6
+    :board test-board1
+    :theme 6
+    :score 23232 }
+  { :user "Brett"
+    :pid 7
+    :board test-board2
+    :theme 7
+    :score 882922 }
+  { :user "Andrew"
+    :pid 8
+    :board test-board3
+    :theme 8
+    :score 99723 }
+  { :user "Andy"
+    :pid 9
+    :board test-board1
+    :theme 9
+    :score 998237 }
+  ])
 
 ;;------------------------------------------------------------------------------
 ;; Username to UUID Mapping
@@ -94,8 +156,7 @@
     [:img {:src "/img/t3tr0s_logo_200w.png" :alt ""}]
     [:h1.title-d49ea "Scoreboard"]]
   [:div.dashboard-0e330
-    [:button#btn1 "Test 1"]
-    [:button#btn2 "Test 2"]
+    [:button#btn-shuffle "SHUFFLE"]
     [:h2.time-left-eb709 "Time Left: 2:32"]
     [:div#boardsContainer.boards-ad07f
       [:div.num-2b782.first-100e1 "1" [:sup "st"]]
@@ -126,6 +187,8 @@
   (client.core/set-bw-background!)
   (.html ($ "#main-container") (dashboard-html))
   (swap! leaders identity)
+
+  (.click ($ "#btn-shuffle") #(reset! leaders (shuffle test-leaders)))
 
   (.emit @socket "join-dashboard")
 
