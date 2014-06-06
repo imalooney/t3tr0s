@@ -171,7 +171,7 @@
 
   ; Send top ranked players to the MC.
   (let [ranks (take 10 (rank-players @game-count @game-mode))]
-    (.. io (to "dashboard") (emit "update-lead-players" (pr-str ranks))))
+    (.. io (to "dashboard") (emit "leader-update" (pr-str ranks))))
 
   )
 
