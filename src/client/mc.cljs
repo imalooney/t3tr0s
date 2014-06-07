@@ -63,13 +63,18 @@
       [:div.input-container-c8147
         [:div.input-4a3e3
           [:label.label-66a3b "Round duration:"]
-          [:input#roundTime.input-48f1f {:type "text"}]]
+          [:input#duration.input-48f1f {:type "text"}]]
         [:div.input-4a3e3
-          [:label.label-66a3b "Time in between:"]
-          [:input#cooldownTime.input-48f1f {:type "text"}]]
+          [:label.label-66a3b "Time between rounds:"]
+          [:input#cooldown.input-48f1f {:type "text"}]]
       [:div.button-container-8e52e
         [:button#startBtn.green-btn-f67eb "START NOW"]
-        [:button#resetTimers.blue-btn-41e23 "RESET TIMES"]]]]])
+        [:button#resetTimes.blue-btn-41e23 "RESET TIMES"]]]]])
+
+(defn- get-times
+  "Retrieve the time settings inputs"
+  []
+  { :duration (js/parseInt (.val ($ "#duration")) 10) })
 
 (defn init-start-page!
   "Initialize the start game page."
@@ -78,7 +83,12 @@
 
   (.click ($ "#startBtn")
           #(do (.emit @socket "start-time")
-               (init-stop-page!))))
+               (init-stop-page!)))
+
+  (.click ($ "#resetTimes")
+          #(do (.emit @socket "reset-times" (pr-str (get-times)))))
+
+  )
 
 ;;------------------------------------------------------------
 ;; Password page

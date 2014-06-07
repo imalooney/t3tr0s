@@ -63,6 +63,10 @@
   "Channel to close in order to halt the current game."
   (atom nil))
 
+(def game-duration
+  "Length in seconds of a multiplayer round. Default is 5 minutes."
+  (atom 300))
+
 (defn rank-players
   "Get players for the given game sorted by rank for the given mode."
   [game-id mode]
@@ -110,7 +114,7 @@
 
     ; Emit a message for every second left until game over.
     (if (= mode :time)
-      (loop [s (* 5 60)]
+      (loop [s @game-duration]
 
         (util/js-log "time left:" s)
 
@@ -149,7 +153,7 @@
       ; Emit a game over message with final ranks to MC.
       (.. io (to "mc") (emit "game-over"
                              (pr-str ranks))))
-    
+
     ; Clear the game mode when done.
     (reset! game-mode nil)
 
@@ -178,6 +182,13 @@
   (swap! players update-in [pid] merge data {:game @game-count :pid pid})
 
   )
+
+(defn- on-reset-times
+  "Called when the MC updates the game time settings."
+  [{:keys [duration]}]
+  (when (pos? duration)
+    (reset! game-duration duration)
+    (util/js-log (str "Game duration reset to " duration))))
 
 ;;------------------------------------------------------------------------------
 ;; Socket Setup
@@ -268,6 +279,9 @@
     (.on socket "stop-game"
          #(if (and @game-mode @quit-game-chan)
             (close! @quit-game-chan)))
+
+    ; Reset game times
+    (.on socket "reset-times" #(on-reset-times (read-string %)))
 
     ))
 
