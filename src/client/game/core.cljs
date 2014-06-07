@@ -70,6 +70,14 @@
   "The state of the game."
   (atom nil))
 
+(def paused?
+  "Boolean flag signaling if game is paused or not"
+  (atom false))
+
+(def paused-board
+  "Temp state of the board when paused"
+  (atom nil))
+
 (defn- update-theme [_ _ _ new-state]
   (let [theme-num (:theme new-state)
         theme (get themes theme-num)]
@@ -381,6 +389,7 @@
   40 :down
   32 :space
   16 :shift
+  80 :p
 
   49 :one
   50 :two
@@ -392,6 +401,31 @@
   56 :eight
   57 :nine
   48 :zero})
+
+(defn resume-game!
+  "Restores the state of the board pre-pausing, and resumes gravity"
+  []
+  (reset! state @paused-board)
+  (put! resume-grav 0)
+  (reset! paused? false))
+
+(defn pause-game!
+  "Saves the current state of the board, loads the game-over animation and pauses gravity"
+  []
+  (reset! paused-board @state)
+  (go-go-game-over!)
+  (swap! state assoc :piece nil)
+  (put! pause-grav 0)
+  (reset! paused? true))
+
+(defn toggle-pause-game!
+  "Toggles pause on the game board"
+  []
+  (if (not @battle)
+    (if @paused?
+      (resume-game!)
+      (pause-game!))
+    (js/console.log "Cant pause in battle mode")))
 
 (defn add-key-events
   "Add all the key inputs."
@@ -411,8 +445,9 @@
                      :eight (change-theme! 7 "2000" "TI-83" e)
                      :nine  (change-theme! 8 "2002" "Flash" e)
                      :zero  (change-theme! 9 "2012" "Facebook" e)
+                     :p     (do (toggle-pause-game!) (.preventDefault e))
                      nil)
-                   (if (:piece @state)
+                   (if (and (:piece @state) (not @paused?))
                      (case (key-name e)
                        :down  (do (put! down-chan true) (.preventDefault e))
                        :left  (do (try-move! -1  0)     (.preventDefault e))
