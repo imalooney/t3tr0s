@@ -59,7 +59,17 @@
 (hiccups/defhtml start-html []
   [:div#inner-container
     [:div.login-5983e
-      [:button#startBtn.green-btn-f67eb "START"]]])
+      [:label#time-left.timeleft-69be1]
+      [:div.input-container-c8147
+        [:div.input-4a3e3
+          [:label.label-66a3b "Round duration:"]
+          [:input#roundTime.input-48f1f {:type "text"}]]
+        [:div.input-4a3e3
+          [:label.label-66a3b "Time in between:"]
+          [:input#cooldownTime.input-48f1f {:type "text"}]]
+      [:div.button-container-8e52e
+        [:button#startBtn.green-btn-f67eb "START NOW"]
+        [:button#resetTimers.blue-btn-41e23 "RESET TIMES"]]]]])
 
 (defn init-start-page!
   "Initialize the start game page."
