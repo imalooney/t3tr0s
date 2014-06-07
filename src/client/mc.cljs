@@ -11,6 +11,26 @@
   (.getElementById js/document id))
 
 ;;------------------------------------------------------------
+;; MC Atoms
+;;------------------------------------------------------------
+
+(def game-settings
+  "Current multiplier settings in effect"
+  (atom {}))
+
+(defn- on-change-game-settings [_ _ _ new-settings]
+  (let [{:keys [duration]} new-settings]
+    (.val ($ "#duration") duration)))
+
+(add-watch game-settings :main on-change-game-settings)
+
+(defn- on-settings-update
+  "Update the game settings inputs"
+  [new-settings]
+  (js/console.log "settings updated")
+  (swap! game-settings merge new-settings))
+
+;;------------------------------------------------------------
 ;; Stop Game page
 ;;------------------------------------------------------------
 
@@ -63,7 +83,7 @@
       [:div.input-container-c8147
         [:div.input-4a3e3
           [:label.label-66a3b "Round duration:"]
-          [:input#duration.input-48f1f {:type "text"}]]
+          [:input#duration.input-48f1f {:type "text" :value (:duration @game-settings)}]]
         [:div.input-4a3e3
           [:label.label-66a3b "Time between rounds:"]
           [:input#cooldown.input-48f1f {:type "text"}]]
@@ -107,7 +127,7 @@
   (.preventDefault e)
   (.emit @socket "request-mc" (.val ($ "#password"))))
 
-(defn on-grant-mc
+(defn- on-grant-mc
   "Callback for handling the MC access grant."
   [str-data]
   (if-let [game-running (read-string str-data)]
@@ -136,6 +156,8 @@
 (defn init
   []
   (client.core/set-bw-background!)
+  ; Listen for any settings updates
+  (.on @socket "settings-update" #(on-settings-update (read-string %)))
 
   (init-password-page!)
   )
@@ -148,6 +170,8 @@
 
   ; Destroy socket listeners.
   (.removeListener @socket "grant-mc" on-grant-mc)
+  (.removeListener @socket "settings-update" on-settings-update)
+
 
   (cleanup-stop-page!)
 

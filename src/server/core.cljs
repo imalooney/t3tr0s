@@ -63,9 +63,9 @@
   "Channel to close in order to halt the current game."
   (atom nil))
 
-(def game-duration
-  "Length in seconds of a multiplayer round. Default is 5 minutes."
-  (atom 300))
+(def game-settings
+  "Game timer settings."
+  (atom {:duration 300})) ; Length in seconds of a multiplayer round. Default is 5 minutes.
 
 (defn rank-players
   "Get players for the given game sorted by rank for the given mode."
@@ -114,7 +114,7 @@
 
     ; Emit a message for every second left until game over.
     (if (= mode :time)
-      (loop [s @game-duration]
+      (loop [s (:duration @game-settings)]
 
         (util/js-log "time left:" s)
 
@@ -185,10 +185,14 @@
 
 (defn- on-reset-times
   "Called when the MC updates the game time settings."
-  [{:keys [duration]}]
-  (when (pos? duration)
-    (reset! game-duration duration)
-    (util/js-log (str "Game duration reset to " duration))))
+  [new-times socket]
+  ; exclude any invalid time entries that aren't positive integers
+  (let [new-times (select-keys new-times (for [[k time] new-times :when (pos? time)] k))]
+    (when-not (empty? new-times)
+      (swap! game-settings merge new-times)
+      (.. socket -broadcast (to "mc") (emit "settings-update" (pr-str new-times)))
+      (.emit socket "settings-update" (pr-str new-times)) ; TODO - How do you emit to self AND room?
+      (util/js-log (str "Updated game times: " new-times)))))
 
 ;;------------------------------------------------------------------------------
 ;; Socket Setup
@@ -263,7 +267,8 @@
             (do
               (util/js-log "Player" pid "granted as MC.")
               (.join socket "mc")
-              (.emit socket "grant-mc" (pr-str @game-mode)))
+              (.emit socket "grant-mc" (pr-str @game-mode))
+              (.emit socket "settings-update" (pr-str @game-settings)))
             (do
               (util/js-log "Player" pid "rejected as MC."))))
 
@@ -281,7 +286,7 @@
             (close! @quit-game-chan)))
 
     ; Reset game times
-    (.on socket "reset-times" #(on-reset-times (read-string %)))
+    (.on socket "reset-times" #(on-reset-times (read-string %) socket))
 
     ))
 
