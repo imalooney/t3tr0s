@@ -5,10 +5,6 @@
   font-style: normal;
 }
 
-// ::-webkit-scrollbar {
-  // background: transparent;
-// }
-
 body {
   background-color: #111;
   font-family: 'visitor1';
@@ -338,18 +334,9 @@ body {
 // Dashboard
 //------------------------------------------------------------------------------
 
-@animationSpeed: 0.2s;
-
+@dashboardAnimationSpeed: 0.2s;
 @dashboardTotalWidth: 1200px;
 @bigBoardWidth: (@dashboardTotalWidth / 4) - 1px;
-@bigBoardPaddingRight: 120px;
-@littleBoardWidth: 110px;
-@bigBoardHeight: 40px;
-@littleBoardTop: @bigBoardHeight + 40px;
-@littleBoardHeight: 140px;
-@littleBoardRightPadding: 11.5px;
-@littleFontSize: 24px;
-
 @rightSideVerticalSeparation: 120px;
 
 @firstPlaceRed: #5388e4;
@@ -392,63 +379,63 @@ body {
   left: 0px;
   top: 0px;
   width: @bigBoardWidth;
-  .transition(@animationSpeed);
+  .transition(@dashboardAnimationSpeed);
 }
 
 .board-a3a91.place-2 {
   left: @bigBoardWidth;
   top: 0px;
   width: @bigBoardWidth;
-  .transition(@animationSpeed);
+  .transition(@dashboardAnimationSpeed);
 }
 
 .board-a3a91.place-3 {
   left: (2 * @bigBoardWidth);
   top: 0px;
   width: @bigBoardWidth;
-  .transition(@animationSpeed);  
+  .transition(@dashboardAnimationSpeed);  
 }
 
 .board-a3a91.place-4 {
   left: (3 * @bigBoardWidth);
   top: 0px;
-  .transition(@animationSpeed);
+  .transition(@dashboardAnimationSpeed);
 }
 
 .board-a3a91.place-5 {
   left: (3 * @bigBoardWidth);
   top: @rightSideVerticalSeparation;
-  .transition(@animationSpeed);
+  .transition(@dashboardAnimationSpeed);
 }
 
 .board-a3a91.place-6 {
   left: (3 * @bigBoardWidth);
   top: (2 * @rightSideVerticalSeparation);
-  .transition(@animationSpeed);
+  .transition(@dashboardAnimationSpeed);
 }
 
 .board-a3a91.place-7 {
   left: (3 * @bigBoardWidth);
   top: (3 * @rightSideVerticalSeparation);
-  .transition(@animationSpeed);
+  .transition(@dashboardAnimationSpeed);
 }
 
 .board-a3a91.place-8 {
   left: (3 * @bigBoardWidth);
   top: (4 * @rightSideVerticalSeparation);
-  .transition(@animationSpeed);
+  .transition(@dashboardAnimationSpeed);
 }
 
 .board-a3a91.place-9 {
   left: (3 * @bigBoardWidth);
   top: (5 * @rightSideVerticalSeparation);
-  .transition(@animationSpeed);
+  .transition(@dashboardAnimationSpeed);
 }
 
 .board-a3a91.place-10 {
   left: (3 * @bigBoardWidth);
   top: (6 * @rightSideVerticalSeparation);
-  .transition(@animationSpeed);
+  .transition(@dashboardAnimationSpeed);
 }
 
 //------------------------------------------------------------------------------
@@ -584,7 +571,10 @@ body {
   width: 260px;
 }
 
-//---------------- Game over score board -----------------//
+//------------------------------------------------------------------------------
+// Game Over Score Board
+//------------------------------------------------------------------------------
+
 .table-9be14 {
   color: white;
   width: 100%;
