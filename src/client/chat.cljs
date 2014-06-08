@@ -5,7 +5,8 @@
     [client.socket :refer [socket]]
     [client.login :refer [get-username
                           get-color]]
-    [cljs.reader :refer [read-string]]))
+    [cljs.reader :refer [read-string]]
+    [client.util :as util]))
 
 ;;------------------------------------------------------------
 ;; HTML
@@ -15,7 +16,7 @@
 	[:div#inner-container
     [:div.chat-logo-e38e3
       [:img {:src "/../../img/t3tr0s_logo_200w.png" :width "160px"}]
-      [:span.span-4e536 "Waiting to play..."]]
+      [:span.span-4e536.time-left-8a651 "Waiting to play..."]]
     [:div#chat-messages]
     [:div#chat-input
       [:input#msg {:type "text" :placeholder "Type to chat..."}]
@@ -105,6 +106,16 @@
   (add-message! (read-string data))
   (scroll-chat-area false))
 
+(defn- on-time-left
+  "Called when server sends a time-left update."
+  [seconds]
+  (js/console.log seconds)
+    (js/console.log (util/seconds->time-str seconds))
+  (.html ($ ".time-left-8a651")
+    (cond
+      (pos? seconds) (str "Time Until Next Game: " (util/seconds->time-str seconds))
+      (zero? seconds) "Waiting to play...")))
+
 (defn on-start-game
   "Called when we receive the go-ahead from the server to start the game."
   []
@@ -135,6 +146,8 @@
   ;; Listen to chat updates.
   (.on @socket "new-message" on-new-message)
 
+  (.on @socket "time-left" on-time-left)
+
   (.on @socket "start-game" on-start-game)
 
   )
@@ -150,5 +163,7 @@
 
   ;; Ignore start game message.
   (.removeListener @socket "start-game" on-start-game)
+
+  (.removeListener @socket "time-left" on-time-left)
 
   )

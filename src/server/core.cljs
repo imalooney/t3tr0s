@@ -2,7 +2,7 @@
   (:require-macros
     [cljs.core.async.macros :refer [go]])
   (:require
-    [cljs.core.async :refer [<! timeout alts! close! chan]]
+    [cljs.core.async :refer [<! timeout alts! close! chan sliding-buffer filter< put!]]
     [clojure.walk]
     [cljs.reader :refer [read-string]]
     [server.gif :refer [create-gif]]
@@ -68,6 +68,10 @@
 (def start-game-chan
   "Channel to start in order to start a new game."
   (atom nil))
+
+(def num-players-chan
+  "Channel to track the current number of players connected."
+  (atom (chan (sliding-buffer 1))))
 
 (def game-settings
   "Game timer settings."
@@ -178,29 +182,29 @@
   (reset! start-game-chan (chan))
 
   (go
-
     ; If a cooldown time is set, then wait for it to expire
     (let [cooldown (:cooldown @game-settings)]
       (if (pos? cooldown)
-        ; Countdown
-        (loop [s cooldown]
-          (util/js-log "time until next game:" s)
+        (do
+          (util/js-log "Waiting for players")
+          ; don't start the countdown until there are at least 2 players connected
+          (<! (filter< #(> % 1) @num-players-chan))
 
-          ; TODO - re-use time-left for cooldown timer?
+          ; Countdown
+          (loop [s cooldown]
+            (util/js-log "time until next game:" s)
 
-          (.. io (to "mc") (emit "time-left" s))
-          (.. io (to "dashboard") (emit "time-left" s))
-          (.. io (to "lobby") (emit "time-left"))
+            (.. io (to "lobby") (emit "time-left" s))
 
-          (if-not (zero? s)
-            ; Wait for either the timer or the start channel.
-            (let [t (timeout 1000)
-                  q @start-game-chan
-                  [_ c] (alts! [t q])]
-              (if (= c t)
-                (recur (dec s))))
-            ; timer expired let the game automatically start
-            (close! @start-game-chan)))
+            (if-not (zero? s)
+              ; Wait for either the timer or the start channel.
+              (let [t (timeout 1000)
+                    q @start-game-chan
+                    [_ c] (alts! [t q])]
+                (if (= c t)
+                  (recur (dec s))))
+              ; timer expired let the game automatically start
+              (close! @start-game-chan))))
 
         ; no cooldown set, then just wait for mc to manually start the game
         (util/js-log "Waiting for manual start of next game")))
@@ -212,6 +216,11 @@
 
       ; It's game time, GO!
       (go-go-game! io :time)))
+
+(defn- put-num-players-connected!
+  "Publishes the number of players connected in case next game countdown is on hold."
+  []
+  (put! @num-players-chan (count @players)))
 
 ;;------------------------------------------------------------------------------
 ;; Socket Events
@@ -269,6 +278,8 @@
     ; Add to player table as "Anon" for now.
     (swap! players assoc pid anon-player)
 
+    (put-num-players-connected!)
+
     ; Request that the client emit an "update-name" message back
     ; in case the server restarts and we need user info again.
     (.emit socket "request-name")
@@ -277,7 +288,8 @@
     (.on socket "disconnect"
          #(do
             (util/js-log "Player" pid "disconnected.")
-            (swap! players dissoc pid)))
+            (swap! players dissoc pid)
+            (put-num-players-connected!)))
 
     ; Update player name when requested.
     (.on socket "update-name"
