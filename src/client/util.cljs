@@ -26,3 +26,11 @@
 ;; http://tinyurl.com/mekjre8
 (defn format-number [n]
   (clojure.string/replace (str n) #"\B(?=(\d{3})+(?!\d))" ","))
+
+(defn seconds->time-str
+  "Converts seconds to mm:ss format for display"
+  [seconds]
+  (let [m (js/Math.floor (/ seconds 60))
+        s (mod seconds 60)
+        s-str (if (< s 10) (str "0" s) s)]
+    (str m ":" s-str)))

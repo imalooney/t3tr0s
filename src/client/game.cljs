@@ -109,21 +109,15 @@
 (defn on-time-left
   "Called when server sends a time-left update."
   [total-seconds]
-  (let [m (js/Math.floor (/ total-seconds 60))
-        s (mod total-seconds 60)
-        s-str (if (< s 10) (str "0" s) s)
-        time-str (str m ":" s-str)]
-    (js/console.log m s s-str time-str)
+  (.html ($ ".time-left-1369c") (str "Time Left: " (util/seconds->time-str total-seconds)))
 
-    (.html ($ ".time-left-1369c") (str "Time Left: " time-str))
+  ; Use this as a mechanism for starting the game
+  ; if the players join late.  Otherwise, they
+  ; would never leave the countdown screen.
+  (if-not @initialized
+    (init-game))
 
-    ; Use this as a mechanism for starting the game
-    ; if the players join late.  Otherwise, they
-    ; would never leave the countdown screen.
-    (if-not @initialized
-      (init-game))
-
-    ))
+  )
 
 (defn init
   []

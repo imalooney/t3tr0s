@@ -2,7 +2,7 @@
   (:require-macros
     [cljs.core.async.macros :refer [go]])
   (:require
-    [cljs.core.async :refer [<! timeout alts! close! chan]]
+    [cljs.core.async :refer [<! timeout alts! close! chan sliding-buffer filter< put!]]
     [clojure.walk]
     [cljs.reader :refer [read-string]]
     [server.gif :refer [create-gif]]
@@ -51,6 +51,8 @@
 ;; Game Runner
 ;;------------------------------------------------------------
 
+(declare go-go-next-game-countdown!)
+
 (def game-count
   "Number of games started since server started (used to identify games)"
   (atom 0))
@@ -62,6 +64,19 @@
 (def quit-game-chan
   "Channel to close in order to halt the current game."
   (atom nil))
+
+(def start-game-chan
+  "Channel to start in order to start a new game."
+  (atom nil))
+
+(def num-players-chan
+  "Channel to track the current number of players connected."
+  (atom (chan (sliding-buffer 1))))
+
+(def game-settings
+  "Game timer settings."
+  (atom {:duration 300 ; Length in seconds of a multiplayer round. Default is 5 minutes.
+         :cooldown 0})) ; Length in seconds before automatically starting a new game. Default (0) requires manual start.
 
 (defn rank-players
   "Get players for the given game sorted by rank for the given mode."
@@ -110,7 +125,7 @@
 
     ; Emit a message for every second left until game over.
     (if (= mode :time)
-      (loop [s (* 5 60)]
+      (loop [s (:duration @game-settings)]
 
         (util/js-log "time left:" s)
 
@@ -149,14 +164,63 @@
       ; Emit a game over message with final ranks to MC.
       (.. io (to "mc") (emit "game-over"
                              (pr-str ranks))))
-    
+
     ; Clear the game mode when done.
     (reset! game-mode nil)
 
     (util/js-log "Game ended.")
 
+    (go-go-next-game-countdown! io)
     )
   )
+
+(defn go-go-next-game-countdown!
+  "Start a new game automatically after cooldown period"
+  [io]
+
+  ; Create new start channel for this game.
+  (reset! start-game-chan (chan))
+
+  (go
+    ; If a cooldown time is set, then wait for it to expire
+    (let [cooldown (:cooldown @game-settings)]
+      (if (pos? cooldown)
+        (do
+          (util/js-log "Waiting for players")
+          ; don't start the countdown until there are at least 2 players connected
+          (<! (filter< #(> % 1) @num-players-chan))
+
+          ; Countdown
+          (loop [s cooldown]
+            (util/js-log "time until next game:" s)
+
+            (.. io (to "lobby") (emit "time-left" s))
+
+            (if-not (zero? s)
+              ; Wait for either the timer or the start channel.
+              (let [t (timeout 1000)
+                    q @start-game-chan
+                    [_ c] (alts! [t q])]
+                (if (= c t)
+                  (recur (dec s))))
+              ; timer expired let the game automatically start
+              (close! @start-game-chan))))
+
+        ; no cooldown set, then just wait for mc to manually start the game
+        (util/js-log "Waiting for manual start of next game")))
+
+      ; wait on the start game channel
+      ; note: if the cooldown timer was interrupted then this should
+      ;       return immediately
+      (<! @start-game-chan)
+
+      ; It's game time, GO!
+      (go-go-game! io :time)))
+
+(defn- put-num-players-connected!
+  "Publishes the number of players connected in case next game countdown is on hold."
+  []
+  (put! @num-players-chan (count @players)))
 
 ;;------------------------------------------------------------------------------
 ;; Socket Events
@@ -178,6 +242,19 @@
   (swap! players update-in [pid] merge data {:game @game-count :pid pid})
 
   )
+
+(defn- on-reset-times
+  "Called when the MC updates the game time settings."
+  [new-times socket]
+  ; exclude any invalid time entries that aren't positive integers
+  (let [{:keys [duration cooldown]} new-times
+        new-times (if (pos? duration) (assoc new-times :duration duration))
+        new-times (if (>= cooldown 0) (assoc new-times :cooldown cooldown))]
+    (when-not (empty? new-times)
+      (swap! game-settings merge new-times)
+      (.. socket -broadcast (to "mc") (emit "settings-update" (pr-str new-times)))
+      (.emit socket "settings-update" (pr-str new-times)) ; TODO - How do you emit to self AND room?
+      (util/js-log (str "Updated game times: " new-times)))))
 
 ;;------------------------------------------------------------------------------
 ;; Socket Setup
@@ -201,6 +278,8 @@
     ; Add to player table as "Anon" for now.
     (swap! players assoc pid anon-player)
 
+    (put-num-players-connected!)
+
     ; Request that the client emit an "update-name" message back
     ; in case the server restarts and we need user info again.
     (.emit socket "request-name")
@@ -209,7 +288,8 @@
     (.on socket "disconnect"
          #(do
             (util/js-log "Player" pid "disconnected.")
-            (swap! players dissoc pid)))
+            (swap! players dissoc pid)
+            (put-num-players-connected!)))
 
     ; Update player name when requested.
     (.on socket "update-name"
@@ -252,7 +332,8 @@
             (do
               (util/js-log "Player" pid "granted as MC.")
               (.join socket "mc")
-              (.emit socket "grant-mc" (pr-str @game-mode)))
+              (.emit socket "grant-mc" (pr-str @game-mode))
+              (.emit socket "settings-update" (pr-str @game-settings)))
             (do
               (util/js-log "Player" pid "rejected as MC."))))
 
@@ -261,13 +342,16 @@
          #(.leave socket "mc"))
 
     ; Start the game
-    #_(.on socket "start-lines" #(if-not @game-mode (go-go-game! io :line)))
-    (.on socket "start-time" #(if-not @game-mode (go-go-game! io :time)))
+    #_(.on socket "start-lines" #(close! if-not @game-mode (go-go-game! io :line)))
+    (.on socket "start-time" #(close! @start-game-chan))
 
     ; Stop the game.
     (.on socket "stop-game"
          #(if (and @game-mode @quit-game-chan)
             (close! @quit-game-chan)))
+
+    ; Reset game times
+    (.on socket "reset-times" #(on-reset-times (read-string %) socket))
 
     ))
 
@@ -289,6 +373,9 @@
     ; start server
     (.listen server (:port config))
     (println "t3tr0s server listening on port" (:port config) "\n")
+
+    ; wait for next game to start
+    (go-go-next-game-countdown! io)
 
     ; configure sockets
     (.sockets.on io "connection" #(init-socket io %))))

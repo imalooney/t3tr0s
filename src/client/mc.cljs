@@ -11,6 +11,27 @@
   (.getElementById js/document id))
 
 ;;------------------------------------------------------------
+;; MC Atoms
+;;------------------------------------------------------------
+
+(def game-settings
+  "Current multiplier settings in effect"
+  (atom {}))
+
+(defn- on-change-game-settings [_ _ _ new-settings]
+  (let [{:keys [duration cooldown]} new-settings]
+    (.val ($ "#duration") duration)
+    (.val ($ "#cooldown") cooldown)))
+
+(add-watch game-settings :main on-change-game-settings)
+
+(defn- on-settings-update
+  "Update the game settings inputs"
+  [new-settings]
+  (js/console.log "settings updated")
+  (swap! game-settings merge new-settings))
+
+;;------------------------------------------------------------
 ;; Stop Game page
 ;;------------------------------------------------------------
 
@@ -59,7 +80,23 @@
 (hiccups/defhtml start-html []
   [:div#inner-container
     [:div.login-5983e
-      [:button#startBtn.green-btn-f67eb "START"]]])
+      [:label#time-left.timeleft-69be1]
+      [:div.input-container-c8147
+        [:div.input-4a3e3
+          [:label.label-66a3b "Round duration:"]
+          [:input#duration.input-48f1f {:type "text" :value (:duration @game-settings)}]]
+        [:div.input-4a3e3
+          [:label.label-66a3b "Time between rounds:"]
+          [:input#cooldown.input-48f1f {:type "text" :value (:cooldown @game-settings)}]]
+      [:div.button-container-8e52e
+        [:button#startBtn.green-btn-f67eb "START NOW"]
+        [:button#resetTimes.blue-btn-41e23 "RESET TIMES"]]]]])
+
+(defn- get-times
+  "Retrieve the time settings inputs"
+  []
+  {:duration (js/parseInt (.val ($ "#duration")) 10)
+   :cooldown (js/parseInt (.val ($ "#cooldown")) 10)})
 
 (defn init-start-page!
   "Initialize the start game page."
@@ -68,7 +105,12 @@
 
   (.click ($ "#startBtn")
           #(do (.emit @socket "start-time")
-               (init-stop-page!))))
+               (init-stop-page!)))
+
+  (.click ($ "#resetTimes")
+          #(do (.emit @socket "reset-times" (pr-str (get-times)))))
+
+  )
 
 ;;------------------------------------------------------------
 ;; Password page
@@ -87,7 +129,7 @@
   (.preventDefault e)
   (.emit @socket "request-mc" (.val ($ "#password"))))
 
-(defn on-grant-mc
+(defn- on-grant-mc
   "Callback for handling the MC access grant."
   [str-data]
   (if-let [game-running (read-string str-data)]
@@ -116,6 +158,8 @@
 (defn init
   []
   (client.core/set-bw-background!)
+  ; Listen for any settings updates
+  (.on @socket "settings-update" #(on-settings-update (read-string %)))
 
   (init-password-page!)
   )
@@ -128,6 +172,8 @@
 
   ; Destroy socket listeners.
   (.removeListener @socket "grant-mc" on-grant-mc)
+  (.removeListener @socket "settings-update" on-settings-update)
+
 
   (cleanup-stop-page!)
 
