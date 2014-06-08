@@ -51,6 +51,8 @@
 ;; Game Runner
 ;;------------------------------------------------------------
 
+(declare go-go-next-game-countdown!)
+
 (def game-count
   "Number of games started since server started (used to identify games)"
   (atom 0))
@@ -63,9 +65,14 @@
   "Channel to close in order to halt the current game."
   (atom nil))
 
+(def start-game-chan
+  "Channel to start in order to start a new game."
+  (atom nil))
+
 (def game-settings
   "Game timer settings."
-  (atom {:duration 300})) ; Length in seconds of a multiplayer round. Default is 5 minutes.
+  (atom {:duration 300 ; Length in seconds of a multiplayer round. Default is 5 minutes.
+         :cooldown 0})) ; Length in seconds before automatically starting a new game. Default (0) requires manual start.
 
 (defn rank-players
   "Get players for the given game sorted by rank for the given mode."
@@ -159,8 +166,52 @@
 
     (util/js-log "Game ended.")
 
+    (go-go-next-game-countdown! io)
     )
   )
+
+(defn go-go-next-game-countdown!
+  "Start a new game automatically after cooldown period"
+  [io]
+
+  ; Create new start channel for this game.
+  (reset! start-game-chan (chan))
+
+  (go
+
+    ; If a cooldown time is set, then wait for it to expire
+    (let [cooldown (:cooldown @game-settings)]
+      (if (pos? cooldown)
+        ; Countdown
+        (loop [s cooldown]
+          (util/js-log "time until next game:" s)
+
+          ; TODO - re-use time-left for cooldown timer?
+
+          (.. io (to "mc") (emit "time-left" s))
+          (.. io (to "dashboard") (emit "time-left" s))
+          (.. io (to "lobby") (emit "time-left"))
+
+          (if-not (zero? s)
+            ; Wait for either the timer or the start channel.
+            (let [t (timeout 1000)
+                  q @start-game-chan
+                  [_ c] (alts! [t q])]
+              (if (= c t)
+                (recur (dec s))))
+            ; timer expired let the game automatically start
+            (close! @start-game-chan)))
+
+        ; no cooldown set, then just wait for mc to manually start the game
+        (util/js-log "Waiting for manual start of next game")))
+
+      ; wait on the start game channel
+      ; note: if the cooldown timer was interrupted then this should
+      ;       return immediately
+      (<! @start-game-chan)
+
+      ; It's game time, GO!
+      (go-go-game! io :time)))
 
 ;;------------------------------------------------------------------------------
 ;; Socket Events
@@ -187,7 +238,9 @@
   "Called when the MC updates the game time settings."
   [new-times socket]
   ; exclude any invalid time entries that aren't positive integers
-  (let [new-times (select-keys new-times (for [[k time] new-times :when (pos? time)] k))]
+  (let [{:keys [duration cooldown]} new-times
+        new-times (if (pos? duration) (assoc new-times :duration duration))
+        new-times (if (>= cooldown 0) (assoc new-times :cooldown cooldown))]
     (when-not (empty? new-times)
       (swap! game-settings merge new-times)
       (.. socket -broadcast (to "mc") (emit "settings-update" (pr-str new-times)))
@@ -277,8 +330,8 @@
          #(.leave socket "mc"))
 
     ; Start the game
-    #_(.on socket "start-lines" #(if-not @game-mode (go-go-game! io :line)))
-    (.on socket "start-time" #(if-not @game-mode (go-go-game! io :time)))
+    #_(.on socket "start-lines" #(close! if-not @game-mode (go-go-game! io :line)))
+    (.on socket "start-time" #(close! @start-game-chan))
 
     ; Stop the game.
     (.on socket "stop-game"
@@ -308,6 +361,9 @@
     ; start server
     (.listen server (:port config))
     (println "t3tr0s server listening on port" (:port config) "\n")
+
+    ; wait for next game to start
+    (go-go-next-game-countdown! io)
 
     ; configure sockets
     (.sockets.on io "connection" #(init-socket io %))))

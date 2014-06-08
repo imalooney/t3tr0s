@@ -19,8 +19,9 @@
   (atom {}))
 
 (defn- on-change-game-settings [_ _ _ new-settings]
-  (let [{:keys [duration]} new-settings]
-    (.val ($ "#duration") duration)))
+  (let [{:keys [duration cooldown]} new-settings]
+    (.val ($ "#duration") duration)
+    (.val ($ "#cooldown") cooldown)))
 
 (add-watch game-settings :main on-change-game-settings)
 
@@ -86,7 +87,7 @@
           [:input#duration.input-48f1f {:type "text" :value (:duration @game-settings)}]]
         [:div.input-4a3e3
           [:label.label-66a3b "Time between rounds:"]
-          [:input#cooldown.input-48f1f {:type "text"}]]
+          [:input#cooldown.input-48f1f {:type "text" :value (:cooldown @game-settings)}]]
       [:div.button-container-8e52e
         [:button#startBtn.green-btn-f67eb "START NOW"]
         [:button#resetTimes.blue-btn-41e23 "RESET TIMES"]]]]])
@@ -94,7 +95,8 @@
 (defn- get-times
   "Retrieve the time settings inputs"
   []
-  { :duration (js/parseInt (.val ($ "#duration")) 10) })
+  {:duration (js/parseInt (.val ($ "#duration")) 10)
+   :cooldown (js/parseInt (.val ($ "#cooldown")) 10)})
 
 (defn init-start-page!
   "Initialize the start game page."
