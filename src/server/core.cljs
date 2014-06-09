@@ -306,7 +306,7 @@
             (.. socket -broadcast (to "lobby") (emit "new-message" (pr-str data)))
             (.join socket "lobby")
             ; socket.io provides no way get a count of players in a room
-            ; so we need to mark players as in the lobby in order to lnow
+            ; so we need to mark players as in the lobby in order to know
             ; who is waiting for the next game
             (swap! players update-in [pid] assoc :in-lobby true)
             (signal-num-players-in-lobby!)))
