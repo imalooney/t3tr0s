@@ -69,8 +69,8 @@
   "Channel to start in order to start a new game."
   (atom nil))
 
-(def num-players-chan
-  "Channel to track the current number of players connected."
+(def players-waiting-chan
+  "Channel to signal the number of players waiting to play in lobby."
   (atom (chan (sliding-buffer 1))))
 
 (def game-settings
@@ -187,8 +187,9 @@
       (if (pos? cooldown)
         (do
           (util/js-log "Waiting for players")
+
           ; don't start the countdown until there are at least 2 players connected
-          (<! (filter< #(> % 1) @num-players-chan))
+          (<! (filter< #(>= % 2) @players-waiting-chan))
 
           ; Countdown
           (loop [s cooldown]
@@ -217,10 +218,13 @@
       ; It's game time, GO!
       (go-go-game! io :time)))
 
-(defn- put-num-players-connected!
-  "Publishes the number of players connected in case next game countdown is on hold."
+(defn- signal-num-players-in-lobby!
+  "Publishes the number of players waiting in the lobby in case next game countdown is on hold."
   []
-  (put! @num-players-chan (count @players)))
+  (let [num-players (count (filter :in-lobby (vals @players)))]
+    (util/log (str "Num players in the lobby: " num-players))
+    (put! @players-waiting-chan num-players)))
+
 
 ;;------------------------------------------------------------------------------
 ;; Socket Events
@@ -278,8 +282,6 @@
     ; Add to player table as "Anon" for now.
     (swap! players assoc pid anon-player)
 
-    (put-num-players-connected!)
-
     ; Request that the client emit an "update-name" message back
     ; in case the server restarts and we need user info again.
     (.emit socket "request-name")
@@ -289,7 +291,7 @@
          #(do
             (util/js-log "Player" pid "disconnected.")
             (swap! players dissoc pid)
-            (put-num-players-connected!)))
+            (signal-num-players-in-lobby!)))
 
     ; Update player name when requested.
     (.on socket "update-name"
@@ -302,14 +304,21 @@
          #(let [data (assoc (get @players pid) :type "join")]
             (util/js-log "Player" pid "joined the lobby.")
             (.. socket -broadcast (to "lobby") (emit "new-message" (pr-str data)))
-            (.join socket "lobby")))
+            (.join socket "lobby")
+            ; socket.io provides no way get a count of players in a room
+            ; so we need to mark players as in the lobby in order to know
+            ; who is waiting for the next game
+            (swap! players update-in [pid] assoc :in-lobby true)
+            (signal-num-players-in-lobby!)))
 
     ; Leave the lobby.
     (.on socket "leave-lobby"
          #(let [data (assoc (get @players pid) :type "leave")]
             (util/js-log "Player" pid "left the lobby.")
             (.. socket -broadcast (to "lobby") (emit "new-message" (pr-str data)))
-            (.leave socket "lobby")))
+            (.leave socket "lobby")
+            (swap! players update-in [pid] dissoc :in-lobby)
+            (signal-num-players-in-lobby!)))
 
     ; Chat in the lobby.
     (.on socket "chat-message" #(on-chat-message % pid socket))
