@@ -31,22 +31,22 @@
 (defn get-username
   "Gets the currently stored username."
   []
-  (if-let [username (aget js/localStorage "username")]
+  (if-let [username (aget js/sessionStorage "username")]
     username
     ""))
 
 (defn get-color
   "Gets the currently stored user color."
   []
-  (if-let [color (aget js/localStorage "color")]
+  (if-let [color (aget js/sessionStorage "color")]
     color
     0))
 
 (defn store-login!
   "Stores the given username and a random color(0-6)"
   [username]
-  (aset js/localStorage "username" username)
-  (aset js/localStorage "color" (rand-int 7)))
+  (aset js/sessionStorage "username" username)
+  (aset js/sessionStorage "color" (rand-int 7)))
 
 (defn send-login!
   "Send the login information to the server."
