@@ -98,7 +98,7 @@
   (.getElementById js/document id))
 
 (defn- create-board-if-needed! [id]
-  (if-not (by-id id)
+  (when-not (by-id id)
     (.append ($ "#boardsContainer") (board id))
     (size-canvas! (str "canvas-" id) empty-board cell-size rows-cutoff)
     ))
