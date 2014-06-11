@@ -78,6 +78,10 @@
   (atom {:duration 300 ; Length in seconds of a multiplayer round. Default is 5 minutes.
          :cooldown 0})) ; Length in seconds before automatically starting a new game. Default (0) requires manual start.
 
+(def leaders
+  "The leaders in the current game."
+  (atom []))
+
 (defn rank-players
   "Get players for the given game sorted by rank for the given mode."
   [game-id mode]
@@ -85,6 +89,11 @@
        (filter #(= game-id (:game %)))
        (sort-by :score)
        (reverse)))
+
+(defn player-visible-on-dashboard?
+  "Determines if the given player is visible on the dashboard."
+  [pid]
+  (some #(= pid (:pid %)) (take 3 @leaders)))
 
 (defn go-go-countdown!
   "Start the countdown"
@@ -102,6 +111,8 @@
   "Start a game."
   [io mode]
 
+  ; Empty the leaders.
+  (swap! leaders empty)
 
   ; Create new quit channel for this game.
   (reset! quit-game-chan (chan))
@@ -133,10 +144,6 @@
         (.. io (to "mc") (emit "time-left" s))
         (.. io (to "dashboard") (emit "time-left" s))
         (.. io (to "lobby") (emit "start-game"))
-
-        ; Send top ranked players to the MC.
-        (let [ranks (take 10 (rank-players @game-count @game-mode))]
-          (.. io (to "dashboard") (emit "leader-update" (pr-str ranks))))
 
         (if-not (zero? s)
 
@@ -235,6 +242,13 @@
     (util/js-log "Player" pid "said:" msg)
     (.. socket -broadcast (to "lobby") (emit "new-message" (pr-str d)))))
 
+(defn- on-score-update
+  "Called when a player's score is updated."
+  [io]
+  (let [ranks (take 10 (rank-players @game-count @game-mode))]
+    (reset! leaders ranks)
+    (.. io (to "dashboard") (emit "leader-update" (pr-str ranks)))))
+
 (defn- on-update-player
   "Called when player sends an updated state."
   [data pid socket io]
@@ -245,7 +259,17 @@
   ; Also update the game id, so we know which players are in the current game.
   (swap! players update-in [pid] merge data {:game @game-count :pid pid})
 
-  )
+  ; Call score update events.
+  (if (contains? data :score)
+    (on-score-update io))
+
+  ; If player should be visible on dashboard, then emit to dashboard.
+  (if (and (contains? data :board)
+           (player-visible-on-dashboard? pid))
+    (.. io (to "dashboard")
+           (emit "board-update"
+                 (pr-str (select-keys (get @players pid) [:board :pid :theme]))))))
+
 
 (defn- on-reset-times
   "Called when the MC updates the game time settings."
@@ -328,7 +352,10 @@
     (.on socket "leave-game" #(.leave socket "game"))
 
     ; Join/leave the dashboard.
-    (.on socket "join-dashboard" #(.join socket "dashboard"))
+    (.on socket "join-dashboard"
+         #(do
+            (.join socket "dashboard")
+            (on-score-update io)))
     (.on socket "leave-dashboard" #(.leave socket "dashboard"))
 
     ; Receive the update from the player.

@@ -112,7 +112,12 @@
 (def place-classes (str "place-1 place-2 place-3 place-4 place-5"
   " place-6 place-7 place-8 place-9 place-10"))
 
+(defn- draw-live-board
+   [id itm]
+   (draw-board! (str "canvas-" id) (:board itm) cell-size (:theme itm) rows-cutoff))
+
 (defn- update-board [idx itm]
+  (js/console.log "updating board")
   (create-uuid-if-needed! (:pid itm))
   (create-board-if-needed! (get @ids (:pid itm)))
   (let [place (+ idx 1)
@@ -122,7 +127,9 @@
 
     ;; hide board that are not in the top three
     (if (<= place 3)
-      (.css $board "display" "")
+      (do
+        (.css $board "display" "")
+        (draw-live-board id itm))
       (.css $board "display" "none"))
 
     (.removeClass $el place-classes)
@@ -130,8 +137,6 @@
 
     (.html ($ (str "#" id " .name-1d96a")) (:user itm))
     (.html ($ (str "#" id " .score-5aeae")) (util/format-number (:score itm)))
-    
-    (draw-board! (str "canvas-" id) (:board itm) cell-size (:theme itm) rows-cutoff)
 
     ))
 
@@ -162,7 +167,7 @@
     [:h1.title-d49ea "Scoreboard"]]
   [:div.dashboard-0e330
     [:button#btn-shuffle {:style "display:none"} "SHUFFLE"]
-    [:h2.time-left-eb709 {:style "display:none"} "Time Left: 2:32"]
+    [:h2.time-left-eb709 "Time Left: 2:32"]
     [:div#boardsContainer.boards-ad07f
       [:div.num-2b782.first-100e1
         [:span.number-86f89 "1"]
@@ -199,12 +204,21 @@
 ;; Socket Events
 ;;------------------------------------------------------------------------------
 
+(defn on-board-update
+  "Called when receiving a board update from a visible leader."
+  [str-data]
+  (let [itm (read-string str-data)
+        id (get @ids (:pid itm))]
+    (draw-live-board id itm)))
+
 (defn on-leader-update
+  "Called when receiving an updated list of leaders and their scores."
   [str-data]
   (let [data (read-string str-data)]
     (reset! leaders data)))
 
 (defn on-time-left
+  "Called when receiving time-left update from server."
   [total-seconds]
   (let [m (js/Math.floor (/ total-seconds 60))
         s (mod total-seconds 60)
@@ -226,6 +240,7 @@
 
   (.emit @socket "join-dashboard")
 
+  (.on @socket "board-update" on-board-update)
   (.on @socket "leader-update" on-leader-update)
   (.on @socket "time-left" on-time-left)
 
@@ -237,6 +252,7 @@
 
   (.emit @socket "leave-dashboard")
 
+  (.removeListener @socket "board-update" on-board-update)
   (.removeListener @socket "leader-update" on-leader-update)
   (.removeListener @socket "time-left" on-time-left)
 
