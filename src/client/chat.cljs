@@ -26,7 +26,7 @@
   [{:keys [user color msg]}]
   [:p.message
     [:span#user {:class (str "color-" color)}(str user ": ")]
-    [:span.txt msg]])
+    [:span.txt (hiccups.runtime/escape-html msg)]])
 
 (hiccups/defhtml chat-join-html
   [{:keys [user color]}]
