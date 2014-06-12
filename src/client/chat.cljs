@@ -1,7 +1,7 @@
 (ns client.chat
-	(:require-macros [hiccups.core :as hiccups])
+  (:require-macros [hiccups.core :as hiccups])
   (:require
-		hiccups.runtime
+    hiccups.runtime
     [client.socket :refer [socket]]
     [client.login :refer [get-username
                           get-color]]
@@ -13,7 +13,7 @@
 ;;------------------------------------------------------------
 
 (hiccups/defhtml chat-html []
-	[:div#inner-container
+  [:div#inner-container
     [:div.chat-logo-e38e3
       [:img {:src "/img/t3tr0s_logo_200w.png" :width "160px"}]
       [:span.span-4e536.time-left-8a651 "Waiting to play..."]]
@@ -25,18 +25,18 @@
 (hiccups/defhtml chat-msg-html
   [{:keys [user color msg]}]
   [:p.message
-   [:span#user {:class (str "color-" color)}(str user ": ")]
-   [:span.txt msg]])
+    [:span#user {:class (str "color-" color)}(str user ": ")]
+    [:span.txt msg]])
 
 (hiccups/defhtml chat-join-html
   [{:keys [user color]}]
   [:p.message
-   [:span#user {:class (str "color-" color)}(str user " joined the lobby")]])
+    [:span#user {:class (str "color-" color)}(str user " joined the lobby")]])
 
 (hiccups/defhtml chat-leave-html
   [{:keys [user color]}]
   [:p.message
-   [:span#user {:class (str "color-" color)}(str user " left the lobby")]])
+    [:span#user {:class (str "color-" color)}(str user " left the lobby")]])
 
 
 ; alias the jquery variable
