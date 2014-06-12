@@ -1,5 +1,7 @@
 (ns server.util)
 
+(def moment (js/require "moment"))
+
 (defn log
   "Log a Clojure thing."
   [thing]
@@ -11,10 +13,12 @@
   (apply (.-log js/console) js-things))
 
 (defn- now []
-  (.toTimeString (js/Date.)))
+  (.format (moment) "YYYY-MM-DD HH:mm:ss"))
 
-;; TODO: better timestamp format here
+;; TODO: investigate using a proper logging library
+;; - https://github.com/flatiron/winston
+;; - https://github.com/trentm/node-bunyan
 (defn tlog
   "Timestampped log."
-  [msg]
-  (js-log (str (now) " - " msg)))
+  [& msgs]
+  (js-log (str "[" (now) "] " (apply str msgs))))

@@ -10,26 +10,26 @@
 
 (enable-console-print!)
 
-;;------------------------------------------------------------
+;;------------------------------------------------------------------------------
 ;; Node libraries
-;;------------------------------------------------------------
+;;------------------------------------------------------------------------------
 
 (def express (js/require "express"))
 (def http    (js/require "http"))
 (def socket  (js/require "socket.io"))
 
-;;------------------------------------------------------------
+;;------------------------------------------------------------------------------
 ;; Config
-;;------------------------------------------------------------
+;;------------------------------------------------------------------------------
 
 (def config
   (-> (js/require "./config.json")
     js->clj
     clojure.walk/keywordize-keys))
 
-;;------------------------------------------------------------
+;;------------------------------------------------------------------------------
 ;; Player IDs
-;;------------------------------------------------------------
+;;------------------------------------------------------------------------------
 
 (def players
   "Table of connected players."
@@ -47,9 +47,9 @@
 
 (def anon-player {:user "Anon" :color 0})
 
-;;------------------------------------------------------------
+;;------------------------------------------------------------------------------
 ;; Game Runner
-;;------------------------------------------------------------
+;;------------------------------------------------------------------------------
 
 (declare go-go-next-game-countdown!)
 
@@ -101,11 +101,19 @@
   (go
     (doseq [i (reverse (range (inc seconds)))]
       (<! (timeout 1000))
-      (util/js-log "countdown:" i)
+      (util/tlog "new game starting in " i)
       (.. io (to "lobby") (emit "start-game"))
       (.. io (to "game") (emit "countdown" i))
-      (.. io (to "mc") (emit "countdown" i)))
-  ))
+      (.. io (to "mc") (emit "countdown" i)))))
+
+;; TODO: rename "game" to "round"?
+
+(defn- log-time-left [s]
+  (cond
+    (= 0 s) nil
+    (= 0 (mod s 15)) (util/tlog "game time remaining: " s " seconds")
+    (< s 10) (util/tlog "game ending in " s)
+    :else nil))
 
 (defn go-go-game!
   "Start a game."
@@ -124,7 +132,7 @@
   (swap! game-count inc)
 
   ; Log the game start.
-  (util/js-log "Starting the game:" (name mode) @game-count)
+  (util/tlog "Starting the game: " (name mode) " " @game-count)
 
   ; Make lobby players navigate to a countdown screen.
   (.. io (to "lobby") (emit "start-game"))
@@ -138,7 +146,7 @@
     (if (= mode :time)
       (loop [s (:duration @game-settings)]
 
-        (util/js-log "time left:" s)
+        (log-time-left s)
 
         (.. io (to "game") (emit "time-left" s))
         (.. io (to "mc") (emit "time-left" s))
@@ -158,11 +166,11 @@
     (let [ranks (rank-players @game-count @game-mode)]
 
       ; Show ranks on server console.
-      (util/js-log "RANKS")
+      (util/tlog "Game Results:")
       (doseq [r ranks]
-        (util/js-log (:user r) " - "
-                        (:score r) " points - "
-                        (:total-lines r) " lines"))
+        (util/tlog (:user r) " - "
+                   (:score r) " points - "
+                   (:total-lines r) " lines"))
 
       ; Emit a game over message with ranks to players.
       (.. io (to "game") (emit "game-over"
@@ -175,11 +183,9 @@
     ; Clear the game mode when done.
     (reset! game-mode nil)
 
-    (util/js-log "Game ended.")
+    (util/tlog "game ended")
 
-    (go-go-next-game-countdown! io)
-    )
-  )
+    (go-go-next-game-countdown! io)))
 
 (defn go-go-next-game-countdown!
   "Start a new game automatically after cooldown period"
@@ -193,14 +199,14 @@
     (let [cooldown (:cooldown @game-settings)]
       (if (pos? cooldown)
         (do
-          (util/js-log "Waiting for players")
+          (util/tlog "waiting for players")
 
           ; don't start the countdown until there are at least 2 players connected
           (<! (filter< #(>= % 2) @players-waiting-chan))
 
           ; Countdown
           (loop [s cooldown]
-            (util/js-log "time until next game:" s)
+            (util/tlog "time until next game: " s)
 
             (.. io (to "lobby") (emit "time-left" s))
 
@@ -215,7 +221,7 @@
               (close! @start-game-chan))))
 
         ; no cooldown set, then just wait for mc to manually start the game
-        (util/js-log "Waiting for manual start of next game")))
+        (util/tlog "waiting for manual start of next game")))
 
       ; wait on the start game channel
       ; note: if the cooldown timer was interrupted then this should
@@ -229,9 +235,8 @@
   "Publishes the number of players waiting in the lobby in case next game countdown is on hold."
   []
   (let [num-players (count (filter :in-lobby (vals @players)))]
-    (util/log (str "Num players in the lobby: " num-players))
+    (util/tlog "lobby count: " num-players)
     (put! @players-waiting-chan num-players)))
-
 
 ;;------------------------------------------------------------------------------
 ;; Socket Events
@@ -239,7 +244,7 @@
 
 (defn- on-chat-message [msg pid socket]
   (let [d (assoc (get @players pid) :type "msg" :msg msg)]
-    (util/js-log "Player" pid "said:" msg)
+    (util/tlog "player " pid " says: \"" msg "\"")
     (.. socket -broadcast (to "lobby") (emit "new-message" (pr-str d)))))
 
 (defn- on-score-update
@@ -253,7 +258,8 @@
   "Called when player sends an updated state."
   [data pid socket io]
 
-  (util/js-log "Player" pid "updated.")
+  ;; NOTE: commented this out because it makes the log very noisy
+  ;;(util/tlog "player " pid " updated")
 
   ; Merge in the updated data into the player structure.
   ; Also update the game id, so we know which players are in the current game.
@@ -282,7 +288,7 @@
       (swap! game-settings merge new-times)
       (.. socket -broadcast (to "mc") (emit "settings-update" (pr-str new-times)))
       (.emit socket "settings-update" (pr-str new-times)) ; TODO - How do you emit to self AND room?
-      (util/js-log (str "Updated game times: " new-times)))))
+      (util/tlog "new game times: " new-times))))
 
 ;;------------------------------------------------------------------------------
 ;; Socket Setup
@@ -298,7 +304,7 @@
 
   (let [pid (gen-player-id!)]
 
-    (util/js-log "Player" pid "connected.")
+    (util/tlog "player " pid " connected")
 
     ; Attach player id to socket.
     (aset socket "pid" pid)
@@ -312,37 +318,38 @@
 
     ; Remove player from table when disconnected.
     (.on socket "disconnect"
-         #(do
-            (util/js-log "Player" pid "disconnected.")
-            (swap! players dissoc pid)
-            (signal-num-players-in-lobby!)))
+      #(do
+        (util/tlog "player " pid " disconnected")
+        (swap! players dissoc pid)
+        (signal-num-players-in-lobby!)))
 
     ; Update player name when requested.
     (.on socket "update-name"
-         #(let [data (read-string %)]
-            (util/js-log "Updating player" pid "with" (:user data) (:color data))
-            (swap! players update-in [pid] merge data)))
+      #(let [data (read-string %)]
+        (util/tlog "player " pid " now known as \"" (:user data) "\"")
+        (util/tlog "player " pid " using color " (:color data))
+        (swap! players update-in [pid] merge data)))
 
     ; Join the lobby.
     (.on socket "join-lobby"
-         #(let [data (assoc (get @players pid) :type "join")]
-            (util/js-log "Player" pid "joined the lobby.")
-            (.. socket -broadcast (to "lobby") (emit "new-message" (pr-str data)))
-            (.join socket "lobby")
-            ; socket.io provides no way get a count of players in a room
-            ; so we need to mark players as in the lobby in order to know
-            ; who is waiting for the next game
-            (swap! players update-in [pid] assoc :in-lobby true)
-            (signal-num-players-in-lobby!)))
+      #(let [data (assoc (get @players pid) :type "join")]
+        (util/tlog "player " pid " joined the lobby")
+        (.. socket -broadcast (to "lobby") (emit "new-message" (pr-str data)))
+        (.join socket "lobby")
+        ; socket.io provides no way get a count of players in a room
+        ; so we need to mark players as in the lobby in order to know
+        ; who is waiting for the next game
+        (swap! players update-in [pid] assoc :in-lobby true)
+        (signal-num-players-in-lobby!)))
 
     ; Leave the lobby.
     (.on socket "leave-lobby"
-         #(let [data (assoc (get @players pid) :type "leave")]
-            (util/js-log "Player" pid "left the lobby.")
-            (.. socket -broadcast (to "lobby") (emit "new-message" (pr-str data)))
-            (.leave socket "lobby")
-            (swap! players update-in [pid] dissoc :in-lobby)
-            (signal-num-players-in-lobby!)))
+      #(let [data (assoc (get @players pid) :type "leave")]
+        (util/tlog "player " pid " left the lobby")
+        (.. socket -broadcast (to "lobby") (emit "new-message" (pr-str data)))
+        (.leave socket "lobby")
+        (swap! players update-in [pid] dissoc :in-lobby)
+        (signal-num-players-in-lobby!)))
 
     ; Chat in the lobby.
     (.on socket "chat-message" #(on-chat-message % pid socket))
@@ -360,22 +367,22 @@
 
     ; Receive the update from the player.
     (.on socket "update-player"
-         #(on-update-player (read-string %) pid socket io))
+      #(on-update-player (read-string %) pid socket io))
 
     ; Request access to the MC role.
     (.on socket "request-mc"
-         #(if (= % (:mc-password config))
-            (do
-              (util/js-log "Player" pid "granted as MC.")
-              (.join socket "mc")
-              (.emit socket "grant-mc" (pr-str @game-mode))
-              (.emit socket "settings-update" (pr-str @game-settings)))
-            (do
-              (util/js-log "Player" pid "rejected as MC."))))
+      #(if (= % (:mc-password config))
+        (do
+          (util/tlog "player " pid " granted as MC")
+          (.join socket "mc")
+          (.emit socket "grant-mc" (pr-str @game-mode))
+          (.emit socket "settings-update" (pr-str @game-settings)))
+        (do
+          (util/tlog "player " pid " rejected as MC"))))
 
     ; Leave the MC role.
     (.on socket "leave-mc"
-         #(.leave socket "mc"))
+      #(.leave socket "mc"))
 
     ; Start the game
     #_(.on socket "start-lines" #(close! if-not @game-mode (go-go-game! io :line)))
@@ -383,20 +390,19 @@
 
     ; Stop the game.
     (.on socket "stop-game"
-         #(if (and @game-mode @quit-game-chan)
-            (close! @quit-game-chan)))
+      #(if (and @game-mode @quit-game-chan)
+        (close! @quit-game-chan)))
 
     ; Reset game times
     (.on socket "reset-times" #(on-reset-times (read-string %) socket))
 
     ))
 
-;;------------------------------------------------------------
+;;------------------------------------------------------------------------------
 ;; Main
-;;------------------------------------------------------------
+;;------------------------------------------------------------------------------
 
 (defn -main [& args]
-
   (let [app    (express)
         server (.createServer http app)
         io     (.listen socket server)]
@@ -408,7 +414,7 @@
 
     ; start server
     (.listen server (:port config))
-    (println "t3tr0s server listening on port" (:port config) "\n")
+    (util/tlog "t3tr0s server listening on port " (:port config))
 
     ; wait for next game to start
     (go-go-next-game-countdown! io)
