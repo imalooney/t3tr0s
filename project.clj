@@ -25,7 +25,7 @@
         :source-paths ["src/client"]
         :compiler {
           :externs ["externs/jquery-1.9.js" "externs/socket.io.js"]
-          :output-to "public/client.js"
+          :output-to "public/client.min.js"
           :optimizations :advanced
           :pretty-print false}}
 
