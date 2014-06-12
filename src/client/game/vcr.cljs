@@ -57,5 +57,5 @@
   "Push the recording to the server to be rendered."
   []
   (let [data (pr-str (:frames @vcr))]
-    (.emit @socket "create-gif" data)))
+    (.emit @socket "create-canvas-gif" data)))
 

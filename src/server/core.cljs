@@ -5,7 +5,7 @@
     [cljs.core.async :refer [<! timeout alts! close! chan sliding-buffer filter< put!]]
     [clojure.walk]
     [cljs.reader :refer [read-string]]
-    [server.gif :refer [create-gif]]
+    [server.gif :refer [create-canvas-gif]]
     [server.util :as util]))
 
 (enable-console-print!)
@@ -292,8 +292,8 @@
   "Initialize the web socket."
   [io socket]
 
-  ; Create gif whenever "create-gif" is emitted.
-  (.on socket "create-gif" #(create-gif (read-string %)))
+  ; Create gif whenever "create-canvas-gif" is emitted.
+  (.on socket "create-canvas-gif" #(create-canvas-gif (read-string %)))
 
 
   (let [pid (gen-player-id!)]
