@@ -78,11 +78,13 @@
   "Temp state of the board when paused"
   (atom nil))
 
-(defn- update-theme [_ _ _ new-state]
-  (let [theme-num (:theme new-state)
-        theme (get themes theme-num)]
-    (.html ($ "#theme") (:year theme))
-    (.html ($ "#theme-details") (:platform theme))))
+(defn- update-theme [_ _ old-state new-state]
+  (if (not= (:theme old-state)
+            (:theme new-state))
+    (let [theme-num (:theme new-state)
+          theme (get themes theme-num)]
+      (.html ($ "#theme") (:year theme))
+      (.html ($ "#theme-details") (:platform theme)))))
 
 (add-watch state :theme-change update-theme)
 
@@ -369,7 +371,7 @@
 
 (defn change-theme!
   "Changes the boards theme"
-  [theme year platform event]
+  [theme event]
   (.preventDefault event)
   (swap! state assoc :theme theme)
   ;; TODO: set this in the atom watcher?
@@ -435,16 +437,16 @@
         key-down (fn [e]
                    (case (key-name e)
                     ;; TODO: remove this - replace with themes value
-                     :one   (change-theme! 0 "1984" "Electronika 60" e)
-                     :two   (change-theme! 1 "1986" "MS DOS" e)
-                     :three (change-theme! 2 "1986" "Tengen/Atari Arcade" e)
-                     :four  (change-theme! 3 "1989" "Gameboy" e)
-                     :five  (change-theme! 4 "1989" "NES" e)
-                     :six   (change-theme! 5 "1989" "Sega Genesis" e)
-                     :seven (change-theme! 6 "1998" "Gameboy color" e)
-                     :eight (change-theme! 7 "2000" "TI-83" e)
-                     :nine  (change-theme! 8 "2002" "Flash" e)
-                     :zero  (change-theme! 9 "2012" "Facebook" e)
+                     :one   (change-theme! 0 e)
+                     :two   (change-theme! 1 e)
+                     :three (change-theme! 2 e)
+                     :four  (change-theme! 3 e)
+                     :five  (change-theme! 4 e)
+                     :six   (change-theme! 5 e)
+                     :seven (change-theme! 6 e)
+                     :eight (change-theme! 7 e)
+                     :nine  (change-theme! 8 e)
+                     :zero  (change-theme! 9 e)
                      :p     (do (toggle-pause-game!) (.preventDefault e))
                      nil)
                    (if (and (:piece @state) (not @paused?))
