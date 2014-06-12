@@ -58,9 +58,15 @@
     (stop-record!)
     (start-record!)))
 
-(defn publish-record!
+(defn publish-canvas-record!
   "Push the recording to the server to be rendered."
   []
   (let [data (pr-str (:frames @vcr))]
     (.emit @socket "create-canvas-gif" data)))
+
+(defn publish-html-record!
+  "Push the recording to the server to be rendered."
+  []
+  (let [data (pr-str (:frames @vcr))]
+    (.emit @socket "create-html-gif" data)))
 

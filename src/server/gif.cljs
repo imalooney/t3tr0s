@@ -3,7 +3,7 @@
     [cljs.core.async.macros :refer [go]])
   (:require
     [clojure.string :refer [join]]
-    [cljs.core.async :refer [close! put! chan <!]]))
+    [cljs.core.async :refer [close! chan <! timeout]]))
 
 ;;------------------------------------------------------------
 ;; Node libraries
@@ -69,27 +69,50 @@
     [images delays]))
 
 
-(defn screenshot-state
-  "Take a screenshot of the given state on the given socket.  Returns a channel that will receive a value when done."
-  [state imagename socket]
-
+(defn resize-screenshots
+  []
   (let [done-chan (chan)]
 
-    ; Set the client's state to render the correct view.
-    (.emit socket "set-state" (pr-str state))
+    (exec "sips --resampleWidth 674 gif/*.png"
+          (fn [error stdout stderr]
+            (if error
+              (println "ERROR:\n" error)
+              (do (println "SUCCESS. resized images")
+                  (close! done-chan)))))
 
+    done-chan))
+
+(defn screenshot
+  [imagename]
+
+  (let [done-chan (chan)]
     ; Use the Mac command `screencapture` to take a screenshot of the browser.
     ; This of course means the server and client need to run on the same computer,
     ; and the browser must remain in view while the server is taking the screenshot.
-    ; TODO: set appropriate recording region with the "-R" option.
-    (exec (str "screencapture " imagename)
+    ; NOTE: the specified region below works on a full firefox window zoomed out 4x
+    (exec (str "screencapture -R390,105,674,400 " imagename)
           (fn [error stdout stderr]
             (if error
               (println "ERROR:\n" error)
               (do (println "SUCCESS.  Wrote " imagename)
-                  (put! done-chan 0)))))
+                  (close! done-chan)))))
 
     done-chan))
+
+(defn screenshot-state
+  "Take a screenshot of the given state on the given socket.  Returns a channel that will receive a value when done."
+  [state imagename socket]
+
+  (go
+
+    ; Set the client's state to render the correct view.
+    (.emit socket "set-state" (pr-str state))
+
+    ; Allow some time for the state to be set
+    (<! (timeout 100))
+
+    ; Wait for screenshot to be taken.
+    (<! (screenshot imagename))))
 
 (defn create-html-gif
   "Create an animated gif from the given states using Mac's `screencapture` command.  (Slow)"
@@ -105,6 +128,10 @@
         (doseq [[frame img] (map vector frames images)]
           (<! (screenshot-state (:state frame) img socket))))
 
+      ; Downscale the screenshots.
+      (<! (resize-screenshots))
+
+      ; Create the gif.
       (create-gif delays images))))
 
 
