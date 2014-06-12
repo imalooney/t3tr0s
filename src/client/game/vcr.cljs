@@ -23,12 +23,17 @@
         dt (if-let [prev-ms (:prev-ms @vcr)]
              (- ms prev-ms)
              0)
-        prev-url (if-let [prev-frame (last (:frames @vcr))]
-                   (:data-url prev-frame))
-        url (.toDataURL (:canvas @vcr))]
-    (when (not= prev-url url)
-      (swap! vcr update-in [:frames] conj {:dt dt :data-url url})
-      (swap! vcr assoc :prev-ms ms))))
+        url (.toDataURL (:canvas @vcr))
+        data (select-keys @client.game.core/state [:next-piece
+                                                   :piece
+                                                   :position
+                                                   :board
+                                                   :theme
+                                                   :score
+                                                   :level
+                                                   :total-lines])]
+    (swap! vcr update-in [:frames] conj {:dt dt :data-url url :state data})
+    (swap! vcr assoc :prev-ms ms)))
 
 (defn start-record!
   "Start recording."

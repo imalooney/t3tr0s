@@ -1,6 +1,9 @@
 (ns server.gif
+  (:require-macros
+    [cljs.core.async.macros :refer [go]])
   (:require
-    [clojure.string :refer [join]]))
+    [clojure.string :refer [join]]
+    [cljs.core.async :refer [close! put! chan <!]]))
 
 ;;------------------------------------------------------------
 ;; Node libraries
@@ -41,13 +44,8 @@
                   (println "ERROR:\n" error)
                   (println "SUCCESS.  Wrote " gif-file))))))
 
-(defn create-html-gif
-  "Create an animated gif from the given states using Mac's `screencapture` command.  (Slow)"
-  []
-  nil)
-
-(defn create-canvas-gif
-  "Make an animated gif from the given frame images."
+(defn images-and-delays
+  "Create a sequence of image frame names and delays for the given frames."
   [frames]
   (let [; current working directory
         cwd "gif"
@@ -58,9 +56,6 @@
         ; Create a list of the image filenames.
         images (map fname (range (count frames)))
 
-        ; create file buffers
-        buffers (map #(data-url->buffer (:data-url %)) frames)
-
         ; create the delays
         dts (-> (map :dt frames)
                 (rest)           ; ignore first delay
@@ -70,6 +65,54 @@
         ; (modern browsers don't support gif delays below 0.02s)
         dt->delay #(max 2 (-> % (/ 10) js/Math.floor))
         delays (map dt->delay dts)]
+
+    [images delays]))
+
+
+(defn screenshot-state
+  "Take a screenshot of the given state on the given socket.  Returns a channel that will receive a value when done."
+  [state imagename socket]
+
+  (let [done-chan (chan)]
+
+    ; Set the client's state to render the correct view.
+    (.emit socket "set-state" (pr-str state))
+
+    ; Use the Mac command `screencapture` to take a screenshot of the browser.
+    ; This of course means the server and client need to run on the same computer,
+    ; and the browser must remain in view while the server is taking the screenshot.
+    ; TODO: set appropriate recording region with the "-R" option.
+    (exec (str "screencapture " imagename)
+          (fn [error stdout stderr]
+            (if error
+              (println "ERROR:\n" error)
+              (do (println "SUCCESS.  Wrote " imagename)
+                  (put! done-chan 0)))))
+
+    done-chan))
+
+(defn create-html-gif
+  "Create an animated gif from the given states using Mac's `screencapture` command.  (Slow)"
+  [frames socket]
+  (let [[images delays] (images-and-delays frames)]
+
+    ; Continue in a go-block because we have to wait on
+    ; asynchronous screenshot operations.
+    (go
+
+      ; Create all the screenshots.
+      (let [done-chan (chan)]
+        (doseq [[frame img] (map vector frames images)]
+          (<! (screenshot-state (:state frame) img socket))))
+
+      (create-gif delays images))))
+
+
+(defn create-canvas-gif
+  "Make an animated gif from the given frame images."
+  [frames]
+  (let [[images delays] (images-and-delays frames)
+        buffers (map #(data-url->buffer (:data-url %)) frames)]
 
     (println "Received " (count frames) "frames")
 

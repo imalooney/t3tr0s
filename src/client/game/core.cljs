@@ -503,6 +503,28 @@
 ;; Entry Point
 ;;------------------------------------------------------------
 
+(defn on-set-state
+  "Called when server is setting the state of the client for a screenshot."
+  [new-state]
+
+  ; Freeze the game.
+  (if (:quit-chan @state)
+    (close! (:quit-chan @state)))
+
+  ; Merge state with new state data.
+  (swap! state merge new-state)
+
+  (display-points!)
+
+  ; Draw new state.
+  (let [board (drawable-board)
+        theme (:theme @state)
+        next-piece (:next-piece @state)]
+    (draw-board! "game-canvas" board cell-size theme rows-cutoff)
+    (draw-board! "next-canvas" (next-piece-board next-piece) cell-size theme))
+
+  )
+
 (defn init []
 
   (init-state!)
@@ -517,10 +539,16 @@
   (go-go-gravity!)
 
   (display-points!)
-  (try-publish-score!))
+  (try-publish-score!)
 
+  (.on @socket "set-state" on-set-state)
+
+  )
 
 (defn cleanup []
   (swap! state assoc :quit true)
   (if (:quit-chan @state)
-    (close! (:quit-chan @state))))
+    (close! (:quit-chan @state)))
+
+  (.removeListener @socket "set-state" on-set-state)
+  )
