@@ -1,6 +1,6 @@
 <img src="public/img/logo.png">
 
-<img src="http://i.imgur.com/HFZOXAu.gif" align="right" width="132px">
+<img src="http://i.imgur.com/Y3cvDx2.gif">
 
 We are re-creating Tetris™ in
 [ClojureScript](https://github.com/shaunlebron/ClojureScript-Syntax-in-15-minutes).
