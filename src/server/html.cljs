@@ -14,9 +14,15 @@
     [:link {:rel "stylesheet" :href "/css/t3tr0s.min.css"}]]
   "<body>")
 
+;; NOTE: add other config items here as needed
+(defn- client-config []
+  (js-obj
+    "use-repl" (boolean (:use-repl server.core.config))))
+
 (hiccups/defhtml footer []
   [:script {:src "/socket.io/socket.io.js" :type "text/javascript"}]
   [:script {:src "/jquery-1.11.1.min.js" :type "text/javascript"}]
+  [:script "window.T3TR0S_CONFIG = " (.stringify js/JSON (client-config)) ";"]
   [:script {:src "/client.js" :type "text/javascript"}]
   "</body>"
   "</html>")

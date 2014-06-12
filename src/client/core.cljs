@@ -66,16 +66,17 @@
 (defn enable-hash-routing!
   "Monitor the URL hash to auto-dispatch our pages."
   []
-  (aset js/window "onhashchange" #(dispatch-hash! (.-hash js/location))))
+  (aset js/window "onhashchange" #(dispatch-hash! (aget js/location "hash"))))
 
-;;------------------------------------------------------------
-;; Page initialization.
-;;------------------------------------------------------------
+;;------------------------------------------------------------------------------
+;; Global App Init
+;;------------------------------------------------------------------------------
 
-(defn init []
+(defn- init []
 
   ; Connect to REPL for development.
-  (repl/connect)
+  (if (aget js/window "T3TR0S_CONFIG" "use-repl")
+    (repl/connect))
 
   ; Make connection to server.
   (connect-socket!)
@@ -89,8 +90,6 @@
 
   ; We have to dispatch the initial hash
   ; because only changes are auto-dispatched.
-  (dispatch-hash! (.-hash js/location))
-
-  )
+  (dispatch-hash! (aget js/location "hash")))
 
 (.addEventListener js/window "load" init)

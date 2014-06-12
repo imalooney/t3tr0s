@@ -1,4 +1,5 @@
 {
   "port": 1984,
-  "mc-password": "thepleasure"
+  "mc-password": "YOUR MC PASSWORD HERE",
+  "use-repl": false
 }

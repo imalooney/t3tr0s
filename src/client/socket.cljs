@@ -9,6 +9,5 @@
 (defn connect-socket!
   "Create a web socket connection to the server."
   []
-  (let [url (.-href js/location)]
+  (let [url (aget js/location "href")]
     (reset! socket (.connect js/io url))))
-

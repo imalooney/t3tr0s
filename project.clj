@@ -13,19 +13,29 @@
   :source-paths ["src"]
 
   :cljsbuild { 
-    :builds {:client {
-              :source-paths ["src/client"]
-              :compiler {
-                :output-to "public/client.js"
-                :output-dir "public/out"
-                :optimizations :whitespace}}
-             :server {
-              :source-paths ["src/server"]
-              :compiler {
-                :target :nodejs
-                :language-in :ecmascript5
-                :output-to "server.js"
-                :optimizations :simple}}}}
+    :builds {
+      :client {
+        :source-paths ["src/client"]
+        :compiler {
+          :output-to "public/client.js"
+          :output-dir "public/out"
+          :optimizations :whitespace}}
+
+      :client-adv {
+        :source-paths ["src/client"]
+        :compiler {
+          :externs ["externs/jquery-1.9.js" "externs/socket.io.js"]
+          :output-to "public/client.js"
+          :optimizations :advanced
+          :pretty-print false}}
+
+     :server {
+      :source-paths ["src/server"]
+      :compiler {
+        :target :nodejs
+        :language-in :ecmascript5
+        :output-to "server.js"
+        :optimizations :simple}}}}
 
   :injections [; Rig a (brepl) function to setup an Austin REPL and dump the url to a file.
                ; (This code is immediately executed after starting the repl.)
