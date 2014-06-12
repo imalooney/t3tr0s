@@ -109,8 +109,6 @@
 (defn- on-time-left
   "Called when server sends a time-left update."
   [seconds]
-  (js/console.log seconds)
-    (js/console.log (util/seconds->time-str seconds))
   (.html ($ ".time-left-8a651")
     (cond
       (pos? seconds) (str "Time Until Next Game: " (util/seconds->time-str seconds))
