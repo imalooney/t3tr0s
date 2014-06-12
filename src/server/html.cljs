@@ -23,7 +23,9 @@
   [:script {:src "/socket.io/socket.io.js" :type "text/javascript"}]
   [:script {:src "/jquery-1.11.1.min.js" :type "text/javascript"}]
   [:script "window.T3TR0S_CONFIG = " (.stringify js/JSON (client-config)) ";"]
-  [:script {:src "/client.js" :type "text/javascript"}]
+  (if (:minified-client server.core.config)
+    [:script {:src "/client.min.js" :type "text/javascript"}]
+    [:script {:src "/client.js" :type "text/javascript"}])
   "</body>"
   "</html>")
 
