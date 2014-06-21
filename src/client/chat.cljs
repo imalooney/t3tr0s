@@ -44,7 +44,6 @@
 
 (hiccups/defhtml player-name-html
   [{:keys [user color]}]
-  (util/log user)
   [:div {:class (str "player-name-3d2f0 color-" color)} user])
 
 (hiccups/defhtml player-list-html
