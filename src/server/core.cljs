@@ -277,7 +277,7 @@
                  (pr-str (select-keys (get @players pid) [:board :pid :theme]))))))
 
 
-(defn- on-reset-times
+(defn- on-update-times
   "Called when the MC updates the game time settings."
   [new-times socket]
   ; exclude any invalid time entries that aren't positive integers
@@ -394,8 +394,8 @@
       #(if (and @game-mode @quit-game-chan)
         (close! @quit-game-chan)))
 
-    ; Reset game times
-    (.on socket "reset-times" #(on-reset-times (read-string %) socket))
+    ; Update game times
+    (.on socket "update-times" #(on-update-times (read-string %) socket))
 
     ))
 

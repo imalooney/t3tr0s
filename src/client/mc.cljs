@@ -90,7 +90,7 @@
           [:input#cooldown.input-48f1f {:type "text" :value (:cooldown @game-settings)}]]
       [:div.button-container-8e52e
         [:button#startBtn.green-btn-f67eb "START NOW"]
-        [:button#resetTimes.blue-btn-41e23 "RESET TIMES"]]]]])
+        [:button#updateTimes.blue-btn-41e23 "UPDATE TIMES"]]]]])
 
 (defn- get-times
   "Retrieve the time settings inputs"
@@ -107,8 +107,8 @@
           #(do (.emit @socket "start-time")
                (init-stop-page!)))
 
-  (.click ($ "#resetTimes")
-          #(do (.emit @socket "reset-times" (pr-str (get-times)))))
+  (.click ($ "#updateTimes")
+          #(do (.emit @socket "update-times" (pr-str (get-times)))))
 
   )
 
