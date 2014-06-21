@@ -17,7 +17,11 @@
     [:div.chat-logo-e38e3
       [:img {:src "/img/t3tr0s_logo_200w.png" :width "160px"}]
       [:span.span-4e536.time-left-8a651 "Waiting to play..."]]
-    [:div#chat-messages]
+    [:div#chat-and-player-container
+      [:div#chat-messages]
+      [:div#player-list-container
+        [:div.player-list-title-7f811 "Players"]
+        [:div#player-list]]]
     [:div#chat-input
       [:input#msg {:type "text" :placeholder "Type to chat..."}]
       [:input#submit.red-btn-2c9ab {:type "submit" :value "Send"}]]])
@@ -38,6 +42,14 @@
   [:p.message
     [:span#user {:class (str "color-" color)}(str user " left the lobby")]])
 
+(hiccups/defhtml player-name-html
+  [{:keys [user color]}]
+  (util/log user)
+  [:div {:class (str "player-name-3d2f0 color-" color)} user])
+
+(hiccups/defhtml player-list-html
+  [players]
+  (map player-name-html players))
 
 ; alias the jquery variable
 (def $ js/$)
@@ -122,9 +134,21 @@
   (aset js/location "hash" "#/battle-game")
 
   )
+
+(defn- on-players-update
+  "Called when the player informatin is updated."
+  [data]
+  (.html ($ "#player-list") (player-list-html (read-string data))))
+
 ;;------------------------------------------------------------
 ;; Page initialization.
 ;;------------------------------------------------------------
+
+(def socket-events
+  [["new-message" on-new-message]
+   ["time-left" on-time-left]
+   ["start-game" on-start-game]
+   ["players-update" on-players-update]])
 
 (defn init
   "Starts the chat page"
@@ -142,12 +166,8 @@
   (.emit @socket "join-lobby")
 
   ;; Listen to chat updates.
-  (.on @socket "new-message" on-new-message)
-
-  (.on @socket "time-left" on-time-left)
-
-  (.on @socket "start-game" on-start-game)
-
+  (doseq [[event-name handler] socket-events]
+    (.on @socket event-name handler))
   )
 
 (defn cleanup
@@ -156,12 +176,8 @@
   ;; Leave the "lobby" room.
   (.emit @socket "leave-lobby")
 
-  ;; Ignore chat updates.
-  (.removeListener @socket "new-message" on-new-message)
-
-  ;; Ignore start game message.
-  (.removeListener @socket "start-game" on-start-game)
-
-  (.removeListener @socket "time-left" on-time-left)
+  ; stop listening for updates
+  (doseq [[event-name handler] socket-events]
+    (.removeListener @socket event-name handler))
 
   )

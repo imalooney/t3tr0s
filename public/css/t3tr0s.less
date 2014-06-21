@@ -297,10 +297,41 @@ body {
   margin: 16px;
 }
 
+#chat-and-player-container {
+  height: 500px;
+}
+
 #chat-messages {
   overflow-y: scroll;
-  height: 500px;
+  height: 100%;
+  width: 80%;
   position: relative;
+  float: left;
+  box-sizing: border-box;
+}
+
+#player-list-container {
+  float: left;
+  width: 20%;
+  height: 100%;
+  overflow-y: auto;
+  border-left: 2px solid rgba(255,255,255,0.5);
+  box-sizing: border-box;
+}
+
+.player-list-title-7f811 {
+  color: #fff;
+  border-bottom: 1px solid rgba(255,255,255,0.5);
+  padding-left: 15px;
+  padding-top: 7px;
+  margin-bottom: 5px;
+  font-size: 19px;
+  font-weight: 600;
+}
+
+.player-name-3d2f0 {
+  padding: 5px 15px;
+  color: red;
 }
 
 #user {

@@ -238,11 +238,18 @@
     (util/tlog "lobby count: " num-players)
     (put! @players-waiting-chan num-players)))
 
+(defn- send-lobby-players-update!
+  "Send the current lobby player information to all clients in lobby"
+  [io]
+  (.. io (to "lobby") (emit "players-update" (pr-str (filter :in-lobby (vals @players))))))
+
 ;;------------------------------------------------------------------------------
 ;; Socket Events
 ;;------------------------------------------------------------------------------
 
-(defn- on-chat-message [msg pid socket]
+(defn- on-chat-message
+  "Chat in the lobby"
+  [msg pid socket]
   (let [d (assoc (get @players pid) :type "msg" :msg msg)]
     (util/tlog "player " pid " says: \"" msg "\"")
     (.. socket -broadcast (to "lobby") (emit "new-message" (pr-str d)))))
@@ -274,8 +281,10 @@
            (player-visible-on-dashboard? pid))
     (.. io (to "dashboard")
            (emit "board-update"
-                 (pr-str (select-keys (get @players pid) [:board :pid :theme]))))))
+                 (pr-str (select-keys (get @players pid) [:board :pid :theme])))))
 
+  ; If player in lobby then send updated player list
+  (if (:in-lobby (get @players pid)) send-lobby-players-update! io))
 
 (defn- on-update-times
   "Called when the MC updates the game time settings."
@@ -289,6 +298,31 @@
       (.. socket -broadcast (to "mc") (emit "settings-update" (pr-str new-times)))
       (.emit socket "settings-update" (pr-str new-times)) ; TODO - How do you emit to self AND room?
       (util/tlog "new game times: " new-times))))
+
+(defn- on-join-lobby
+  "Player joins the lobby"
+  [pid socket io]
+  (let [data (assoc (get @players pid) :type "join")]
+    (util/tlog "player " pid " joined the lobby")
+    (.. socket -broadcast (to "lobby") (emit "new-message" (pr-str data)))
+    (.join socket "lobby")
+    ; socket.io provides no way to get a count of players in a room
+    ; so we need to mark players as in the lobby in order to know
+    ; who is waiting for the next game
+    (swap! players update-in [pid] assoc :in-lobby true)
+    (send-lobby-players-update! io)
+    (signal-num-players-in-lobby!)))
+
+(defn- on-leave-lobby
+  "Player leaves the lobby"
+  [pid socket io]
+  (let [data (assoc (get @players pid) :type "leave")]
+    (util/tlog "player " pid " left the lobby")
+    (.. socket -broadcast (to "lobby") (emit "new-message" (pr-str data)))
+    (.leave socket "lobby")
+    (swap! players update-in [pid] dissoc :in-lobby)
+    (send-lobby-players-update! io)
+    (signal-num-players-in-lobby!)))
 
 ;;------------------------------------------------------------------------------
 ;; Socket Setup
@@ -331,28 +365,8 @@
         (util/tlog "player " pid " using color " (:color data))
         (swap! players update-in [pid] merge data)))
 
-    ; Join the lobby.
-    (.on socket "join-lobby"
-      #(let [data (assoc (get @players pid) :type "join")]
-        (util/tlog "player " pid " joined the lobby")
-        (.. socket -broadcast (to "lobby") (emit "new-message" (pr-str data)))
-        (.join socket "lobby")
-        ; socket.io provides no way get a count of players in a room
-        ; so we need to mark players as in the lobby in order to know
-        ; who is waiting for the next game
-        (swap! players update-in [pid] assoc :in-lobby true)
-        (signal-num-players-in-lobby!)))
-
-    ; Leave the lobby.
-    (.on socket "leave-lobby"
-      #(let [data (assoc (get @players pid) :type "leave")]
-        (util/tlog "player " pid " left the lobby")
-        (.. socket -broadcast (to "lobby") (emit "new-message" (pr-str data)))
-        (.leave socket "lobby")
-        (swap! players update-in [pid] dissoc :in-lobby)
-        (signal-num-players-in-lobby!)))
-
-    ; Chat in the lobby.
+    (.on socket "join-lobby" #(on-join-lobby pid socket io))
+    (.on socket "leave-lobby" #(on-leave-lobby pid socket io))
     (.on socket "chat-message" #(on-chat-message % pid socket))
 
     ; Join/leave the game.
