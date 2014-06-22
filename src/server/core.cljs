@@ -428,7 +428,9 @@
       (.use (.static express (str js/__dirname "/public"))))
 
     ; start server
-    (.listen server (:port config))
+    (if (:host config)
+      (.listen server (:port config) (:host config))
+      (.listen server (:port config)))
     (util/tlog "t3tr0s server listening on port " (:port config))
 
     ; wait for next game to start
