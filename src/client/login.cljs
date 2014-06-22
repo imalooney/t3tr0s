@@ -1,14 +1,11 @@
 (ns client.login
   (:require-macros [hiccups.core :as hiccups])
   (:require
+    [client.dom :as dom]
     [client.socket :refer [socket]]
     hiccups.runtime))
 
 (def $ js/$)
-
-;; TODO: move this to a dom namespace
-(defn- by-id [id]
-  (.getElementById js/document id))
 
 ;;------------------------------------------------------------------------------
 ;; HTML
@@ -86,7 +83,7 @@
   (.click ($ "#submit") on-submit)
 
   ; Put focus on username field.
-  (.focus (by-id "login")))
+  (.focus (dom/by-id "login")))
 
 (defn cleanup
   []
