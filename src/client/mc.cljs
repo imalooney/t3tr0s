@@ -2,17 +2,17 @@
   (:require-macros [hiccups.core :as hiccups])
   (:require
     [cljs.reader :refer [read-string]]
-    [client.socket :refer [socket]]
+    [client.socket :as socket]
+    [client.dom :refer [by-id]]
     hiccups.runtime))
 
-(def $ js/$)
+(declare init-start-page!)
 
-(defn- by-id [id]
-  (.getElementById js/document id))
+(def $ js/jQuery)
 
-;;------------------------------------------------------------
+;;------------------------------------------------------------------------------
 ;; MC Atoms
-;;------------------------------------------------------------
+;;------------------------------------------------------------------------------
 
 (def game-settings
   "Current multiplier settings in effect"
@@ -31,17 +31,15 @@
   (js/console.log "settings updated")
   (swap! game-settings merge new-settings))
 
-;;------------------------------------------------------------
+;;------------------------------------------------------------------------------
 ;; Stop Game page
-;;------------------------------------------------------------
+;;------------------------------------------------------------------------------
 
 (hiccups/defhtml stop-html []
   [:div#inner-container
     [:div.login-5983e
       [:label#time-left.timeleft-69be1]
       [:button#stopBtn.red-btn-2c9ab "STOP"]]])
-
-(declare init-start-page!)
 
 (defn on-time-left
   "Called when receiving time left from server."
@@ -56,26 +54,27 @@
 (defn cleanup-stop-page!
   "Remove socket listeners specific to the stop page."
   []
-  (.removeListener @socket "time-left" on-time-left)
-  (.removeListener @socket "countdown" on-countdown)
-  )
+  (socket/removeListener "time-left")
+  (socket/removeListener "countdown"))
+
+(defn- on-click-stop-btn []
+  (socket/emit "stop-game")
+  (cleanup-stop-page!)
+  (init-start-page!))
 
 (defn init-stop-page!
   "Initialize the start game page."
   []
   (.html ($ "#main-container") (stop-html))
 
-  (.on @socket "time-left" on-time-left)
-  (.on @socket "countdown" on-countdown)
+  (socket/on "time-left" on-time-left)
+  (socket/on "countdown" on-countdown)
 
-  (.click ($ "#stopBtn")
-          #(do (.emit @socket "stop-game")
-               (cleanup-stop-page!)
-               (init-start-page!))))
+  (.click ($ "#stopBtn") on-click-stop-btn))
 
-;;------------------------------------------------------------
+;;------------------------------------------------------------------------------
 ;; Start Game page
-;;------------------------------------------------------------
+;;------------------------------------------------------------------------------
 
 (hiccups/defhtml start-html []
   [:div#inner-container
@@ -98,23 +97,23 @@
   {:duration (js/parseInt (.val ($ "#duration")) 10)
    :cooldown (js/parseInt (.val ($ "#cooldown")) 10)})
 
+(defn- click-start-btn []
+  (socket/emit "start-time")
+  (init-stop-page!))
+
+(defn- click-update-times-btn []
+  (socket/emit "update-times" (get-times)))
+
 (defn init-start-page!
   "Initialize the start game page."
   []
   (.html ($ "#main-container") (start-html))
+  (.click ($ "#startBtn") click-start-btn)
+  (.click ($ "#updateTimes") click-update-times-btn))
 
-  (.click ($ "#startBtn")
-          #(do (.emit @socket "start-time")
-               (init-stop-page!)))
-
-  (.click ($ "#updateTimes")
-          #(do (.emit @socket "update-times" (pr-str (get-times)))))
-
-  )
-
-;;------------------------------------------------------------
+;;------------------------------------------------------------------------------
 ;; Password page
-;;------------------------------------------------------------
+;;------------------------------------------------------------------------------
 
 (hiccups/defhtml password-html []
   [:div#inner-container
@@ -127,7 +126,7 @@
 
 (defn- click-login-as-mc [e]
   (.preventDefault e)
-  (.emit @socket "request-mc" (.val ($ "#password"))))
+  (socket/emit "request-mc" (.val ($ "#password"))))
 
 (defn- on-grant-mc
   "Callback for handling the MC access grant."
@@ -146,35 +145,30 @@
 
   ; Render either the stop page or the start page
   ; when access as MC is granted.
-  (.on @socket "grant-mc" on-grant-mc)
+  (socket/on "grant-mc" on-grant-mc)
 
   ; Put focus on the password field.
   (.focus (by-id "password")))
 
-;;------------------------------------------------------------
-;; Main page intializer.
-;;------------------------------------------------------------
+;;------------------------------------------------------------------------------
+;; Page Init / Cleanup
+;;------------------------------------------------------------------------------
 
 (defn init
   []
   (client.core/set-bw-background!)
   ; Listen for any settings updates
-  (.on @socket "settings-update" #(on-settings-update (read-string %)))
+  (socket/on "settings-update" #(on-settings-update (read-string %)))
 
-  (init-password-page!)
-  )
+  (init-password-page!))
 
 (defn cleanup
   []
-
   ; Leave the MC role.
-  (.emit @socket "leave-mc")
+  (socket/emit "leave-mc")
 
   ; Destroy socket listeners.
-  (.removeListener @socket "grant-mc" on-grant-mc)
-  (.removeListener @socket "settings-update" on-settings-update)
+  (socket/removeListener "grant-mc")
+  (socket/removeListener "settings-update")
 
-
-  (cleanup-stop-page!)
-
-  )
+  (cleanup-stop-page!))

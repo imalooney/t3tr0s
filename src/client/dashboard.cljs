@@ -1,12 +1,15 @@
 (ns client.dashboard
   (:require-macros [hiccups.core :as hiccups])
   (:require
+    [client.dom :refer [by-id]]
     [client.game.paint :refer [draw-board! size-canvas!]]
     [client.game.board :refer [empty-board rows-cutoff]]
     [client.util :as util]
     [cljs.reader :refer [read-string]]
-    [client.socket :refer [socket]]
+    [client.socket :as socket]
     hiccups.runtime))
+
+(declare board)
 
 (def cell-size 24)
 
@@ -22,8 +25,6 @@
 
 (def test-board3
   [[0 0 0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0 0 0] [0 0 0 0 "T4" 0 0 0 0 0] [0 0 0 "T2" "T11" "T8" 0 0 0 0] [0 0 0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0 0 0] [0 0 0 0 "G4" 0 0 0 0 0] [0 "S6" "S8" "G2" "G11" "G8" 0 0 0 0] ["S2" "S9" 0 0 "L4" 0 0 0 0 0] ["Z2" "Z12" 0 0 "L5" 0 0 0 0 0] [0 "Z3" "Z8" 0 "L3" "L8" 0 0 0 0] [0 "O6" "O12" 0 0 "I2" "I10" "I10" "I8" 0] [0 "O3" "O9" "S6" "S8" 0 "S6" "S8" 0 0] [0 "J4" "S2" "S9" 0 "S2" "S9" "T4" 0 0] [0 "J3" "J10" "J8" 0 0 "T2" "T11" "T8" 0]])
-
-(declare board)
 
 (def $ js/jQuery)
 
@@ -94,14 +95,10 @@
   (if-not (get @ids n)
     (swap! ids #(assoc % n (util/uuid)))))
 
-(defn- by-id [id]
-  (.getElementById js/document id))
-
 (defn- create-board-if-needed! [id]
   (when-not (by-id id)
     (.append ($ "#boardsContainer") (board id))
-    (size-canvas! (str "canvas-" id) empty-board cell-size rows-cutoff)
-    ))
+    (size-canvas! (str "canvas-" id) empty-board cell-size rows-cutoff)))
 
 ;;------------------------------------------------------------------------------
 ;; Leaderboard State
@@ -224,8 +221,7 @@
         s (mod total-seconds 60)
         s-str (if (< s 10) (str "0" s) s)
         time-str (str m ":" s-str)]
-    (.html ($ ".time-left-eb709") (str "Time Left: " time-str))
-  ))
+    (.html ($ ".time-left-eb709") (str "Time Left: " time-str))))
 
 ;;------------------------------------------------------------------------------
 ;; Page Initialization / Cleanup
@@ -238,22 +234,17 @@
 
   (.click ($ "#btn-shuffle") #(reset! leaders (shuffle test-leaders)))
 
-  (.emit @socket "join-dashboard")
+  (socket/emit "join-dashboard")
 
-  (.on @socket "board-update" on-board-update)
-  (.on @socket "leader-update" on-leader-update)
-  (.on @socket "time-left" on-time-left)
+  (socket/on "board-update" on-board-update)
+  (socket/on "leader-update" on-leader-update)
+  (socket/on "time-left" on-time-left)
 
-  (on-time-left 0)
-  )
+  (on-time-left 0))
 
 (defn cleanup
   []
-
-  (.emit @socket "leave-dashboard")
-
-  (.removeListener @socket "board-update" on-board-update)
-  (.removeListener @socket "leader-update" on-leader-update)
-  (.removeListener @socket "time-left" on-time-left)
-
-  )
+  (socket/emit "leave-dashboard")
+  (socket/removeListener "board-update")
+  (socket/removeListener "leader-update")
+  (socket/removeListener "time-left"))

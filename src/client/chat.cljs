@@ -2,15 +2,17 @@
   (:require-macros [hiccups.core :as hiccups])
   (:require
     hiccups.runtime
-    [client.socket :refer [socket]]
+    [client.socket :as socket]
     [client.login :refer [get-username
                           get-color]]
     [cljs.reader :refer [read-string]]
     [client.util :as util]))
 
-;;------------------------------------------------------------
+(def $ js/jQuery)
+
+;;------------------------------------------------------------------------------
 ;; HTML
-;;------------------------------------------------------------
+;;------------------------------------------------------------------------------
 
 (hiccups/defhtml chat-html []
   [:div#inner-container
@@ -50,12 +52,9 @@
   [players]
   (map player-name-html players))
 
-; alias the jquery variable
-(def $ js/$)
-
-;;------------------------------------------------------------
+;;------------------------------------------------------------------------------
 ;; Chat
-;;-----------------------------------------------------------
+;;------------------------------------------------------------------------------
 
 (defn get-message
   "Gets the latest message in the input field"
@@ -70,7 +69,7 @@
 (defn send-message!
   "Sends a message to the chat"
   []
-  (.emit @socket "chat-message" (get-message)))
+  (socket/emit "chat-message" (get-message)))
 
 (defn add-message!
   [msg]
@@ -130,18 +129,16 @@
   []
 
   ; Navigate to the battle page.
-  (aset js/location "hash" "#/battle-game")
-
-  )
+  (aset js/location "hash" "#/battle-game"))
 
 (defn- on-players-update
   "Called when the player informatin is updated."
   [data]
   (.html ($ "#player-list") (player-list-html (read-string data))))
 
-;;------------------------------------------------------------
-;; Page initialization.
-;;------------------------------------------------------------
+;;------------------------------------------------------------------------------
+;; Page Init / Cleanup
+;;------------------------------------------------------------------------------
 
 (def socket-events
   [["new-message" on-new-message]
@@ -162,21 +159,17 @@
   (.keyup ($ "#msg") #(if (= (.-keyCode %) 13) (submit-message!)))
 
   ;; Join the "lobby" room.
-  (.emit @socket "join-lobby")
+  (socket/emit "join-lobby")
 
   ;; Listen to chat updates.
   (doseq [[event-name handler] socket-events]
-    (.on @socket event-name handler))
-  )
+    (socket/on event-name handler)))
 
 (defn cleanup
   []
-
   ;; Leave the "lobby" room.
-  (.emit @socket "leave-lobby")
+  (socket/emit "leave-lobby")
 
   ; stop listening for updates
-  (doseq [[event-name handler] socket-events]
-    (.removeListener @socket event-name handler))
-
-  )
+  (doseq [[event-name _] socket-events]
+    (socket/removeListener event-name)))

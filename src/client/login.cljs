@@ -2,10 +2,11 @@
   (:require-macros [hiccups.core :as hiccups])
   (:require
     [client.dom :as dom]
-    [client.socket :refer [socket]]
+    [client.socket :as socket]
+    [client.util :as util]
     hiccups.runtime))
 
-(def $ js/$)
+(def $ js/jQuery)
 
 ;;------------------------------------------------------------------------------
 ;; HTML
@@ -48,8 +49,7 @@
 (defn send-login!
   "Send the login information to the server."
   []
-  (.emit @socket "update-name" (pr-str {:user (get-username)
-                                        :color (get-color)})))
+  (socket/emit "update-name" {:user (get-username) :color (get-color)}))
 
 ;;------------------------------------------------------------------------------
 ;; Events

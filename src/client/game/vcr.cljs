@@ -1,10 +1,10 @@
 (ns client.game.vcr
   (:require
-    [client.socket :refer [socket]]))
+    [client.socket :as socket]))
 
-;;------------------------------------------------------------
+;;------------------------------------------------------------------------------
 ;; VCR (record game)
-;;------------------------------------------------------------
+;;------------------------------------------------------------------------------
 
 (def vcr (atom {:canvas nil
                 :recording false
@@ -61,12 +61,9 @@
 (defn publish-canvas-record!
   "Push the recording to the server to be rendered."
   []
-  (let [data (pr-str (:frames @vcr))]
-    (.emit @socket "create-canvas-gif" data)))
+  (socket/emit "create-canvas-gif" (:frames @vcr)))
 
 (defn publish-html-record!
   "Push the recording to the server to be rendered."
   []
-  (let [data (pr-str (:frames @vcr))]
-    (.emit @socket "create-html-gif" data)))
-
+  (socket/emit "create-html-gif" (:frames @vcr)))

@@ -3,11 +3,11 @@
   (:require
     [cljs.reader :refer [read-string]]
     hiccups.runtime
-    [client.socket :refer [socket]]
+    [client.socket :as socket]
     client.game.core
     [client.util :as util]))
 
-(def $ js/$)
+(def $ js/jQuery)
 
 ;;------------------------------------------------------------
 ;; Initialization flag
@@ -93,8 +93,7 @@
   "Show and listen for the countdown messages."
   []
   (.html ($ "#main-container") (countdown-html))
-  (.on @socket "countdown" on-countdown)
-  )
+  (socket/on "countdown" on-countdown))
 
 (declare cleanup)
 
@@ -132,27 +131,22 @@
   (if @client.game.core/battle
     (do
       ; Join the "game" room to receive game-related messages.
-      (.emit @socket "join-game")
-      (.on @socket "game-over" on-game-over)
-      (.on @socket "time-left" on-time-left)
+      (socket/emit "join-game")
+      (socket/on "game-over" on-game-over)
+      (socket/on "time-left" on-time-left)
       (init-countdown))
-    (init-game))
-
-  )
+    (init-game)))
 
 (defn cleanup
   []
 
   ; Leave the game room.
-  (.emit @socket "leave-game")
+  (socket/emit "leave-game")
 
   ; Shutdown the game facilities.
   (client.game.core/cleanup)
 
   ; Ignore the game messages.
-  (.removeListener @socket "game-over" on-game-over)
-  (.removeListener @socket "time-left" on-time-left)
-  (.removeListener @socket "countdown" on-countdown)
-
-  )
-
+  (socket/removeListener "game-over")
+  (socket/removeListener "time-left")
+  (socket/removeListener "countdown"))

@@ -34,13 +34,12 @@
                                draw-board!]]
     [client.game.multiplayer :refer [opponent-scale]]
     [client.game.vcr :refer [vcr toggle-record! record-frame!]]
-    [client.socket :refer [socket]]
+    [client.socket :as socket]
     [cljs.core.async :refer [close! put! chan <! timeout unique alts!]]))
 
 (enable-console-print!)
 
-; alias the jquery variable
-(def $ js/$)
+(def $ js/jQuery)
 
 ;;------------------------------------------------------------------------------
 ;; Themes
@@ -132,8 +131,8 @@
   "Inform the server of our current state."
   []
   (if @battle
-    (.emit @socket "update-player"
-           (pr-str (select-keys @state [:total-lines :score])))))
+    (socket/emit "update-player"
+      (select-keys @state [:total-lines :score]))))
 
 ;;------------------------------------------------------------
 ;; STATE MONITOR
@@ -176,9 +175,8 @@
                 ; NOTE: Comment the following form out if we
                 ;       do not want to send the player screen to the server.
                 (if @battle
-                  (.emit @socket "update-player"
-                         (pr-str {:theme (:theme @state)
-                                  :board new-board})))
+                  (socket/emit "update-player"
+                    {:theme (:theme @state) :board new-board}))
 
                 (draw-board! "game-canvas" new-board cell-size new-theme rows-cutoff)
                 (draw-board! "next-canvas" (next-piece-board next-piece) cell-size new-theme)
@@ -567,14 +565,11 @@
   (display-points!)
   (try-publish-score!)
 
-  (.on @socket "set-state" on-set-state)
-
-  )
+  (socket/on "set-state" on-set-state))
 
 (defn cleanup []
   (swap! state assoc :quit true)
   (if (:quit-chan @state)
     (close! (:quit-chan @state)))
 
-  (.removeListener @socket "set-state" on-set-state)
-  )
+  (socket/removeListener "set-state"))

@@ -386,14 +386,15 @@
 
     ; Request access to the MC role.
     (.on socket "request-mc"
-      #(if (= % (:mc-password config))
-        (do
-          (util/tlog "player " pid " granted as MC")
-          (.join socket "mc")
-          (.emit socket "grant-mc" (pr-str @game-mode))
-          (.emit socket "settings-update" (pr-str @game-settings)))
-        (do
-          (util/tlog "player " pid " rejected as MC"))))
+      (fn [password]
+        (if (= (read-string password) (:mc-password config))
+          (do
+            (util/tlog "player " pid " granted as MC")
+            (.join socket "mc")
+            (.emit socket "grant-mc" (pr-str @game-mode))
+            (.emit socket "settings-update" (pr-str @game-settings)))
+          (do
+            (util/tlog "player " pid " rejected as MC")))))
 
     ; Leave the MC role.
     (.on socket "leave-mc"

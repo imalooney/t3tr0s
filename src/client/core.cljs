@@ -7,7 +7,7 @@
     client.mc
     [client.login :refer [send-login!]]
     [client.repl :as repl]
-    [client.socket :refer [socket connect-socket!]]
+    [client.socket :as socket]
     [client.util :as util]))
 
 (enable-console-print!)
@@ -96,12 +96,12 @@
   (if (aget js/window "T3TR0S_CONFIG" "use-repl")
     (repl/connect))
 
-  ; Make connection to server.
-  (connect-socket!)
+  ;; initialize the socket connection
+  (socket/connect!)
 
   ; Send user information to server, and again when requested.
   (send-login!)
-  (.on @socket "request-name" send-login!)
+  (socket/on "request-name" send-login!)
 
   ; Add custom hash routing.
   (enable-hash-routing!)
