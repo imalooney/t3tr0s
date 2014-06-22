@@ -452,7 +452,7 @@
 (defn- toggle-music!
   "Toggles the music on or off"
   []
-  (swap! music-playing? not))
+  (if-not @paused?(swap! music-playing? not)))
 
 (defn add-key-events
   "Add all the key inputs."
