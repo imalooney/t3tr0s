@@ -7,11 +7,25 @@
     client.mc
     [client.login :refer [send-login!]]
     [client.repl :as repl]
-    [client.socket :refer [socket connect-socket!]]))
+    [client.socket :refer [socket connect-socket!]]
+    [client.util :as util]))
 
 (enable-console-print!)
 
 (def $ js/jQuery)
+
+;;------------------------------------------------------------------------------
+;; Client ID
+;;------------------------------------------------------------------------------
+
+;; get the client-id from localStorage or create a new one if needed
+(def client-id
+  (if-let [id (aget js/localStorage "client-id")]
+    id
+    (util/uuid)))
+
+;; save client-id to localStorage
+(aset js/localStorage "client-id" client-id)
 
 ;;------------------------------------------------------------------------------
 ;; Set Background
