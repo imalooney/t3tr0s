@@ -26,3 +26,6 @@ pom.xml
 /config.json
 
 /public/css/t3tr0s.min.css
+
+# ignore diffs
+*.diff
