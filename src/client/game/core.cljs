@@ -78,6 +78,10 @@
   "Temp state of the board when paused"
   (atom nil))
 
+(def paused-music
+  "Temp state of the music when paused"
+  (atom nil))
+
 (def music-playing?
   "Boolean flag signaling if the music is playing or not"
   (atom false))
@@ -422,16 +426,19 @@
   []
   (reset! state @paused-board)
   (put! resume-grav 0)
-  (reset! paused? false))
+  (reset! paused? false)
+  (reset! music-playing? @paused-music))
 
 (defn pause-game!
   "Saves the current state of the board, loads the game-over animation and pauses gravity"
   []
   (reset! paused-board @state)
+  (reset! paused-music @music-playing?)
   (go-go-game-over!)
   (swap! state assoc :piece nil)
   (put! pause-grav 0)
-  (reset! paused? true))
+  (reset! paused? true)
+  (reset! music-playing? false))
 
 (defn toggle-pause-game!
   "Toggles pause on the game board"
