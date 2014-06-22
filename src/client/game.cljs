@@ -37,6 +37,7 @@
         [:div.clr-22ff3]
        [:div.time-left-1369c]]
       [:div.change-theme-6bd50 "Press keys 0-9 to change your theme"]
+      [:audio#music {:src "audio/theme.mp3" :preload "none" :loop "loop"}]
       [:div#theme]
       [:div#theme-details]]
       ; [:div#theme "1984"]

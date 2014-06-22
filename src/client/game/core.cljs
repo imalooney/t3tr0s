@@ -78,6 +78,18 @@
   "Temp state of the board when paused"
   (atom nil))
 
+(def music-playing?
+  "Boolean flag signaling if the music is playing or not"
+  (atom false))
+
+(defn- on-music-playing-change [_ _ _ new-state]
+  (let [music-el (.getElementById js/document "music")]
+    (if new-state
+      (.play music-el)
+      (.pause music-el))))
+
+(add-watch music-playing? :music on-music-playing-change)
+
 (defn- update-theme [_ _ old-state new-state]
   (if (not= (:theme old-state)
             (:theme new-state))
@@ -182,7 +194,7 @@
       (<! (timeout 10))
       (swap! state assoc-in [:board y] game-over-row))))
 
-(defn spawn-piece! 
+(defn spawn-piece!
   "Spawns the given piece at the starting position."
   [piece]
     (swap! state assoc :piece piece
@@ -392,6 +404,7 @@
   32 :space
   16 :shift
   80 :p
+  77 :m
 
   49 :one
   50 :two
@@ -429,6 +442,11 @@
       (pause-game!))
     (js/console.log "Cant pause in battle mode")))
 
+(defn- toggle-music!
+  "Toggles the music on or off"
+  []
+  (swap! music-playing? not))
+
 (defn add-key-events
   "Add all the key inputs."
   []
@@ -448,6 +466,7 @@
                      :nine  (change-theme! 8 e)
                      :zero  (change-theme! 9 e)
                      :p     (do (toggle-pause-game!) (.preventDefault e))
+                     :m     (do (toggle-music!) (.preventDefault e))
                      nil)
                    (if (and (:piece @state) (not @paused?))
                      (case (key-name e)
@@ -529,7 +548,7 @@
 
   (init-state!)
   (load-theme!)
-    
+
   (size-canvas! "game-canvas" empty-board cell-size rows-cutoff)
   (size-canvas! "next-canvas" (next-piece-board) cell-size)
 
