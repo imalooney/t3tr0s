@@ -76,7 +76,7 @@
 (def game-settings
   "Game timer settings."
   (atom {:duration 300 ; Length in seconds of a multiplayer round. Default is 5 minutes.
-         :cooldown 0})) ; Length in seconds before automatically starting a new game. Default (0) requires manual start.
+         :cooldown 90})) ; Length in seconds before automatically starting a new game. Setting 0 requires manual start.
 
 (def leaders
   "The leaders in the current game."
