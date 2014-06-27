@@ -1,6 +1,10 @@
+<a href="http://t3tr0s.com">
 <img src="public/img/logo.png">
 
 <img src="http://i.imgur.com/Y3cvDx2.gif">
+</a>
+
+[Click to Play!](http://t3tr0s.com")
 
 We are re-creating Tetris™ in
 [ClojureScript](https://github.com/shaunlebron/ClojureScript-Syntax-in-15-minutes).
