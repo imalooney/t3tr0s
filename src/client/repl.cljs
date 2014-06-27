@@ -1,12 +1,9 @@
 (ns client.repl
   (:require
-    [clojure.browser.repl :as repl]))
+    [weasel.repl :as repl]))
 
-(def $ js/$)
-
-(defn connect []
-  (.ajax $ #js {:url "repl-url"
-                :cache false
-                :dataType "text"
-                :success #(repl/connect %)}))
+(defn connect
+  "Connect to the websocket REPL to allow debugging."
+  []
+  (repl/connect "ws://localhost:9001" :verbose true))
 

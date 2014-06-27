@@ -3,12 +3,13 @@
   :url "https://github.com/imalooney/t3tr0s"
 
   :dependencies [[org.clojure/clojure "1.5.1"]
-                 [org.clojure/clojurescript "0.0-2202"]
+                 [org.clojure/clojurescript "0.0-2234"]
                  [org.clojure/core.async "0.1.267.0-0d7780-alpha"]
-                 [hiccups "0.3.0"]]
+                 [hiccups "0.3.0"]
+                 [com.cemerick/piggieback "0.1.3"]
+                 [weasel "0.2.0"]]
 
-  :plugins [[lein-cljsbuild "1.0.3"]
-            [com.cemerick/austin "0.1.4"]]
+  :plugins [[lein-cljsbuild "1.0.3"]]
 
   :source-paths ["src"]
 
@@ -37,13 +38,7 @@
         :output-to "server.js"
         :optimizations :simple}}}}
 
-  :injections [; Rig a (brepl) function to setup an Austin REPL and dump the url to a file.
-               ; (This code is immediately executed after starting the repl.)
-               ; (The url file is read by our clojurescript app so it can connect to it.)
-               ; (We don't auto-execute (brepl) because we want the prompt to be colored)
-               (require 'cemerick.austin.repls)
-               (defn brepl []
-                 (let [env (cemerick.austin/repl-env)]
-                   (spit "public/repl-url" (:repl-url env))
-                   (cemerick.austin.repls/cljs-repl (reset! cemerick.austin.repls/browser-repl-env env))))]
+  :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}
+  :injections [(require 'weasel.repl.websocket)
+               (def brepl #(cemerick.piggieback/cljs-repl :repl-env (weasel.repl.websocket/repl-env)))]
   )
