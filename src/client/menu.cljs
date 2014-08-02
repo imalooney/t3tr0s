@@ -1,7 +1,8 @@
 (ns client.menu
   (:require-macros [hiccups.core :as hiccups])
   (:require
-    hiccups.runtime))
+    hiccups.runtime
+    [client.dom :as dom]))
 
 (def $ js/$)
 
@@ -10,11 +11,11 @@
 ;;------------------------------------------------------------
 
 (hiccups/defhtml menu-html []
-  [:div#inner-container
+  [:div.inner-6ae9d
     [:div.logo-31d54]
     [:div.menu-cd25d
-      [:button#solo-btn.green-btn-f67eb "SOLO"]
-      [:button#lobby-btn.blue-btn-41e23 "BATTLE"]]])
+      [:button#solo-btn.green-btn-f67eb "Solo"]
+      [:button#lobby-btn.blue-btn-41e23 "Battle"]]])
 
 ;;------------------------------------------------------------
 ;; Page initialization.
@@ -23,10 +24,10 @@
 (defn init
   []
 
-  (client.core/set-color-background!)
+  (dom/set-color-background!)
 
   ; Initialize page content
-  (.html ($ "#main-container") (menu-html))
+  (dom/set-page-body! (menu-html))
 
   (.click ($ "#solo-btn") #(aset js/location "hash" "#/solo-game"))
   (.click ($ "#lobby-btn") #(aset js/location "hash" "#/lobby"))

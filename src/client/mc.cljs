@@ -2,9 +2,9 @@
   (:require-macros [hiccups.core :as hiccups])
   (:require
     [cljs.reader :refer [read-string]]
-    [client.socket :as socket]
-    [client.dom :refer [by-id]]
-    hiccups.runtime))
+    hiccups.runtime
+    [client.dom :as dom]
+    [client.socket :as socket]))
 
 (declare init-start-page!)
 
@@ -36,7 +36,7 @@
 ;;------------------------------------------------------------------------------
 
 (hiccups/defhtml stop-html []
-  [:div#inner-container
+  [:div.inner-6ae9d
     [:div.login-5983e
       [:label#time-left.timeleft-69be1]
       [:button#stopBtn.red-btn-2c9ab "STOP"]]])
@@ -65,7 +65,7 @@
 (defn init-stop-page!
   "Initialize the start game page."
   []
-  (.html ($ "#main-container") (stop-html))
+  (dom/set-page-body! (stop-html))
 
   (socket/on "time-left" on-time-left)
   (socket/on "countdown" on-countdown)
@@ -77,7 +77,7 @@
 ;;------------------------------------------------------------------------------
 
 (hiccups/defhtml start-html []
-  [:div#inner-container
+  [:div.inner-6ae9d
     [:div.login-5983e
       [:label#time-left.timeleft-69be1]
       [:div.input-container-c8147
@@ -88,8 +88,8 @@
           [:label.label-66a3b "Time between rounds:"]
           [:input#cooldown.input-48f1f {:type "text" :value (:cooldown @game-settings)}]]
       [:div.button-container-8e52e
-        [:button#startBtn.green-btn-f67eb "START NOW"]
-        [:button#updateTimes.blue-btn-41e23 "UPDATE TIMES"]]]]])
+        [:button#startBtn.green-btn-f67eb "Start Now"]
+        [:button#updateTimes.blue-btn-41e23 "Update Times"]]]]])
 
 (defn- get-times
   "Retrieve the time settings inputs"
@@ -107,7 +107,7 @@
 (defn init-start-page!
   "Initialize the start game page."
   []
-  (.html ($ "#main-container") (start-html))
+  (dom/set-page-body! (start-html))
   (.click ($ "#startBtn") click-start-btn)
   (.click ($ "#updateTimes") click-update-times-btn))
 
@@ -116,7 +116,7 @@
 ;;------------------------------------------------------------------------------
 
 (hiccups/defhtml password-html []
-  [:div#inner-container
+  [:div.inner-6ae9d
     [:div.login-5983e
       [:form
         [:div.input-4a3e3
@@ -138,7 +138,7 @@
 (defn init-password-page!
   "Initialize the password page."
   []
-  (.html ($ "#main-container") (password-html))
+  (dom/set-page-body! (password-html))
 
   ; Request access as MC when user submits password.
   (.click ($ "#submitPasswordBtn") click-login-as-mc)
@@ -148,7 +148,7 @@
   (socket/on "grant-mc" on-grant-mc)
 
   ; Put focus on the password field.
-  (.focus (by-id "password")))
+  (.focus (dom/by-id "password")))
 
 ;;------------------------------------------------------------------------------
 ;; Page Init / Cleanup
@@ -156,7 +156,7 @@
 
 (defn init
   []
-  (client.core/set-bw-background!)
+  (dom/set-bw-background!)
   ; Listen for any settings updates
   (socket/on "settings-update" #(on-settings-update (read-string %)))
 

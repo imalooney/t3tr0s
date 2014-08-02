@@ -2,9 +2,10 @@
   (:require-macros [hiccups.core :as hiccups])
   (:require
     hiccups.runtime
-    [client.socket :as socket]
+    [client.dom :as dom]
     [client.login :refer [get-username
                           get-color]]
+    [client.socket :as socket]
     [cljs.reader :refer [read-string]]
     [client.util :as util]))
 
@@ -15,7 +16,7 @@
 ;;------------------------------------------------------------------------------
 
 (hiccups/defhtml chat-html []
-  [:div#inner-container
+  [:div.inner-6ae9d
     [:div.chat-logo-e38e3
       [:img {:src "/img/t3tr0s_logo_200w.png" :width "160px"}]
       [:span.span-4e536.time-left-8a651 "Waiting to play..."]]
@@ -150,9 +151,8 @@
   "Starts the chat page"
   []
 
-  (client.core/set-bw-background!)
-
-  (.html ($ "#main-container") (chat-html))
+  (dom/set-bw-background!)
+  (dom/set-page-body! (chat-html))
 
   ;; Add listeners
   (.click ($ "#submit") submit-message!)

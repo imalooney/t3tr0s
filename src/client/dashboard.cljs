@@ -1,13 +1,13 @@
 (ns client.dashboard
   (:require-macros [hiccups.core :as hiccups])
   (:require
-    [client.dom :refer [by-id]]
+    [cljs.reader :refer [read-string]]
+    hiccups.runtime
+    [client.dom :as dom]
     [client.game.paint :refer [draw-board! size-canvas!]]
     [client.game.board :refer [empty-board rows-cutoff]]
     [client.util :as util]
-    [cljs.reader :refer [read-string]]
-    [client.socket :as socket]
-    hiccups.runtime))
+    [client.socket :as socket]))
 
 (declare board)
 
@@ -96,7 +96,7 @@
     (swap! ids #(assoc % n (util/uuid)))))
 
 (defn- create-board-if-needed! [id]
-  (when-not (by-id id)
+  (when-not (dom/by-id id)
     (.append ($ "#boardsContainer") (board id))
     (size-canvas! (str "canvas-" id) empty-board cell-size rows-cutoff)))
 
@@ -119,7 +119,7 @@
   (create-board-if-needed! (get @ids (:pid itm)))
   (let [place (+ idx 1)
         id (get @ids (:pid itm))
-        $el ($ (by-id id))
+        $el ($ (dom/by-id id))
         $board ($ (str "#" id " .board-45de4"))]
 
     ;; hide board that are not in the top three
@@ -228,8 +228,8 @@
 ;;------------------------------------------------------------------------------
 
 (defn init []
-  (client.core/set-bw-background!)
-  (.html ($ "#main-container") (dashboard-html))
+  (dom/set-bw-background!)
+  (dom/set-page-body! (dashboard-html))
   (swap! leaders identity)
 
   (.click ($ "#btn-shuffle") #(reset! leaders (shuffle test-leaders)))

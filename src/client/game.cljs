@@ -3,8 +3,9 @@
   (:require
     [cljs.reader :refer [read-string]]
     hiccups.runtime
-    [client.socket :as socket]
     client.game.core
+    [client.dom :as dom]
+    [client.socket :as socket]
     [client.util :as util]))
 
 (def $ js/jQuery)
@@ -48,26 +49,26 @@
   [:h1#countdown "Connecting..."])
 
 (hiccups/defhtml gameover-html [ranks]
-  [:div#inner-container
-   [:div.chat-logo-e38e3
-    [:img {:src "/../../img/t3tr0s_logo_200w.png" :width "160px"}]
-    [:span.span-4e536 "Game over"]]
-   [:div#chat-messages
-    [:table.table-9be14
-     [:thead
-      [:tr
-       [:th.th-147ad "place"]
-       [:th "name"]
-       [:th "score"]
-       [:th "lines"]]]
-     [:tbody
-      (for [[i player] (map-indexed vector ranks)]
-        [:tr.tr-cf247
-         [:td (str (+ i 1) ".")]
-         [:td {:class (str "color-" (mod i 7))} (:user player)]
-         [:td (util/format-number (:score player))]
-         [:td (:total-lines player)]])]]]
-   [:button#game-over-btn.red-btn-2c9ab "LOBBY"]])
+  [:div.inner-6ae9d
+    [:div.chat-logo-e38e3
+      [:img {:src "/img/t3tr0s_logo_200w.png" :width "160px"}]
+      [:span.span-4e536 "Game over"]]
+    [:div#chat-messages
+      [:table.table-9be14
+        [:thead
+          [:tr
+            [:th.th-147ad "place"]
+            [:th "name"]
+            [:th "score"]
+            [:th "lines"]]]
+        [:tbody
+          (for [[i player] (map-indexed vector ranks)]
+            [:tr.tr-cf247
+              [:td (str (+ i 1) ".")]
+              [:td {:class (str "color-" (mod i 7))} (:user player)]
+              [:td (util/format-number (:score player))]
+              [:td (:total-lines player)]])]]]
+    [:button#game-over-btn.red-btn-2c9ab "LOBBY"]])
 
 ;;------------------------------------------------------------
 ;; Page initialization.
@@ -76,7 +77,7 @@
 (defn init-game
   "Show and start the game."
   []
-  (.html ($ "#main-container") (game-html))
+  (dom/set-page-body! (game-html))
   (client.game.core/init)
   (reset! initialized true)
   )
@@ -92,7 +93,7 @@
 (defn init-countdown
   "Show and listen for the countdown messages."
   []
-  (.html ($ "#main-container") (countdown-html))
+  (dom/set-page-body! (countdown-html))
   (socket/on "countdown" on-countdown))
 
 (declare cleanup)
@@ -103,7 +104,7 @@
   (js/console.log "game over")
   (cleanup)
   (let [data (read-string str-data)]
-    (.html ($ "#main-container") (gameover-html data))
+    (dom/set-page-body! (gameover-html data))
     (.click ($ "#game-over-btn") #(aset js/location "hash" "#/lobby"))))
 
 (defn on-time-left
@@ -124,7 +125,7 @@
 
   (reset! initialized false)
 
-  (client.core/set-bw-background!)
+  (dom/set-bw-background!)
 
   ; Only show the countdown if we are in a battle game
   ; so we can wait for the game to start.

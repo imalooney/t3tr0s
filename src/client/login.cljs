@@ -13,7 +13,7 @@
 ;;------------------------------------------------------------------------------
 
 (hiccups/defhtml login-html []
-  [:div#inner-container
+  [:div.inner-6ae9d
     [:div.logo-31d54]
     [:div.login-5983e
       [:form
@@ -71,10 +71,10 @@
 
 (defn init []
 
-  (client.core/set-color-background!)
+  (dom/set-color-background!)
 
   ; Initialize page content
-  (.html ($ "#main-container") (login-html))
+  (dom/set-page-body! (login-html))
 
   ; Populate username field.
   (.val ($ "#login") (get-username))

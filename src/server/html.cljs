@@ -31,5 +31,5 @@
 
 (hiccups/defhtml page-shell []
   (head "T3TR0S")
-  [:div#main-container]
+  [:div#appContainer]
   (footer))
