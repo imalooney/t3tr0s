@@ -17,6 +17,9 @@ grunt.initConfig({
   },
 
   watch: {
+    options: {
+      atBegin: true
+    },
     files: "public/css/*.less",
     tasks: ["less:watch"]
   }
