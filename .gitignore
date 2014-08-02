@@ -11,8 +11,8 @@ pom.xml
 *.swp
 
 /public/out/
-/public/client.js
-/public/client.min.js
+/public/js/client.js
+/public/js/client.min.js
 /server.js
 /public/repl-url
 /.repl

@@ -1,6 +1,10 @@
 (defproject t3tr0s "0.1.0-SNAPSHOT"
   :description "multiplayer Tetris™ for a 30th anniversary celebration tournament"
   :url "https://github.com/imalooney/t3tr0s"
+  :license {
+    :name "MIT License"
+    :url "https://github.com/imalooney/t3tr0s/blob/master/LICENSE"
+    :distribution :repo}
 
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [org.clojure/clojurescript "0.0-2234"]
@@ -18,7 +22,7 @@
       :client {
         :source-paths ["src/client"]
         :compiler {
-          :output-to "public/client.js"
+          :output-to "public/js/client.js"
           :output-dir "public/out"
           :optimizations :whitespace}}
 
@@ -26,7 +30,7 @@
         :source-paths ["src/client"]
         :compiler {
           :externs ["externs/jquery-1.9.js" "externs/socket.io.js"]
-          :output-to "public/client.min.js"
+          :output-to "public/js/client.min.js"
           :optimizations :advanced
           :pretty-print false}}
 
