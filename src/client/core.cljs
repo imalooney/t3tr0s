@@ -94,7 +94,7 @@
 
   ; Connect to REPL for development.
   (if (aget js/window "T3TR0S_CONFIG" "use-repl")
-    (repl/connect))
+    (repl/connect!))
 
   ;; initialize the socket connection
   (socket/connect!)
