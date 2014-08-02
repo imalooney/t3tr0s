@@ -1,4 +1,4 @@
-(ns html
+(ns server.html
   (:require-macros [hiccups.core :as hiccups])
   (:require
     [hiccups.runtime :as hiccupsrt]))

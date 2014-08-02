@@ -6,6 +6,7 @@
     [clojure.walk]
     [cljs.reader :refer [read-string]]
     [server.gif :refer [create-html-gif create-canvas-gif]]
+    [server.html :as html]
     [server.util :as util]))
 
 (enable-console-print!)
