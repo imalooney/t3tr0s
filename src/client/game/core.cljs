@@ -61,47 +61,9 @@
 ;; STATE OF THE GAME
 ;;------------------------------------------------------------
 
-(def battle
-  "Boolean flag signaling whether we are in solo or battle mode."
-  (atom false))
-
 (def state
   "The state of the game."
   (atom nil))
-
-(def paused?
-  "Boolean flag signaling if game is paused or not"
-  (atom false))
-
-(def paused-board
-  "Temp state of the board when paused"
-  (atom nil))
-
-(def paused-music
-  "Temp state of the music when paused"
-  (atom nil))
-
-(def music-playing?
-  "Boolean flag signaling if the music is playing or not"
-  (atom false))
-
-(defn- on-music-playing-change [_ _ _ new-state]
-  (let [music-el (.getElementById js/document "music")]
-    (if new-state
-      (.play music-el)
-      (.pause music-el))))
-
-(add-watch music-playing? :music on-music-playing-change)
-
-(defn- update-theme [_ _ old-state new-state]
-  (if (not= (:theme old-state)
-            (:theme new-state))
-    (let [theme-num (:theme new-state)
-          theme (get themes theme-num)]
-      (.html ($ "#theme") (:year theme))
-      (.html ($ "#theme-details") (:platform theme)))))
-
-(add-watch state :theme-change update-theme)
 
 (defn init-state!
   "Set the initial state of the game."
@@ -127,24 +89,48 @@
 (def pause-grav (chan))
 (def resume-grav (chan))
 
-(defn try-publish-score!
-  "Inform the server of our current state."
-  []
-  (if @battle
-    (socket/emit "update-player"
-      (select-keys @state [:total-lines :score]))))
+(def battle
+  "Boolean flag signaling whether we are in solo or battle mode."
+  (atom false))
+
+(def paused?
+  "Boolean flag signaling if game is paused or not"
+  (atom false))
+
+(def paused-board
+  "Temp state of the board when paused"
+  (atom nil))
+
+(def paused-music
+  "Temp state of the music when paused"
+  (atom nil))
+
+(def music-playing?
+  "Boolean flag signaling if the music is playing or not"
+  (atom false))
 
 ;;------------------------------------------------------------
 ;; STATE MONITOR
 ;;------------------------------------------------------------
 
-(defn drawable-board
-  "Draw the current state of the board."
-  []
-  (let [{piece :piece
-         [x y] :position
-         board :board} @state]
-    (create-drawable-board piece x y board)))
+(defn- on-music-playing-change [_ _ _ new-state]
+  (let [music-el (.getElementById js/document "music")]
+    (if new-state
+      (.play music-el)
+      (.pause music-el))))
+
+(add-watch music-playing? :music on-music-playing-change)
+
+
+(defn- update-theme [_ _ old-state new-state]
+  (if (not= (:theme old-state)
+            (:theme new-state))
+    (let [theme-num (:theme new-state)
+          theme (get themes theme-num)]
+      (.html ($ "#theme") (:year theme))
+      (.html ($ "#theme-details") (:platform theme)))))
+
+(add-watch state :theme-change update-theme)
 
 (defn make-redraw-chan
   "Create a channel that receives a value everytime a redraw is requested."
@@ -157,6 +143,14 @@
                 (request-anim trigger-redraw)))]
       (request-anim trigger-redraw)
       redraw-chan)))
+
+(defn drawable-board
+  "Draw the current state of the board."
+  []
+  (let [{piece :piece
+         [x y] :position
+         board :board} @state]
+    (create-drawable-board piece x y board)))
 
 (defn go-go-draw!
   "Kicks off the drawing routine."
@@ -227,6 +221,13 @@
   (.html ($ "#score") (str "Score: " (util/format-number (:score @state))))
   (.html ($ "#level") (str "Level: " (:level @state)))
   (.html ($ "#lines") (str "Lines: " (:total-lines @state))))
+
+(defn try-publish-score!
+  "Inform the server of our current state."
+  []
+  (if @battle
+    (socket/emit "update-player"
+      (select-keys @state [:total-lines :score]))))
 
 (defn update-points!
   [rows-cleared]
