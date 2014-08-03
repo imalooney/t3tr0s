@@ -33,22 +33,16 @@
 
 (def previous-hash (atom nil))
 
-(def pages {"#/login" {:init client.login/init :cleanup client.login/cleanup}
-            "#/lobby" {:init client.chat/init :cleanup client.chat/cleanup}
-            "#/menu"  {:init client.menu/init :cleanup client.menu/cleanup}
-            "#/mc"    {:init    client.mc/init :cleanup client.mc/cleanup}
-            "#/solo-game"   {:init #(do
-                                      (reset! client.game.core/battle false)
-                                      (client.game/init))
-                             :cleanup client.game/cleanup}
-            "#/battle-game" {:init #(do
-                                      (reset! client.game.core/battle true)
-                                      (client.game/init))
-                             :cleanup client.game/cleanup}
-            "#/dashboard" {:init client.dashboard/init
-                           :cleanup client.dashboard/cleanup}})
+(def pages {
+  "#/login" {:init client.login/init :cleanup client.login/cleanup}
+  "#/lobby" {:init client.chat/init  :cleanup client.chat/cleanup}
+  "#/menu"  {:init client.menu/init  :cleanup client.menu/cleanup}
+  "#/mc"    {:init client.mc/init    :cleanup client.mc/cleanup}
+  "#/solo-game"   {:init client.game/init-solo   :cleanup client.game/cleanup}
+  "#/battle-game" {:init client.game/init-battle :cleanup client.game/cleanup}
+  "#/dashboard"   {:init client.dashboard/init :cleanup client.dashboard/cleanup}})
 
-(defn dispatch-hash!
+(defn- dispatch-hash!
   "Call the appropriate function for the given URL hash."
   [h]
 
@@ -67,7 +61,7 @@
       (init)
       (js/console.error "no page called" h))))
 
-(defn enable-hash-routing!
+(defn- enable-hash-routing!
   "Monitor the URL hash to auto-dispatch our pages."
   []
   (aset js/window "onhashchange" #(dispatch-hash! (aget js/location "hash"))))

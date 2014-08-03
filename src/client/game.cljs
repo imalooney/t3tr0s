@@ -70,10 +70,6 @@
               [:td (:total-lines player)]])]]]
     [:button#game-over-btn.red-btn-2c9ab "LOBBY"]])
 
-;;------------------------------------------------------------
-;; Page initialization.
-;;------------------------------------------------------------
-
 (defn init-game
   "Show and start the game."
   []
@@ -120,11 +116,13 @@
 
   )
 
-(defn init
+;;------------------------------------------------------------------------------
+;; Page Initialization / Cleanup
+;;------------------------------------------------------------------------------
+
+(defn- init
   []
-
   (reset! initialized false)
-
   (dom/set-bw-background!)
 
   ; Only show the countdown if we are in a battle game
@@ -137,6 +135,14 @@
       (socket/on "time-left" on-time-left)
       (init-countdown))
     (init-game)))
+
+(defn init-solo []
+  (reset! client.game.core/battle false)
+  (init))
+
+(defn init-battle []
+  (reset! client.game.core/battle true)
+  (init))
 
 (defn cleanup
   []
