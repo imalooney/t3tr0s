@@ -1,5 +1,6 @@
 (ns client.game.paint
   (:require
+    [client.dom :as dom]
     [client.game.multiplayer :refer [opponent-scale]]
     [client.game.board :refer [empty-board
                                read-board
@@ -76,7 +77,7 @@
   "Set the size of the canvas."
   ([id board scale] (size-canvas! id board scale 0))
   ([id board scale y-cutoff]
-   (let [canvas (.getElementById js/document id)
+   (let [canvas (dom/by-id id)
          [w h] (board-size board)]
      (aset canvas "width" (* scale w))
      (aset canvas "height" (* scale (- h y-cutoff))))))
@@ -85,7 +86,7 @@
   "Draw the given board to the canvas."
   ([id board scale theme] (draw-board! id board scale theme 0))
   ([id board scale theme y-cutoff]
-    (let [canvas (.getElementById js/document id)
+    (let [canvas (dom/by-id id)
           ctx (.getContext canvas "2d")
           [w h] (board-size board)]
       (doseq [x (range w) y (range h)]
@@ -110,8 +111,8 @@
 (defn create-opponent-canvas!
   "Draw each opponents board"
   [id]
-  (if (nil? (.getElementById js/document id))
-    (let [arena (.getElementById js/document "arena")
+  (if (nil? (dom/by-id id))
+    (let [arena (dom/by-id "arena")
           canvas (.createElement js/document "canvas")]
       (.appendChild arena canvas)
       (aset canvas "id" id)
@@ -120,7 +121,7 @@
 
 (defn delete-opponent-canvas!
   [id]
-  (let [arena (.getElementById js/document "arena")
-        canvas (.getElementById js/document id)]
+  (let [arena (dom/by-id "arena")
+        canvas (dom/by-id id)]
     (if-not (nil? canvas)
       (.removeChild arena canvas))))

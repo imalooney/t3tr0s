@@ -2180,3 +2180,7 @@ jQuery.prototype.wrapAll = function(wrappingElement) {};
  * @return {!jQuery}
  */
 jQuery.prototype.wrapInner = function(arg1) {};
+
+// 2014-08-02 - C. Oakman
+// add velocity.js
+jQuery.prototype.velocity = function() {};

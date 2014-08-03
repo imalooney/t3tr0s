@@ -9,13 +9,24 @@
     [client.util :as util]
     [client.socket :as socket]))
 
-(declare board)
+(declare
+  place->coords
+  place-id)
 
-(def cell-size 24)
+(def $ js/jQuery)
 
-;; TODO:
-;; - hide empty boards that are not in the leaderboard 10
-;; - more efficient board updating code?
+(def big-board-cell-size 36)
+(def small-board-cell-size 20)
+
+(def first-row-height 900)
+(def small-row-height 560)
+(def small-row-width 247)
+
+;;------------------------------------------------------------------------------
+;; Dummy Data for Debugging / Testing
+;;------------------------------------------------------------------------------
+
+;; TODO: rewrite this as a function to produce random page-state
 
 (def test-board1
   [[0 0 0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0 0 0] [0 0 0 0 "O6" "O12" 0 0 0 0] [0 0 0 0 "O3" "O9" 0 0 0 0] [0 0 0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0 0 0] [0 0 0 0 "G6" "G12" 0 0 0 0] [0 0 0 0 "G3" "G9" 0 0 0 0] [0 0 0 0 0 "L4" 0 0 0 0] [0 0 0 "L2" "L10" "L9" 0 0 0 0] [0 0 0 0 "T4" 0 0 0 0 0] [0 0 0 "T2" "T11" "T8" 0 0 0 0] ["J4" 0 0 0 0 "J4" 0 0 0 0] ["J3" "J10" "J8" 0 0 "J3" "J10" "J8" 0 0] [0 "O6" "O12" 0 0 0 "Z2" "Z12" 0 0] [0 "O3" "O9" 0 0 "J4" 0 "Z3" "Z8" 0] [0 0 "L4" 0 0 "J3" "J10" "J8" 0 0] ["L2" "L10" "L9" 0 0 0 "I2" "I10" "I10" "I8"] [0 "O6" "O12" 0 0 "Z2" "Z12" 0 0 0] [0 "O3" "O9" 0 0 0 "Z3" "Z8" 0 0]])
@@ -26,9 +37,7 @@
 (def test-board3
   [[0 0 0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0 0 0] [0 0 0 0 "T4" 0 0 0 0 0] [0 0 0 "T2" "T11" "T8" 0 0 0 0] [0 0 0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0 0 0] [0 0 0 0 0 0 0 0 0 0] [0 0 0 0 "G4" 0 0 0 0 0] [0 "S6" "S8" "G2" "G11" "G8" 0 0 0 0] ["S2" "S9" 0 0 "L4" 0 0 0 0 0] ["Z2" "Z12" 0 0 "L5" 0 0 0 0 0] [0 "Z3" "Z8" 0 "L3" "L8" 0 0 0 0] [0 "O6" "O12" 0 0 "I2" "I10" "I10" "I8" 0] [0 "O3" "O9" "S6" "S8" 0 "S6" "S8" 0 0] [0 "J4" "S2" "S9" 0 "S2" "S9" "T4" 0 0] [0 "J3" "J10" "J8" 0 0 "T2" "T11" "T8" 0]])
 
-(def $ js/jQuery)
-
-(def test-leaders [
+(def test-state [
   { :user "Chris"
     :pid 0
     :board test-board1
@@ -79,141 +88,234 @@
     :board test-board1
     :theme 9
     :score 998237 }
+
+  ; { :user "Shaun"
+  ;   :pid 112
+  ;   :board test-board2
+  ;   :theme 1
+  ;   :score 232323 }
+  ; { :user "Elaine"
+  ;   :pid 223
+  ;   :board test-board3
+  ;   :theme 2
+  ;   :score 232323 }
+  ; { :user "Luis"
+  ;   :pid 345
+  ;   :board test-board1
+  ;   :theme 3
+  ;   :score 88 }
+  ; { :user "Phil"
+  ;   :pid 445
+  ;   :board test-board2
+  ;   :theme 4
+  ;   :score 8282 }
+  ; { :user "Rose"
+  ;   :pid 534
+  ;   :board test-board3
+  ;   :theme 5
+  ;   :score 746289 }
+  ; { :user "Brian"
+  ;   :pid 633
+  ;   :board test-board1
+  ;   :theme 6
+  ;   :score 23232 }
+  ; { :user "Brett"
+  ;   :pid 775
+  ;   :board test-board2
+  ;   :theme 7
+  ;   :score 882922 }
+  ; { :user "Andrew"
+  ;   :pid 820
+  ;   :board test-board3
+  ;   :theme 8
+  ;   :score 99723 }
+  ; { :user "AndyAndyAndy"
+  ;   :pid 982
+  ;   :board test-board1
+  ;   :theme 9
+  ;   :score 998237 }
+
   ])
-
-;;------------------------------------------------------------------------------
-;; Username to UUID Mapping
-;;------------------------------------------------------------------------------
-
-(def ids 
-  "Stores a mapping of username --> UUID for use as DOM ids"
-  (atom {}))
-
-(defn create-uuid-if-needed!
-  "creates a mapping of username --> UUID in the ids atom if one does not already exist"
-  [n]
-  (if-not (get @ids n)
-    (swap! ids #(assoc % n (util/uuid)))))
-
-(defn- create-board-if-needed! [id]
-  (when-not (dom/by-id id)
-    (.append ($ "#boardsContainer") (board id))
-    (size-canvas! (str "canvas-" id) empty-board cell-size rows-cutoff)))
-
-;;------------------------------------------------------------------------------
-;; Leaderboard State
-;;------------------------------------------------------------------------------
-
-(def leaders (atom []))
-
-(def place-classes (str "place-1 place-2 place-3 place-4 place-5"
-  " place-6 place-7 place-8 place-9 place-10"))
-
-(defn- draw-live-board
-   [id itm]
-   (draw-board! (str "canvas-" id) (:board itm) cell-size (:theme itm) rows-cutoff))
-
-(defn- update-board [idx itm]
-  (js/console.log "updating board")
-  (create-uuid-if-needed! (:pid itm))
-  (create-board-if-needed! (get @ids (:pid itm)))
-  (let [place (+ idx 1)
-        id (get @ids (:pid itm))
-        $el ($ (dom/by-id id))
-        $board ($ (str "#" id " .board-45de4"))]
-
-    ;; hide board that are not in the top three
-    (if (<= place 3)
-      (do
-        (.css $board "display" "")
-        (draw-live-board id itm))
-      (.css $board "display" "none"))
-
-    (.removeClass $el place-classes)
-    (.addClass $el (str "place-" place))
-
-    (.html ($ (str "#" id " .name-1d96a")) (:user itm))
-    (.html ($ (str "#" id " .score-5aeae")) (util/format-number (:score itm)))
-
-    ))
-
-(defn- on-change-leaders [_ _ _ new-leaders]
-  (doall
-    (map-indexed
-      update-board
-      new-leaders))
-  ;; TODO: hide any .board-a3a91 elements that do not have a .place class
-  )
-
-(add-watch leaders :main on-change-leaders)
 
 ;;------------------------------------------------------------------------------
 ;; HTML
 ;;------------------------------------------------------------------------------
 
-(hiccups/defhtml board [id]
-  [:div.board-a3a91 {:id id}
-    [:div.name-1d96a]
-    [:div.board-45de4
-     [:canvas.canvas-ad036 {:id (str "canvas-" id)}]]
-    [:div.score-5aeae]])
+(hiccups/defhtml board-container [id]
+  [:div.container-13c1f {:id id}
+    [:div.large-name-2eee0 {:id (str id "-name")}]
+    [:div.board-b4cf9
+      [:canvas.canvas-b534a {:id (str id "-canvas")}]]
+    [:div.score-a2b90 {:id (str id "-score")}]])
 
-(hiccups/defhtml dashboard-html []
-  [:div.header-d680b
-    [:img {:src "/img/t3tr0s_logo_200w.png" :alt ""}]
-    [:h1.title-d49ea "Scoreboard"]]
-  [:div.dashboard-0e330
-    [:button#btn-shuffle {:style "display:none"} "SHUFFLE"]
-    [:h2.time-left-eb709 "Time Left: 2:32"]
-    [:div#boardsContainer.boards-ad07f
-      [:div.num-2b782.first-100e1
-        [:span.number-86f89 "1"]
-        [:span.sup-0f414 "st"]]
-      [:div.num-2b782.second-e09e1
-        [:span.number-86f89 "2"]
-        [:span.sup-0f414 "nd"]]
-      [:div.num-2b782.third-deef68 
-        [:span.number-86f89 "3"]
-        [:span.sup-0f414 "rd"]]
-      [:div.num-2b782.fourth-a266b
-        [:span.number-86f89 "4"]
-        [:span.sup-0f414 "th"]]
-      [:div.num-2b782.fifth-96fe6
-        [:span.number-86f89 "5"]
-        [:span.sup-0f414 "th"]]
-      [:div.num-2b782.sixth-fd905
-        [:span.number-86f89 "6"]
-        [:span.sup-0f414 "th"]]
-      [:div.num-2b782.seventh-84a13
-        [:span.number-86f89 "7"]
-        [:span.sup-0f414 "th"]]
-      [:div.num-2b782.eight-15b29
-        [:span.number-86f89 "8"]
-        [:span.sup-0f414 "th"]]
-      [:div.num-2b782.ninth-780fc
-        [:span.number-86f89 "9"]
-        [:span.sup-0f414 "th"]]
-      [:div.num-2b782.tenth-34b19
-        [:span.number-86f89 "10"]
-        [:span.sup-0f414 "th"]]]])
+(hiccups/defhtml place [p]
+  [:div.place-e1c91 {
+    :id (place-id p)
+    :style (let [js-coords (place->coords p)]
+      (str "top: " (aget js-coords "top") "px;"
+           "left: " (aget js-coords "left") "px"))}
+    p])
+
+(hiccups/defhtml page-shell []
+  [:div.wrapper-2ba66
+    [:div.hdr-93a4f
+      [:img.logo-dd80d {:src "/img/t3tr0s_logo_200w.png" :alt "T3TR0S Logo"}]
+      [:div.game-6dc02 "Game"]
+      [:div.dashboard-3a58e "Dashboard"]]
+    ;; NOTE: this button is for testing purposes
+    [:button#shuffleBtn {:style "padding: 12px 24px; display: none"} "Shuffle!"]
+    [:div#boardsContainer.boards-4b797]])
+
+;;------------------------------------------------------------------------------
+;; Pid to UUID Mapping
+;;------------------------------------------------------------------------------
+
+(def ids
+  "Stores a mapping of pid --> UUID for use as DOM ids"
+  (atom {}))
+
+(defn- create-uuid-if-needed!
+  "creates a mapping of pid --> UUID in the ids atom if one does not already exist"
+  [n]
+  (if-not (get @ids n)
+    (swap! ids #(assoc % n (util/uuid)))))
+
+;;------------------------------------------------------------------------------
+;; Dashboard State
+;;------------------------------------------------------------------------------
+
+(def page-state (atom []))
+
+(defn- update-board-canvas! [id itm place]
+  (when (<= place 3)
+    (size-canvas! (str id "-canvas") (:board itm) big-board-cell-size rows-cutoff)
+    (draw-board! (str id "-canvas") (:board itm) big-board-cell-size (:theme itm) rows-cutoff))
+  (when (> place 3)
+    (size-canvas! (str id "-canvas") (:board itm) small-board-cell-size rows-cutoff)
+    (draw-board! (str id "-canvas") (:board itm) small-board-cell-size (:theme itm) rows-cutoff))
+  )
+
+;; NOTE: does NOT apply to places 1, 2, 3
+(defn- place->row
+  "Given a place, returns the row it is on."
+  [p]
+  (if (<= p 3)
+    0
+    (js/Math.ceil (/ (- p 3) 5))))
+
+;; NOTE: does NOT apply to places 1, 2, 3
+(defn- place->col
+  "Given a place, returns the column it is on."
+  [p]
+  (let [r (rem (- p 3) 5)]
+    (if (= r 0)
+      5
+      r)))
+
+(defn- place->coords
+  "Returns top + left coordinates for a place.
+   NOTE: returns a js-object"
+  [p]
+  (cond
+    (= p 1) (js-obj "top" 0 "left" 0)
+    (= p 2) (js-obj "top" 0 "left" 415)
+    (= p 3) (js-obj "top" 0 "left" 830)
+    :else (js-obj
+      "top" (+ (* (dec (place->row p)) small-row-height) first-row-height)
+      "left" (* (dec (place->col p)) small-row-width))))
+
+(defn- place-id [p]
+  (str "dashboardPlace" p))
+
+(defn- calc-height [num-boards]
+  (if (<= num-boards 3)
+    (+ first-row-height 40)
+    (+ first-row-height (* (place->row num-boards) small-row-height) 40)))
+
+(defn- set-container-height!
+  "Sets the height of the boards container based on how many boards there are."
+  [num-boards]
+  (.css ($ "#boardsContainer")
+    "height" (str (calc-height num-boards) "px")))
+
+(defn- update-place! [p]
+  (if-not (dom/by-id (place-id p))
+    (.prepend ($ "#boardsContainer") (place p))))
+
+(defn- update-place-numbers! [num-places]
+  (doall (map update-place! (range 1 (inc num-places))))
+  ;; TODO: need to clear places that are no longer in use
+  ;;   ie: someone dropped off
+  )
+
+(defn- create-board-container-if-needed! [id]
+  (when-not (dom/by-id id)
+    (.prepend ($ "#boardsContainer") (board-container id))))
+
+(defn- update-board! [idx itm]
+  (create-uuid-if-needed! (:pid itm))
+  (create-board-container-if-needed! (get @ids (:pid itm)))
+  (let [place (+ idx 1)
+        id (get @ids (:pid itm))
+        name-id (str id "-name")
+        score-id (str id "-score")]
+    (update-board-canvas! id itm place)
+    (dom/set-html! name-id (:user itm))
+    (dom/set-html! score-id (-> itm :score util/format-number))
+
+    ;; TODO: have different sizes for places, names, scores for the top 3?
+    ; (when (<= place 3)
+    ;   (.removeClass ($ (str "#" name-id)) "small-name-ecd97")
+    ;   (.addClass ($ (str "#" name-id)) "large-name-2eee0"))
+
+    ; (when (> place 3)
+    ;   (.removeClass ($ (str "#" name-id)) "large-name-2eee0")
+    ;   (.addClass ($ (str "#" name-id)) "small-name-ecd97"))
+
+    (.velocity ($ (str "#" id))
+      (place->coords place)
+      (js-obj "duration" 200))
+  ))
+
+(defn- update-all-boards! [boards]
+  (doall (map-indexed update-board! boards)))
+
+(defn- on-change-page-state [_ _ _ new-s]
+  (set-container-height! (count new-s))
+  (update-place-numbers! (count new-s))
+  (update-all-boards! new-s)
+  )
+
+(add-watch page-state :main on-change-page-state)
 
 ;;------------------------------------------------------------------------------
 ;; Socket Events
 ;;------------------------------------------------------------------------------
 
+;; Shaun - can we send the position information from the server on the 
+;;   "board-update" event?
+;; would be nice to not have to loop through page-state here
 (defn on-board-update
   "Called when receiving a board update from a visible leader."
   [str-data]
-  (let [itm (read-string str-data)
-        id (get @ids (:pid itm))]
-    (draw-live-board id itm)))
+  (let [board-state (read-string str-data)
+        pid (:pid board-state)
+        id (get @ids pid)]
 
+    (doall (map-indexed
+      (fn [idx itm]
+        (if (= pid (:pid itm))
+          (update-board-canvas! id board-state (inc idx))))
+      @page-state))))
+
+;; TODO: this should be renamed from "leader", but need to change the backend
 (defn on-leader-update
   "Called when receiving an updated list of leaders and their scores."
   [str-data]
   (let [data (read-string str-data)]
-    (reset! leaders data)))
+    (reset! page-state data)))
 
+;; TODO: where to put this on the new dashboard page?
 (defn on-time-left
   "Called when receiving time-left update from server."
   [total-seconds]
@@ -223,16 +325,26 @@
         time-str (str m ":" s-str)]
     (.html ($ ".time-left-eb709") (str "Time Left: " time-str))))
 
+(defn- shuffle-page-state []
+  (reset! page-state (shuffle test-state)))
+
 ;;------------------------------------------------------------------------------
 ;; Page Initialization / Cleanup
 ;;------------------------------------------------------------------------------
 
+;; TODO: this page should never be in an invalid state
+;; ie: waiting for game to start, show results of previous round, etc
+;; should show *something* no matter what
+
 (defn init []
   (dom/set-bw-background!)
-  (dom/set-page-body! (dashboard-html))
-  (swap! leaders identity)
+  (dom/set-page-body! (page-shell))
+  (swap! page-state identity)
 
-  (.click ($ "#btn-shuffle") #(reset! leaders (shuffle test-leaders)))
+  ;; NOTE: for debugging
+  ; (.click ($ "#shuffleBtn") shuffle-page-state)
+  ; (shuffle-page-state)
+  ; (js/setInterval shuffle-page-state 2000)
 
   (socket/emit "join-dashboard")
 

@@ -91,11 +91,6 @@
        (sort-by :score)
        (reverse)))
 
-(defn player-visible-on-dashboard?
-  "Determines if the given player is visible on the dashboard."
-  [pid]
-  (some #(= pid (:pid %)) (take 3 @leaders)))
-
 (defn go-go-countdown!
   "Start the countdown"
   [io seconds]
@@ -276,10 +271,9 @@
   ; Call score update events.
   (if (contains? data :score)
     (on-score-update io))
-
+  
   ; If player should be visible on dashboard, then emit to dashboard.
-  (if (and (contains? data :board)
-           (player-visible-on-dashboard? pid))
+  (if (contains? data :board)
     (.. io (to "dashboard")
            (emit "board-update"
                  (pr-str (select-keys (get @players pid) [:board :pid :theme])))))

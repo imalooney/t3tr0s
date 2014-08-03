@@ -1,16 +1,38 @@
 @font-face {
-  font-family: 'visitor';
-  src: url("/font/visitor1.ttf") format("truetype");
-  font-weight: normal;
+  font-family: 'Open Sans Light';
   font-style: normal;
+  font-weight: 300;
+  src: url('../font/OpenSans-Light.eot');
+  src: local('Open Sans Light'), local('OpenSans-Light'), url('../font/OpenSans-Light.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../font/OpenSans.eot');
+  src: local('Open Sans'), local('OpenSans'), url('../font/OpenSans.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 600;
+  src: url('../font/OpenSans-Semibold.eot');
+  src: local('Open Sans Semibold'), local('OpenSans-Semibold'), url('../font/OpenSans-Semibold.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'visitor';
+  font-style: normal;
+  font-weight: normal;
+  src: url("../font/visitor1.ttf") format("truetype");
 }
 
 body {
   background-color: #111;
   font-family: 'visitor';
   letter-spacing: 2px;
-  overflow: hidden;
-  text-transform: uppercase;
 }
 
 .color-c025c {
@@ -626,4 +648,92 @@ body {
   text-align: center;
   line-height: 30px;
   border-bottom: 1px solid rgba(255,255,255,0.5);
+}
+
+//------------------------------------------------------------------------------
+// New Dashboard
+//------------------------------------------------------------------------------
+
+.wrapper-2ba66 {
+  margin: 0 auto;
+  width: 1200px;
+}
+
+.hdr-93a4f {
+  position: relative;
+}
+
+.hdr-btn() {
+  cursor: pointer;
+  font-size: 24px;
+  padding: 20px;
+  position: absolute;
+  top: 0;
+}
+
+.game-6dc02 {
+  .hdr-btn();
+  background: #484848;
+  color: #7a7a7a;
+  right: 205px;
+}
+
+.dashboard-3a58e {
+  .hdr-btn();
+  background: #fff;
+  color: #2b2b2b;
+  right: 0px;
+}
+
+.logo-dd80d {
+  margin: 30px 0;
+}
+
+.boards-4b797 {
+  min-height: 600px;
+  position: relative;
+}
+
+.place-e1c91 {
+  background: #fff;
+  color: #1f1f1f;
+  font-size: 32px;
+  position: absolute;
+  padding: 12px;
+  text-align: center;
+  width: 30px;
+  .rounded(100px);
+}
+
+.container-13c1f {
+  //margin-left: 20px;
+  position: absolute;
+}
+
+.board-b4cf9 {
+  border: 5px solid #fff;
+  margin-top: 30px;
+}
+
+.large-name-2eee0 {
+  color: #fff;
+  font-size: 32px;
+  padding: 12px 0 0 65px;
+  text-align: left;
+}
+
+.small-name-ecd97 {
+  color: #fff;
+  font-size: 24px;
+  padding: 12px 0 0 40px;
+  text-align: left;
+}
+
+.score-a2b90 {
+  color: #fff;
+  font-family: "Open Sans";
+  font-size: 32px;
+  font-weight: 600;
+  margin-top: 6px;
+  text-align: right;
 }
