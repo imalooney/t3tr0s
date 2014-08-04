@@ -160,7 +160,7 @@
   [:div.wrapper-2ba66
     [:div.hdr-93a4f
       [:img.logo-dd80d {:src "/img/t3tr0s_logo_200w.png" :alt "T3TR0S Logo"}]
-      [:div.game-6dc02 "Game"]
+      [:div#battleGameLink.game-6dc02 "Game"]
       [:div.dashboard-3a58e "Dashboard"]]
     ;; NOTE: this button is for testing purposes
     [:button#shuffleBtn {:style "padding: 12px 24px; display: none"} "Shuffle!"]
@@ -329,6 +329,17 @@
   (reset! page-state (shuffle test-state)))
 
 ;;------------------------------------------------------------------------------
+;; DOM Events
+;;------------------------------------------------------------------------------
+
+(defn- click-battle-link []
+  (aset js/window "location" "hash" "#/battle-game"))
+
+(defn- add-events []
+  (.on ($ "#shuffleBtn") "click" shuffle-page-state)
+  (.on ($ "#battleGameLink") "click" click-battle-link))
+
+;;------------------------------------------------------------------------------
 ;; Page Initialization / Cleanup
 ;;------------------------------------------------------------------------------
 
@@ -339,10 +350,11 @@
 (defn init []
   (dom/set-bw-background!)
   (dom/set-page-body! (page-shell))
+  (add-events)
+
   (swap! page-state identity)
 
   ;; NOTE: for debugging
-  ; (.click ($ "#shuffleBtn") shuffle-page-state)
   ; (shuffle-page-state)
   ; (js/setInterval shuffle-page-state 2000)
 
