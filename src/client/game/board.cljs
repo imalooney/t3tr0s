@@ -313,6 +313,17 @@
       board2)
     board))
 
+(defn highest-nonempty-row
+  [board]
+  (first (keep-indexed #(if (not= empty-row %2) %1) board)))
+
+(defn tower-height
+  [board]
+  (let [h (count board)]
+    (if-let [y (highest-nonempty-row board)]
+      (- h y)
+      0)))
+
 ;;------------------------------------------------------------
 ;; Next piece board generator.
 ;;------------------------------------------------------------

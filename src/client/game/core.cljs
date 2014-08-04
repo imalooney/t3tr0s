@@ -4,6 +4,7 @@
   (:require
     [client.util :as util]
     [cljs.reader :refer [read-string]]
+    [client.game.history :as history]
     [client.game.board :refer [piece-fits?
                                rotate-piece
                                start-position
@@ -23,7 +24,8 @@
                                n-rows
                                n-cols
                                rows-cutoff
-                               next-piece-board]]
+                               next-piece-board
+                               tower-height]]
     [client.game.rules :refer [get-points
                                level-up?
                                get-level-speed]]
@@ -83,7 +85,9 @@
                  :soft-drop false
 
                  :quit false
-                 :quit-chan (chan)}))
+                 :quit-chan (chan)
+
+                 :history []}))
 
 ; required for pausing/resuming the gravity routine
 (def pause-grav (chan))
@@ -172,6 +176,7 @@
                   (socket/emit "update-player"
                     {:theme (:theme @state) :board new-board}))
 
+                (history/draw-history! (:history @state))
                 (draw-board! "game-canvas" new-board cell-size new-theme rows-cutoff)
                 (draw-board! "next-canvas" (next-piece-board next-piece) cell-size new-theme)
                 (if (:recording @vcr)
@@ -195,6 +200,10 @@
   [piece]
     (swap! state assoc :piece piece
                        :position start-position)
+    (swap! state update-in [:history]
+                 conj {:height (-> @state :board tower-height)
+                       :drop-y (second start-position)
+                       :collapsed #{}})
     (put! resume-grav 0))
 
 (defn try-spawn-piece!
@@ -290,10 +299,14 @@
   []
   (let [[x y] (:position @state)
         piece (:piece @state)
-        board (:board @state)]
-    (swap! state assoc :board (write-piece-to-board piece x y board)
+        board (:board @state)
+        new-board (write-piece-to-board piece x y board)]
+    (swap! state assoc :board new-board
                        :piece nil
                        :soft-drop false)
+    (swap! state update-in [:history (-> @state :history count dec)]
+                 assoc :height (tower-height new-board)
+                       :collapsed (get-filled-row-indices new-board))
     (put! pause-grav 0)
 
     ; If collapse routine returns a channel...
@@ -313,7 +326,9 @@
         board (:board @state)
         ny (inc y)]
     (if (piece-fits? piece x ny board)
-      (swap! state assoc-in [:position 1] ny)
+      (do
+        (swap! state assoc-in [:position 1] ny)
+        (swap! state assoc-in [:history (-> @state :history count dec) :drop-y] ny))
       (lock-piece!))))
 
 (defn go-go-gravity!
@@ -554,6 +569,8 @@
 
   (init-state!)
   (load-theme!)
+
+  (history/init-canvas! "history-canvas")
 
   (size-canvas! "game-canvas" empty-board cell-size rows-cutoff)
   (size-canvas! "next-canvas" (next-piece-board) cell-size)
