@@ -156,6 +156,41 @@
             "left: " (aget js-coords "left") "px"))}
     p])
 
+(hiccups/defhtml pieces-table []
+  [:table.tbl-c8c6b
+    [:tbody
+      [:tr
+        [:td.piece-fbcb9 [:img {:src "/img/pieces/i.png" :alt "I Piece" :style "width: 48px"}]]
+        [:td.number-ca2a6 "1,112"]
+        [:td.spacer-67b8d]
+        [:td.piece-fbcb9 [:img {:src "/img/pieces/s.png" :alt "S Piece" :style "width: 36px"}]]
+        [:td.number-ca2a6 "1,232"]]
+      [:tr
+        [:td.piece-fbcb9 [:img {:src "/img/pieces/j.png" :alt "J Piece" :style "width: 36px"}]]
+        [:td.number-ca2a6 "1,224"]
+        [:td.spacer-67b8d]
+        [:td.piece-fbcb9 [:img {:src "/img/pieces/t.png" :alt "T Piece" :style "width: 36px"}]]
+        [:td.number-ca2a6 "1,132"]]
+      [:tr
+        [:td.piece-fbcb9 [:img {:src "/img/pieces/l.png" :alt "L Piece" :style "width: 36px"}]]
+        [:td.number-ca2a6 "1,400"]
+        [:td.spacer-67b8d]
+        [:td.piece-fbcb9 [:img {:src "/img/pieces/z.png" :alt "Z Piece" :style "width: 36px"}]]
+        [:td.number-ca2a6 "1,198"]]
+      [:tr
+        [:td.piece-fbcb9 [:img {:src "/img/pieces/o.png" :alt "O Piece" :style "width: 24px"}]]
+        [:td.number-ca2a6 "1,244"]]]])
+
+(hiccups/defhtml stats []
+  [:div.label-39b9c "Pieces:"]
+  (pieces-table)
+  [:div.line-8975a]
+  [:div.label-39b9c "Lines:"]
+  [:div.metric-b93a8 "1,214"]
+  [:div.line-8975a]
+  [:div.label-39b9c "Time Left:"]
+  [:div.metric-b93a8 "2:45"])
+
 (hiccups/defhtml page-shell []
   [:div.wrapper-2ba66
     [:div.hdr-93a4f
@@ -164,7 +199,8 @@
       [:div.dashboard-3a58e "Dashboard"]]
     ;; NOTE: this button is for testing purposes
     [:button#shuffleBtn {:style "padding: 12px 24px; display: none"} "Shuffle!"]
-    [:div#boardsContainer.boards-4b797]])
+    [:div#boardsContainer.boards-4b797
+      [:div.stats-2cda4 (stats)]]])
 
 ;;------------------------------------------------------------------------------
 ;; Pid to UUID Mapping
@@ -240,7 +276,7 @@
 
 (defn- update-place! [p]
   (if-not (dom/by-id (place-id p))
-    (.prepend ($ "#boardsContainer") (place p))))
+    (.append ($ "#boardsContainer") (place p))))
 
 (defn- update-place-numbers! [num-places]
   (doall (map update-place! (range 1 (inc num-places))))
@@ -250,7 +286,7 @@
 
 (defn- create-board-container-if-needed! [id]
   (when-not (dom/by-id id)
-    (.prepend ($ "#boardsContainer") (board-container id))))
+    (.append ($ "#boardsContainer") (board-container id))))
 
 (defn- update-board! [idx itm]
   (create-uuid-if-needed! (:pid itm))
