@@ -18,8 +18,8 @@
 (def large-board-cell-size 15)
 (def small-board-cell-size 12)
 
-(def first-row-height 480)
-(def small-row-height 400)
+(def first-row-height 473)
+(def small-row-height 399)
 (def small-row-width 200)
 
 ;;------------------------------------------------------------------------------
@@ -264,6 +264,7 @@
     (dom/set-html! score-id (-> itm :score util/format-number))
 
     ;; different sizes for name, scores when in top 3
+    ;; TODO: this should probably be replaced with a single class on the container
     (when (<= place 3)
       (.removeClass ($ (str "#" name-id)) "small-name-ecd97")
       (.addClass ($ (str "#" name-id)) "large-name-2eee0")
@@ -360,6 +361,9 @@
 
   ;; NOTE: for debugging
   ; (shuffle-page-state)
+  ; (js/setTimeout shuffle-page-state 2000)
+  ; (js/setTimeout shuffle-page-state 4000)
+  ; (js/setTimeout shuffle-page-state 6000)
   ; (js/setInterval shuffle-page-state 2000)
 
   (socket/emit "join-dashboard")
