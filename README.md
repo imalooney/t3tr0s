@@ -30,24 +30,26 @@ past.  (We are working on the game at least once a week):
 ## Setup
 
 1. Install [Leiningen] and [Node.js].
-2. Run the following in the project directory
-```sh
-# install node.js dependencies
-npm install
+1. Run the following in the project directory
 
-# compile LESS file
-grunt less
+    ```sh
+    # install node.js dependencies
+    npm install
 
-# compile ClojureScript files (this may take a minute)
-lein cljsbuild once
+    # compile LESS file
+    grunt less
 
-# copy the example config file (edit as needed)
-cp example.config.json config.json
+    # compile ClojureScript files (this may take a minute)
+    lein cljsbuild once
 
-# start the node.js server
-node server.js
-```
-3. Open <http://localhost:1984> in your browser.
+    # copy the example config file (edit as needed)
+    cp example.config.json config.json
+
+    # start the node.js server
+    node server.js
+    ```
+
+1. Open <http://localhost:1984> in your browser.
 
 ### Browser REPL
 
