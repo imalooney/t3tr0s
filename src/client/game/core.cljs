@@ -496,7 +496,9 @@
                        :right (do (try-move!  1  0)     (.preventDefault e))
                        :space (do (hard-drop!)          (.preventDefault e))
                        :up    (do (try-rotate!)         (.preventDefault e))
-                       nil)))
+                       nil)
+                     (when (#{:down :left :right :space :up} (key-name e))
+                       (.preventDefault e))))
         key-up (fn [e]
                  (when-not (:quit @state)
                    (case (key-name e)
