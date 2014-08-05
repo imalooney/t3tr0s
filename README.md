@@ -29,18 +29,24 @@ past.  (We are working on the game at least once a week):
 
 ## Setup
 
-1. Install [Leiningen](http://leiningen.org/) and [NodeJS](http://nodejs.org/).
-1. Run the following in the project directory:
+1. Install [Leiningen] and [Node.js].
+1. Run the following in the project directory
 
-    ```
+    ```sh
+    # install node.js dependencies
     npm install
-    node server
-    ```
 
-1. In another terminal, run the auto-compiler from the project directory:
+    # compile LESS file
+    grunt less
 
-    ```
-    lein cljsbuild auto
+    # compile ClojureScript files (this may take a minute)
+    lein cljsbuild once
+
+    # copy the example config file (edit as needed)
+    cp example.config.json config.json
+
+    # start the node.js server
+    node server.js
     ```
 
 1. Open <http://localhost:1984> in your browser.
@@ -82,3 +88,6 @@ All code licensed under the terms of the [MIT License](https://github.com/imaloo
 The image files of past versions of the games (ie: the tilemap files) belong to their respective copyright holders.
 
 Tetris is a registered trademark of The Tetris Company.
+
+[Node.js]:http://nodejs.org
+[Leiningen]:http://leiningen.org

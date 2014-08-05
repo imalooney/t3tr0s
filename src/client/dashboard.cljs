@@ -186,10 +186,10 @@
   (pieces-table)
   [:div.line-8975a]
   [:div.label-39b9c "Lines:"]
-  [:div.metric-b93a8 "1,214"]
+  [:div#totalLines.metric-b93a8 "1,214"]
   [:div.line-8975a]
   [:div.label-39b9c "Time Left:"]
-  [:div.metric-b93a8 "2:45"])
+  [:div#timeLeft.metric-b93a8])
 
 (hiccups/defhtml page-shell []
   [:div.wrapper-2ba66
@@ -356,7 +356,6 @@
   (let [data (read-string str-data)]
     (reset! page-state data)))
 
-;; TODO: where to put this on the new dashboard page?
 (defn on-time-left
   "Called when receiving time-left update from server."
   [total-seconds]
@@ -364,7 +363,7 @@
         s (mod total-seconds 60)
         s-str (if (< s 10) (str "0" s) s)
         time-str (str m ":" s-str)]
-    (.html ($ ".time-left-eb709") (str "Time Left: " time-str))))
+    (dom/set-html! "timeLeft" time-str)))
 
 (defn- shuffle-page-state []
   (reset! page-state (shuffle test-state)))
