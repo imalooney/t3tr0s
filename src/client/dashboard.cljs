@@ -89,51 +89,51 @@
     :theme 9
     :score 998237 }
 
-  ; { :user "Shaun"
-  ;   :pid 112
-  ;   :board test-board2
-  ;   :theme 1
-  ;   :score 232323 }
-  ; { :user "Elaine"
-  ;   :pid 223
-  ;   :board test-board3
-  ;   :theme 2
-  ;   :score 232323 }
-  ; { :user "Luis"
-  ;   :pid 345
-  ;   :board test-board1
-  ;   :theme 3
-  ;   :score 88 }
-  ; { :user "Phil"
-  ;   :pid 445
-  ;   :board test-board2
-  ;   :theme 4
-  ;   :score 8282 }
-  ; { :user "Rose"
-  ;   :pid 534
-  ;   :board test-board3
-  ;   :theme 5
-  ;   :score 746289 }
-  ; { :user "Brian"
-  ;   :pid 633
-  ;   :board test-board1
-  ;   :theme 6
-  ;   :score 23232 }
-  ; { :user "Brett"
-  ;   :pid 775
-  ;   :board test-board2
-  ;   :theme 7
-  ;   :score 882922 }
-  ; { :user "Andrew"
-  ;   :pid 820
-  ;   :board test-board3
-  ;   :theme 8
-  ;   :score 99723 }
-  ; { :user "AndyAndyAndy"
-  ;   :pid 982
-  ;   :board test-board1
-  ;   :theme 9
-  ;   :score 998237 }
+  { :user "Chris Pounds"
+    :pid 112
+    :board test-board2
+    :theme 1
+    :score 232323 }
+  { :user "Elaine"
+    :pid 223
+    :board test-board3
+    :theme 2
+    :score 232323 }
+  { :user "Luis"
+    :pid 345
+    :board test-board1
+    :theme 3
+    :score 88 }
+  { :user "Phil"
+    :pid 445
+    :board test-board2
+    :theme 4
+    :score 8282 }
+  { :user "Rose"
+    :pid 534
+    :board test-board3
+    :theme 5
+    :score 746289 }
+  { :user "Brian"
+    :pid 633
+    :board test-board1
+    :theme 6
+    :score 23232 }
+  { :user "Brett"
+    :pid 775
+    :board test-board2
+    :theme 7
+    :score 882922 }
+  { :user "Andrew"
+    :pid 820
+    :board test-board3
+    :theme 8
+    :score 99723 }
+  { :user "AndyAndyAndy"
+    :pid 982
+    :board test-board1
+    :theme 9
+    :score 998237 }
 
   ])
 
@@ -182,13 +182,13 @@
         [:td.number-ca2a6 "1,244"]]]])
 
 (hiccups/defhtml stats []
-  [:div.label-39b9c "Pieces:"]
+  [:div.label-39b9c "Pieces"]
   (pieces-table)
   [:div.line-8975a]
-  [:div.label-39b9c "Lines:"]
+  [:div.label-39b9c "Lines"]
   [:div#totalLines.metric-b93a8 "1,214"]
   [:div.line-8975a]
-  [:div.label-39b9c "Time Left:"]
+  [:div.label-39b9c "Time Left"]
   [:div#timeLeft.metric-b93a8])
 
 (hiccups/defhtml page-shell []

@@ -1,47 +1,40 @@
 @font-face {
-  font-family: 'Open Sans Light';
-  font-style: normal;
-  font-weight: 300;
-  src: url('../font/OpenSans-Light.eot');
-  src: local('Open Sans Light'), local('OpenSans-Light'), url('../font/OpenSans-Light.woff') format('woff');
-}
-
-@font-face {
   font-family: 'Open Sans';
   font-style: normal;
   font-weight: 400;
-  src: url('../font/OpenSans.eot');
-  src: local('Open Sans'), local('OpenSans'), url('../font/OpenSans.woff') format('woff');
+  src: url('/font/OpenSans.eot');
+  src: local('Open Sans'), local('OpenSans'), url('/font/OpenSans.woff') format('woff');
 }
 
-@font-face {
-  font-family: 'Open Sans';
-  font-style: normal;
-  font-weight: 600;
-  src: url('../font/OpenSans-Semibold.eot');
-  src: local('Open Sans Semibold'), local('OpenSans-Semibold'), url('../font/OpenSans-Semibold.woff') format('woff');
-}
+// @font-face {
+//   font-family: 'visitor';
+//   font-style: normal;
+//   font-weight: normal;
+//   src: url("../font/visitor1.ttf") format("truetype");
+// }
 
 @font-face {
-  font-family: 'visitor';
-  font-style: normal;
+  font-family: 'JosefinSlabSemiBold';
+  src: url('/font/JosefinSlab-SemiBold.eot');
+  src: url('/font/JosefinSlab-SemiBold.eot?#iefix') format('embedded-opentype'),
+       url('/font/JosefinSlab-SemiBold.woff') format('woff'),
+       url('/font/JosefinSlab-SemiBold.ttf') format('truetype'),
+       url('/font/JosefinSlab-SemiBold.svg#JosefinSlabSemiBold') format('svg');
   font-weight: normal;
-  src: url("../font/visitor1.ttf") format("truetype");
+  font-style: normal;
 }
 
-// TODO: implement these
 .serious-font() {
-
+  font-family: "Open Sans";
 }
 
 .fun-font() {
-
+  font-family: "JosefinSlabSemiBold";
 }
 
 body {
   background-color: #111; // default
-  font-family: 'visitor';
-  letter-spacing: 2px;
+  .fun-font();
 }
 
 .bg-color-c025c {
@@ -375,8 +368,8 @@ body {
 }
 
 .txt {
+  color: #fff;
   font-size: 1em;
-  color: #FFF;
 }
 
 .color-0 {
@@ -438,6 +431,7 @@ body {
   font-size: 24px;
   padding: 20px;
   position: absolute;
+  text-transform: uppercase;
   top: 0;
 }
 
@@ -445,7 +439,7 @@ body {
   .hdr-btn();
   background: #484848;
   color: #7a7a7a;
-  right: 205px;
+  right: 200px;
 }
 
 .dashboard-3a58e {
@@ -474,16 +468,16 @@ body {
 
 .large-place-2288d {
   .place();
-  font-size: 32px;
-  padding: 12px;
+  font-size: 28px;
+  padding: 8px 6px 6px 6px;
   width: 30px;
 }
 
 .small-place-e1c91 {
   .place();
-  font-size: 28px;
-  padding: 8px;
-  width: 26px;
+  font-size: 26px;  
+  padding: 8px 4px 4px 4px;
+  width: 30px;
 }
 
 .container-13c1f {
@@ -496,27 +490,29 @@ body {
 }
 
 .large-name-2eee0 {
+  .serious-font();
   color: #fff;
-  font-size: 28px;
-  max-width: 165px; // so names don't spill over
+  font-size: 22px;
+  max-width: 140px; // so names don't spill over
   overflow-x: hidden;
-  padding: 14px 0 0 62px;
+  padding: 5px 0 0 48px;
   text-align: left;
+  white-space: nowrap;
 }
 
 .small-name-ecd97 {
+  .serious-font();
   color: #fff;
-  font-size: 24px;
-  max-width: 126px; // so names don't spill over
+  font-size: 18px;
+  max-width: 128px; // so names don't spill over
   overflow-x: hidden;
-  padding: 10px 0 0 50px;
+  padding: 6px 0 0 44px;
   text-align: left;
+  white-space: nowrap;
 }
 
 .score() {
   color: #fff;
-  font-family: "Open Sans";
-  font-weight: 600;
   text-align: right;
 }
 
@@ -549,23 +545,22 @@ body {
 }
 
 .label-39b9c {
-  font-size: 22px;
-  margin: 0 0 8px 0;
+  font-size: 17px;
+  margin: 0 0 10px 0;
   padding: 0;
+  text-transform: uppercase;
 }
 
 .line-8975a {
   background: #b0b0b0;
   height: 1px;
+  margin: 10px 0 15px 0;
   padding: 0;
-  margin: 10px 0;
 }
 
 .metric-b93a8 {
-  font-family: "Open Sans";
-  font-size: 24px;
-  font-weight: 600;
-  margin: 0 0 8px 0;
+  font-size: 32px;
+  margin: 0;
   padding: 0;
 }
 
@@ -580,10 +575,7 @@ body {
 }
 
 .number-ca2a6 {
-  font-family: "Open Sans";
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0px;
+  font-size: 20px;
   text-align: right;
 }
 
