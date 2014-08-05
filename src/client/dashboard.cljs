@@ -15,12 +15,12 @@
 
 (def $ js/jQuery)
 
-(def big-board-cell-size 36)
-(def small-board-cell-size 20)
+(def large-board-cell-size 15)
+(def small-board-cell-size 12)
 
-(def first-row-height 900)
-(def small-row-height 560)
-(def small-row-width 247)
+(def first-row-height 480)
+(def small-row-height 400)
+(def small-row-width 200)
 
 ;;------------------------------------------------------------------------------
 ;; Dummy Data for Debugging / Testing
@@ -143,17 +143,17 @@
 
 (hiccups/defhtml board-container [id]
   [:div.container-13c1f {:id id}
-    [:div.large-name-2eee0 {:id (str id "-name")}]
-    [:div.board-b4cf9
-      [:canvas.canvas-b534a {:id (str id "-canvas")}]]
-    [:div.score-a2b90 {:id (str id "-score")}]])
+    [:div {:id (str id "-name")}]
+    [:canvas.canvas-b534a {:id (str id "-canvas")}]
+    [:div {:id (str id "-score")}]])
 
 (hiccups/defhtml place [p]
-  [:div.place-e1c91 {
-    :id (place-id p)
-    :style (let [js-coords (place->coords p)]
-      (str "top: " (aget js-coords "top") "px;"
-           "left: " (aget js-coords "left") "px"))}
+  [:div 
+    {:class (if (<= p 3) "large-place-2288d" "small-place-e1c91")
+     :id (place-id p)
+     :style (let [js-coords (place->coords p)]
+       (str "top: " (aget js-coords "top") "px; "
+            "left: " (aget js-coords "left") "px"))}
     p])
 
 (hiccups/defhtml page-shell []
@@ -188,8 +188,8 @@
 
 (defn- update-board-canvas! [id itm place]
   (when (<= place 3)
-    (size-canvas! (str id "-canvas") (:board itm) big-board-cell-size rows-cutoff)
-    (draw-board! (str id "-canvas") (:board itm) big-board-cell-size (:theme itm) rows-cutoff))
+    (size-canvas! (str id "-canvas") (:board itm) large-board-cell-size rows-cutoff)
+    (draw-board! (str id "-canvas") (:board itm) large-board-cell-size (:theme itm) rows-cutoff))
   (when (> place 3)
     (size-canvas! (str id "-canvas") (:board itm) small-board-cell-size rows-cutoff)
     (draw-board! (str id "-canvas") (:board itm) small-board-cell-size (:theme itm) rows-cutoff))
@@ -218,8 +218,8 @@
   [p]
   (cond
     (= p 1) (js-obj "top" 0 "left" 0)
-    (= p 2) (js-obj "top" 0 "left" 415)
-    (= p 3) (js-obj "top" 0 "left" 830)
+    (= p 2) (js-obj "top" 0 "left" 240)
+    (= p 3) (js-obj "top" 0 "left" 480)
     :else (js-obj
       "top" (+ (* (dec (place->row p)) small-row-height) first-row-height)
       "left" (* (dec (place->col p)) small-row-width))))
@@ -263,14 +263,18 @@
     (dom/set-html! name-id (:user itm))
     (dom/set-html! score-id (-> itm :score util/format-number))
 
-    ;; TODO: have different sizes for places, names, scores for the top 3?
-    ; (when (<= place 3)
-    ;   (.removeClass ($ (str "#" name-id)) "small-name-ecd97")
-    ;   (.addClass ($ (str "#" name-id)) "large-name-2eee0"))
+    ;; different sizes for name, scores when in top 3
+    (when (<= place 3)
+      (.removeClass ($ (str "#" name-id)) "small-name-ecd97")
+      (.addClass ($ (str "#" name-id)) "large-name-2eee0")
+      (.removeClass ($ (str "#" score-id)) "small-score-7d14a")
+      (.addClass ($ (str "#" score-id)) "large-score-a2b90"))
 
-    ; (when (> place 3)
-    ;   (.removeClass ($ (str "#" name-id)) "large-name-2eee0")
-    ;   (.addClass ($ (str "#" name-id)) "small-name-ecd97"))
+    (when (> place 3)
+      (.removeClass ($ (str "#" name-id)) "large-name-2eee0")
+      (.addClass ($ (str "#" name-id)) "small-name-ecd97")
+      (.removeClass ($ (str "#" score-id)) "large-score-a2b90")
+      (.addClass ($ (str "#" score-id)) "small-score-7d14a"))
 
     (.velocity ($ (str "#" id))
       (place->coords place)

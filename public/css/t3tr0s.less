@@ -656,7 +656,7 @@ body {
 
 .wrapper-2ba66 {
   margin: 0 auto;
-  width: 1200px;
+  width: 960px;
 }
 
 .hdr-93a4f {
@@ -694,46 +694,76 @@ body {
   position: relative;
 }
 
-.place-e1c91 {
+.place() {
   background: #fff;
   color: #1f1f1f;
-  font-size: 32px;
   position: absolute;
-  padding: 12px;
   text-align: center;
-  width: 30px;
   .rounded(100px);
 }
 
+.large-place-2288d {
+  .place();
+  font-size: 32px;
+  padding: 12px;
+  width: 30px;
+}
+
+.small-place-e1c91 {
+  .place();
+  font-size: 28px;
+  padding: 8px;
+  width: 26px;
+}
+
 .container-13c1f {
-  //margin-left: 20px;
   position: absolute;
 }
 
-.board-b4cf9 {
+.canvas-b534a {
   border: 5px solid #fff;
-  margin-top: 30px;
+  margin-top: 25px;
 }
 
 .large-name-2eee0 {
   color: #fff;
   font-size: 32px;
-  padding: 12px 0 0 65px;
+  max-width: 165px; // so names don't spill over
+  overflow-x: hidden;
+  padding: 12px 0 0 62px;
   text-align: left;
 }
 
 .small-name-ecd97 {
   color: #fff;
   font-size: 24px;
-  padding: 12px 0 0 40px;
+  max-width: 126px; // so names don't spill over
+  overflow-x: hidden;
+  padding: 10px 0 0 50px;
   text-align: left;
 }
 
-.score-a2b90 {
+.score() {
   color: #fff;
   font-family: "Open Sans";
-  font-size: 32px;
   font-weight: 600;
-  margin-top: 6px;
   text-align: right;
+}
+
+.large-score-a2b90 {
+  .score();
+  font-size: 32px;
+  margin-top: 4px;
+  // NOTE: this needs to be kept in sync with
+  //   client.dashboard.large-board-cell-size
+  width: 160px;
+}
+
+.small-score-7d14a {
+  .score();
+  font-size: 24px;
+  margin-top: 4px;
+  // NOTE: this needs to be kept in sync with
+  //   client.dashboard.small-board-cell-size
+  width: 130px;
 }
