@@ -29,26 +29,35 @@
   src: url("../font/visitor1.ttf") format("truetype");
 }
 
+// TODO: implement these
+.serious-font() {
+
+}
+
+.fun-font() {
+
+}
+
 body {
-  background-color: #111;
+  background-color: #111; // default
   font-family: 'visitor';
   letter-spacing: 2px;
 }
 
-.color-c025c {
-  background-attachment: fixed;
-  background-image: url("/img/t3tr0s_color_bg.png");
-  background-position: bottom;
-  background-repeat: repeat-x;
-  background-size: 600px auto;
+.bg-color-c025c {
+  background-attachment: fixed, scroll;
+  background-image: url("/img/bg-pieces-color.png"), url("/img/bg-grey-tile.png");
+  background-position: center bottom, 0 0;
+  background-repeat: repeat-x, repeat;
+  background-size: 306px 67.5px, 13.5px;
 }
 
-.bw-e2019 {
-  background-attachment: fixed;
-  background-image: url("/img/t3tr0s_bw_bg.png");
-  background-position: bottom;
-  background-repeat: repeat-x;
-  background-size: 560px auto;
+.bg-grey-e2019 {
+  background-attachment: fixed, scroll;
+  background-image: url("/img/bg-pieces-grey.png"), url("/img/bg-grey-tile.png");
+  background-position: center bottom, 0 0;
+  background-repeat: repeat-x, repeat;
+  background-size: 306px 67.5px, 13.5px;
 }
 
 #appContainer {

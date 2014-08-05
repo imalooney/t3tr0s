@@ -38,10 +38,10 @@
 
 (defn set-color-background! []
   (-> ($ "body")
-    (.removeClass "bw-e2019")
-    (.addClass "color-c025c")))
+    (.removeClass "bg-grey-e2019")
+    (.addClass "bg-color-c025c")))
 
 (defn set-bw-background! []
   (-> ($ "body")
-    (.removeClass "color-c025c")
-    (.addClass "bw-e2019")))
+    (.removeClass "bg-color-c025c")
+    (.addClass "bg-grey-e2019")))
