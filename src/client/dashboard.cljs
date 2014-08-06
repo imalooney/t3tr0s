@@ -147,14 +147,25 @@
     [:canvas.canvas-b534a {:id (str id "-canvas")}]
     [:div {:id (str id "-score")}]])
 
-(hiccups/defhtml place [p]
-  [:div 
-    {:class (if (<= p 3) "large-place-2288d" "small-place-e1c91")
-     :id (place-id p)
+(hiccups/defhtml large-place [p]
+  [:div.place-2288d
+    {:id (place-id p)
      :style (let [js-coords (place->coords p)]
        (str "top: " (aget js-coords "top") "px; "
             "left: " (aget js-coords "left") "px"))}
-    p])
+    [:svg.circle-8ba96 {:height 40 :width 40}
+      [:circle {:cx 20 :cy 20 :r 19 :fill "#fff"}]]
+    [:div.num-a9a1f p]])
+
+(hiccups/defhtml small-place [p]
+  [:div.place-2288d
+    {:id (place-id p)
+     :style (let [js-coords (place->coords p)]
+       (str "top: " (aget js-coords "top") "px; "
+            "left: " (aget js-coords "left") "px"))}
+    [:svg.circle-8ba96 {:height 36 :width 36}
+      [:circle {:cx 18 :cy 18 :r 17 :fill "#fff"}]]
+    [:div.num-cf8ed p]])
 
 (hiccups/defhtml pieces-table []
   [:table.tbl-c8c6b
@@ -276,7 +287,8 @@
 
 (defn- update-place! [p]
   (if-not (dom/by-id (place-id p))
-    (.append ($ "#boardsContainer") (place p))))
+    (.append ($ "#boardsContainer")
+      (if (<= p 3) (large-place p) (small-place p)))))
 
 (defn- update-place-numbers! [num-places]
   (doall (map update-place! (range 1 (inc num-places))))
