@@ -3,13 +3,21 @@
   (:require
     hiccups.runtime
     [client.dom :as dom]
-    [client.login :refer [get-username
-                          get-color]]
+    [client.login :refer [get-color]]
     [client.socket :as socket]
     [cljs.reader :refer [read-string]]
     [client.util :as util]))
 
 (def $ js/jQuery)
+
+;; TODO: move this elsewhere, also move (get-color) elsewhere
+
+(defn get-username
+  "Gets the currently stored username."
+  []
+  (if-let [username (aget js/sessionStorage "username")]
+    username
+    ""))
 
 ;;------------------------------------------------------------------------------
 ;; HTML
@@ -25,9 +33,10 @@
       [:div#player-list-container
         [:div.player-list-title-7f811 "Players"]
         [:div#player-list]]]
-    [:div#chat-input
-      [:input#msg {:type "text" :placeholder "Type to chat..."}]
-      [:input#submit.red-btn-2c9ab {:type "submit" :value "Send"}]]])
+    [:div.chat-e41e1
+      [:input#chatInput {:type "text" :placeholder "Type to chat..."}]
+      [:input#sendChatBtn.red-btn-2c9ab {:type "submit" :value "Send"}]
+      [:div.clr-22ff3]]])
 
 (hiccups/defhtml chat-msg-html
   [{:keys [user color msg]}]
@@ -60,12 +69,12 @@
 (defn get-message
   "Gets the latest message in the input field"
   []
-  (.val ($ "#msg")))
+  (.val ($ "#chatInput")))
 
 (defn clear-message!
   "Clear the current message in the input field"
   []
-  (.val ($ "#msg") ""))
+  (.val ($ "#chatInput") ""))
 
 (defn send-message!
   "Sends a message to the chat"
@@ -155,8 +164,8 @@
   (dom/set-page-body! (chat-html))
 
   ;; Add listeners
-  (.click ($ "#submit") submit-message!)
-  (.keyup ($ "#msg") #(if (= (.-keyCode %) 13) (submit-message!)))
+  (.click ($ "#sendChatBtn") submit-message!)
+  (.keyup ($ "#chatInput") #(if (= (.-keyCode %) 13) (submit-message!)))
 
   ;; Join the "lobby" room.
   (socket/emit "join-lobby")

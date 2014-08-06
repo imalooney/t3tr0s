@@ -13,14 +13,12 @@
 ;;------------------------------------------------------------------------------
 
 (hiccups/defhtml login-html []
-  [:div.inner-6ae9d
-    [:div.logo-31d54]
-    [:div.login-5983e
-      [:form
-        [:div.input-4a3e3
-          [:label.label-66a3b "What is your name?"]
-          [:input#login.input-48f1f {:type "text"}]]
-        [:button#submit.red-btn-2c9ab "OK"]]]])
+  [:div.wrapper-cd25d
+    [:img {:src "/img/t3tr0s_logo_850w.png" :alt "T3TR0S Logo"}]
+    [:form#loginForm
+      [:input#nameInput {:type "text" :placeholder "Enter your name..."}]
+      [:button#playBtn.red-btn-2c9ab "Play!"]]
+    [:div.clr-22ff3]])
 
 ;;------------------------------------------------------------------------------
 ;; Username storage.
@@ -56,35 +54,31 @@
 ;;------------------------------------------------------------------------------
 
 ;; TODO: what to do when they don't input a username? validation?
-(defn on-submit
-  "Handle the submit event."
-  [e]
+(defn- on-form-submit [e]
   (.preventDefault e)
-  (let [input (.val ($ "#login"))]
+  (let [input (.val ($ "#nameInput"))]
     (store-login! input)
     (send-login!)
-    (aset js/location "hash" "#/menu")))
+    (aset js/location "hash" "#/lobby")))
+
+(defn- add-events []
+  (.on ($ "#loginForm") "submit" on-form-submit))
 
 ;;------------------------------------------------------------------------------
 ;; Page Initialization
 ;;------------------------------------------------------------------------------
 
 (defn init []
-
   (dom/set-color-background!)
-
-  ; Initialize page content
   (dom/set-page-body! (login-html))
+  (add-events)
 
-  ; Populate username field.
-  (.val ($ "#login") (get-username))
+  ;; Populate name field if they have a name stored in localStorage.
+  (.val ($ "#nameInput") (get-username))
 
-  ; Set username on button click.
-  (.click ($ "#submit") on-submit)
+  ;; Put focus on username field.
+  (.focus (dom/by-id "nameInput"))
+  )
 
-  ; Put focus on username field.
-  (.focus (dom/by-id "login")))
-
-(defn cleanup
-  []
+(defn cleanup []
   nil)

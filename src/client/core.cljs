@@ -53,8 +53,8 @@
 
   (if (get #{"" "#/"} h)
 
-    ; Redirect blank hash to login page.
-    (aset js/location "hash" "#/login")
+    ; Redirect blank hash to menu page.
+    (aset js/location "hash" "#/menu")
 
     ; Initialize the new page if possible.
     (if-let [init (-> h pages :init)]

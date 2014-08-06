@@ -66,35 +66,27 @@ body {
 // Buttons
 //------------------------------------------------------------------------------
 
-.btn() {
+.btn(@backgroundColor, @borderColor) {
+  background: @backgroundColor;
+  border: 4px solid @borderColor;
   color: #fff;
-  font-size: 40px;
+  font-size: 36px;
+  height: 63px;
+  padding: 5px 15px 0 15px;
   text-transform: uppercase;
-  width: 184px;
+  .box-shadow(0 0 0 4px #fff);
 }
 
 .red-btn-2c9ab {
-  .btn();
-  background: url('/img/send_button.jpg') no-repeat;
-  background-size: 179px auto;
-  height: 92px;
-  margin-top: 40px;
+  .btn(#b92231, #c64c57);
 }
 
 .blue-btn-41e23 {
-  .btn();
-  background: url('/img/battle_button.jpg') no-repeat;
-  background-size: 179px auto;
-  height: 92px;
-  margin: 30px;
+  .btn(#2d9eca, #54b0d5);
 }
 
 .green-btn-f67eb {
-  .btn();
-  background: url('/img/solo_button.jpg') no-repeat;
-  background-size: 179px auto;
-  height: 92px;
-  margin: 30px;
+  .btn(#6cac00, #87bc2e);
 }
 
 //------------------------------------------------------------------------------
@@ -109,9 +101,35 @@ body {
   margin: 100px auto 0 auto;
 }
 
-.menu-cd25d {
-  margin: 70px auto;
-  width: 500px;
+.wrapper-cd25d {
+  margin: 130px auto 0 auto;
+  width: 600px;
+
+  img {
+    margin-bottom: 80px;
+    width: 600px;
+  }
+}
+
+#soloBtn {
+  width: 260px;
+}
+
+#battleBtn {
+  float: right;
+  width: 260px;
+}
+
+#playBtn {
+  float: right;
+}
+
+#nameInput {
+  font-size: 34px;
+  height: 67px;
+  margin:  -4px 0 0 0;
+  padding: 0 15px;
+  width: 380px;
 }
 
 //------------------------------------------------------------------------------
@@ -298,18 +316,20 @@ body {
   height:100%;
 }
 
-#chat-input {
+.chat-e41e1 {
   position: relative;
   bottom: 0px;
   width: 800px;
 }
 
-#chat-input > * {
-  margin: 0;
-  border: 0;
+#sendChatBtn {
+  height: 87px;
+  float: right;
+  margin-top: 19px;
+  width: 210px;
 }
 
-#msg {
+#chatInput {
   width: 500px;
   font-size: 30px;
   color: #111;
