@@ -16,6 +16,7 @@
 ;;------------------------------------------------------------------------------
 
 (def express (js/require "express"))
+(def compression (js/require "compression"))
 (def http    (js/require "http"))
 (def socket  (js/require "socket.io"))
 
@@ -271,7 +272,7 @@
   ; Call score update events.
   (if (contains? data :score)
     (on-score-update io))
-  
+
   ; If player should be visible on dashboard, then emit to dashboard.
   (if (contains? data :board)
     (.. io (to "dashboard")
@@ -420,6 +421,7 @@
 
     ; configure express app
     (doto app
+      (.use (compression))
       (.get "/" (fn [req res] (.send res (html/page-shell))))
       (.use (.static express (str js/__dirname "/public"))))
 
