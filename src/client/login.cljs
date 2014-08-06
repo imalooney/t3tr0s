@@ -12,13 +12,17 @@
 ;; HTML
 ;;------------------------------------------------------------------------------
 
+(hiccups/defhtml login-inner []
+  [:form#loginForm
+    [:input#nameInput {:type "text" :placeholder "Enter your name..."}]
+    [:button#playBtn.red-btn-2c9ab "Play!"]]
+  [:div.clr-22ff3])
+
 (hiccups/defhtml login-html []
   [:div.wrapper-cd25d
     [:img {:src "/img/t3tr0s_logo_850w.png" :alt "T3TR0S Logo"}]
-    [:form#loginForm
-      [:input#nameInput {:type "text" :placeholder "Enter your name..."}]
-      [:button#playBtn.red-btn-2c9ab "Play!"]]
-    [:div.clr-22ff3]])
+    [:div#menuInnerWrapper
+      (login-inner)]])
 
 ;;------------------------------------------------------------------------------
 ;; Username storage.
@@ -70,7 +74,13 @@
 
 (defn init []
   (dom/set-color-background!)
-  (dom/set-page-body! (login-html))
+
+  ;; this just helps prevent the image "flashing" when you transition from the
+  ;; menu page to the login page (99% of cases)
+  (if (dom/by-id "menuInnerWrapper")
+    (dom/set-html! "menuInnerWrapper" (login-inner))
+    (dom/set-page-body! (login-html)))
+
   (add-events)
 
   ;; Populate name field if they have a name stored in localStorage.

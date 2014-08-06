@@ -13,9 +13,10 @@
 (hiccups/defhtml menu-html []
   [:div.wrapper-cd25d
     [:img {:src "/img/t3tr0s_logo_850w.png" :alt "T3TR0S Logo"}]
-    [:button#soloBtn.green-btn-f67eb "Solo"]
-    [:button#battleBtn.blue-btn-41e23 "Battle!"]
-    [:div.clr-22ff3]])
+    [:div#menuInnerWrapper
+      [:button#soloBtn.green-btn-f67eb "Solo"]
+      [:button#battleBtn.blue-btn-41e23 "Battle!"]
+      [:div.clr-22ff3]]])
 
 ;;------------------------------------------------------------------------------
 ;; Page initialization.
