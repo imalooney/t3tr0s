@@ -15,7 +15,7 @@
 (hiccups/defhtml login-inner []
   [:form#loginForm
     [:input#nameInput {:type "text" :placeholder "Enter your name..."}]
-    [:button#playBtn.red-btn-2c9ab "Play!"]]
+    [:button#playBtn.red-btn-2c9ab "Play"]]
   [:div.clr-22ff3])
 
 (hiccups/defhtml login-html []
