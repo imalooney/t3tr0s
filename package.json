@@ -1,17 +1,18 @@
 {
   "name": "t3tr0s",
-  "homepage":"https://github.com/imalooney/t3tr0s",
-  "license":"MIT",
+  "homepage": "https://github.com/imalooney/t3tr0s",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/imalooney/t3tr0s.git"
   },
   "dependencies": {
-    "express" : "4.1.x",
+    "express": "4.1.x",
     "grunt": "0.4.x",
     "grunt-contrib-less": "0.6.4",
     "grunt-contrib-watch": "0.5.3",
     "moment": "2.6.0",
-    "socket.io" : "1.0.x"
+    "socket.io": "1.0.x",
+    "compression": "^1.0.10"
   }
 }
