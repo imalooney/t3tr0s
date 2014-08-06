@@ -37,7 +37,7 @@ past.  (We are working on the game at least once a week):
     npm install
 
     # compile LESS file
-    grunt less
+    grunt
 
     # compile ClojureScript files (this may take a minute)
     lein cljsbuild once
