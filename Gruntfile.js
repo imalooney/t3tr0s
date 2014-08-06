@@ -23,12 +23,14 @@ grunt.initConfig({
     files: "public/css/*.less",
     tasks: ["less:watch"]
   }
-  
+
 });
 
 // load tasks from npm
 grunt.loadNpmTasks('grunt-contrib-less');
 grunt.loadNpmTasks('grunt-contrib-watch');
+
+grunt.registerTask('default', ['less']);
 
 // end module.exports
 };
