@@ -23,6 +23,14 @@
                       (aset img "src" "tilemap-gameboy-color.png")
                       img))
 
+(def tilemap-gameboy-real (let [img (js/Image.)]
+                            (aset img "src" "tilemap-gameboy-real.png")
+                            img))
+
+(def tilemap-gameboy-real-adj (let [img (js/Image.)]
+                                (aset img "src" "tilemap-gameboy-real-adj.png")
+                                img))
+
 (def tilemap (let [img (js/Image.)]
                (aset img "src" "tilemap.png")
                img))
@@ -47,27 +55,50 @@
 (defn get-image-region
   "Get the tilemap and position for the image of the given cell value and theme."
   [theme value]
-  (let [wrap-theme (mod theme 10)
-        string-value (str value)]
+  (let [string-value (str value)]
     (cond 
-      (= wrap-theme 2)
+
+      ; TENGEN
+      (= theme 2)
         (let [[k a] (piece-type-adj value)
               row (value-position k)
               col a]
           [tilemap-tengen row col])
-      (and (= wrap-theme 6) (= (subs string-value 0 1) "I"))
-        (let [[k a] (piece-type-adj value)
-              row (value-position k)
-              col a]
-          [tilemap-gameboy-color row col])
-      (and (= wrap-theme 3) (= (subs string-value 0 1) "I"))
+
+      ; GAMEBOY I-PIECE
+      (and (= theme 3) (= (subs string-value 0 1) "I"))
         (let [[k a] (piece-type-adj value)
               row (value-position k)
               col a]
           [tilemap-gameboy row col])
+
+      ; GAMEBOY COLOR I-PIECE
+      (and (= theme 6) (= (subs string-value 0 1) "I"))
+        (let [[k a] (piece-type-adj value)
+              row (value-position k)
+              col a]
+          [tilemap-gameboy-color row col])
+
+      ; GAMEBOY REAL
+      (and (= theme 13) (not= (subs string-value 0 1) "I"))
+        (let [[k a] (piece-type-adj value)
+              row 0
+              col (value-position k)
+              size 40]
+          [tilemap-gameboy-real row col size])
+
+      ; GAMEBOY REAL I-PIECE
+      (and (= theme 13) (= (subs string-value 0 1) "I"))
+        (let [[k a] (piece-type-adj value)
+              row 0
+              col a
+              size 40]
+          [tilemap-gameboy-real-adj row col size])
+
+      ; DEFAULT TILEMAP
       :else
         (let [[k _] (piece-type-adj value)
-              row wrap-theme
+              row theme
               col (value-position k)]
           [tilemap row col]))
     )
@@ -91,13 +122,14 @@
           [w h] (board-size board)]
       (doseq [x (range w) y (range h)]
         (let [; tilemap region
-              [img row col] (get-image-region theme (read-board x y board))
+              [img row col size] (get-image-region theme (read-board x y board))
+              size (or size cell-size)
 
-              ; source coordinates (on (draw-board! "game-canvas" new-board cell-size (:level @state) rows-cutoff))
-              sx (* cell-size col) ; Cell-size is based on tilemap, always extract with that size
-              sy (* cell-size row)
-              sw cell-size
-              sh cell-size
+              ; source coordinates (on tilemap)
+              sx (* size col) ; Cell-size is based on tilemap, always extract with that size
+              sy (* size row)
+              sw size
+              sh size
 
               ; destination coordinates (on canvas)
               dx (* scale x)
