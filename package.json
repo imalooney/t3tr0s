@@ -13,6 +13,6 @@
     "grunt-contrib-watch": "0.5.3",
     "moment": "2.6.0",
     "socket.io": "1.0.x",
-    "compression": "^1.0.10"
+    "compression": "1.0.10"
   }
 }

@@ -5,12 +5,13 @@
 
 (hiccups/defhtml head [page-title]
   "<!doctype html>"
-  "<html>"
+  "<html lang='en-us'>"
   [:head
     [:meta {:charset "utf-8"}]
     [:meta {:http-equiv "X-UA-Compatible" :content "IE=edge"}]
     [:title page-title]
     [:meta {:name "viewport" :content "width=device-width"}]
+    [:link {:rel "shortcut icon" :href "/img/favicon.ico" :type "image/x-icon"}]
     [:link {:rel "stylesheet" :href "/css/t3tr0s.min.css"}]]
   "<body>")
 
