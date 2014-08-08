@@ -6,8 +6,8 @@
 (def size 5)
 
 (def back-color "#FFF")
-(def drop-color "#DDD")
-(def block-color "#888")
+(def drop-color "#EEE")
+(def block-color "#BBB")
 (def collapse-color "#F00")
 
 (def canvas nil)
@@ -28,7 +28,6 @@
 (defn draw-state!
   [i s]
 
-  (js/console.log i (:drop-y s) (:height s) (pr-str (:collapsed s)))
   (aset ctx "fillStyle" back-color)
   (.fillRect ctx i 0 1 22)
 
