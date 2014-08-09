@@ -206,11 +206,11 @@
   [:div.wrapper-2ba66
     [:div.hdr-93a4f
       [:img.logo-dd80d {:src "/img/t3tr0s_logo_200w.png" :alt "T3TR0S Logo"}]
-      [:div#battleGameLink.game-6dc02 "Game"]
-      [:div.dashboard-3a58e "Dashboard"]]
+      [:div#battleGameLink.game-inactive-6dc02 "Game"]
+      [:div.stats-active-3a58e "Stats"]]
     ;; NOTE: this button is for testing purposes
     [:button#shuffleBtn {:style "padding: 12px 24px; display: none"} "Shuffle!"]
-    [:div#boardsContainer.boards-4b797
+    [:div#boardsContainer.wrapper-4b797
       [:div.stats-2cda4 (stats)]]])
 
 ;;------------------------------------------------------------------------------
