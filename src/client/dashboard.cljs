@@ -234,13 +234,10 @@
 (def page-state (atom []))
 
 (defn- update-board-canvas! [id itm place]
-  (when (<= place 3)
-    (size-canvas! (str id "-canvas") (:board itm) large-board-cell-size rows-cutoff)
-    (draw-board! (str id "-canvas") (:board itm) large-board-cell-size (:theme itm) rows-cutoff))
-  (when (> place 3)
-    (size-canvas! (str id "-canvas") (:board itm) small-board-cell-size rows-cutoff)
-    (draw-board! (str id "-canvas") (:board itm) small-board-cell-size (:theme itm) rows-cutoff))
-  )
+  (let [cell-size (if (<= place 3) large-board-cell-size small-board-cell-size)
+        canvas-id (str id "-canvas")]
+    (size-canvas! canvas-id (:board itm) cell-size rows-cutoff)
+    (draw-board! canvas-id (:board itm) cell-size (:theme itm) rows-cutoff)))
 
 ;; NOTE: does NOT apply to places 1, 2, 3
 (defn- place->row
