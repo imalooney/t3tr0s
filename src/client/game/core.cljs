@@ -114,6 +114,10 @@
   "Boolean flag signaling if the music is playing or not"
   (atom false))
 
+(def chat-input-has-focus?
+  "Boolean flag signaling when the chat text input has focus."
+  (atom false))
+
 ;;------------------------------------------------------------
 ;; STATE MONITOR
 ;;------------------------------------------------------------
@@ -472,7 +476,7 @@
 (defn- toggle-music!
   "Toggles the music on or off"
   []
-  (if-not @paused?(swap! music-playing? not)))
+  (if-not @paused? (swap! music-playing? not)))
 
 (defn add-key-events
   "Add all the key inputs."

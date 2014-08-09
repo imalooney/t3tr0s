@@ -55,8 +55,42 @@
     [:div.label-39b9c "Time Left"]
     [:div#gameScreenTimeLeft.metric-b93a8]])
 
+(hiccups/defhtml fake-msgs []
+  [:div.msg-c6ec3
+    [:div.name-9c6f3 "Elaine"]
+    [:div.msg-8e805 "I sure do love playing T3tr0s."]]
+  [:div.msg-c6ec3
+    [:div.name-9c6f3 "Oakman"]
+    [:div.msg-8e805 "I do too Elaine. We should see if Brett wants to play as well."]]
+  [:div.msg-c6ec3
+    [:div.name-9c6f3 "King_LeBron"]
+    [:div.msg-8e805 "I love t3tr0s, but not as much as I love core.async and om!"]]
+  [:div.msg-c6ec3
+    [:div.name-9c6f3 "Elaine"]
+    [:div.msg-8e805 "For sure. Brett is a neat kid."]]
+  [:div.msg-c6ec3
+    [:div.name-9c6f3 "Oakman"]
+    [:div.msg-8e805 "I agree, and he has greaaaat hair."]]
+  )
+
 (hiccups/defhtml chat-box []
-  [:div.chat-ad045 "Chat!"])
+  [:div.chat-ad045
+    [:div.top-6b3a9 "Chat"]
+    [:div#gameScreenChatMessages.messages-8e193
+      (fake-msgs)
+      (fake-msgs)
+      (fake-msgs)
+      (fake-msgs)
+      (fake-msgs)
+      (fake-msgs)
+      (fake-msgs)
+      (fake-msgs)
+      (fake-msgs)
+      (fake-msgs)]
+    [:div.bottom-237dd
+      [:input#gameScreenChatInput.input-bd1e5 {
+        :type "text"
+        :placeholder "Type message and press enter..."}]]])
 
 (hiccups/defhtml page-shell []
   [:div.wrapper-2ba66
@@ -174,6 +208,10 @@
 
   )
 
+;; TODO: we will need this when appending a new chat message
+;; var objDiv = document.getElementById("your_div");
+;; objDiv.scrollTop = objDiv.scrollHeight;
+
 ;;------------------------------------------------------------------------------
 ;; DOM Events
 ;;------------------------------------------------------------------------------
@@ -181,8 +219,39 @@
 (defn- click-stats-link []
   (aset js/window "location" "hash" "#/dashboard"))
 
+(defn- click-chat-messages []
+  (.focus (dom/by-id "gameScreenChatInput")))
+
+(defn- blur-chat-input []
+  (reset! client.game.core/chat-input-has-focus? false)
+  
+  ;; TODO: this is not working...
+  ;;(.focus (aget js/document "body"))
+  )
+
+(defn- focus-chat-input []
+  (reset! client.game.core/chat-input-has-focus? true))
+
+;; TODO: need to figure out how to deal with focus and capturing key events
+;;   for the game when we tab out of this input element
+;;   currently not working
+(defn- keydown-chat-input [js-evt]
+  (if (= 13 (aget js-evt "keyCode"))
+    (let [input-el (dom/by-id "gameScreenChatInput")
+          msg (aget input-el "value")]
+
+      ;; TODO: send chat message here
+      (util/log (str "chat message: " msg))
+
+      (aset input-el "value" ""))))
+
 (defn- add-events []
-  (.on ($ "#statsLink") "click" click-stats-link))
+  (.on ($ "#statsLink") "click" click-stats-link)
+  (.on ($ "#gameScreenChatMessages") "click" click-chat-messages)
+  (.on ($ "#gameScreenChatInput") "blue" blur-chat-input)
+  (.on ($ "#gameScreenChatInput") "focus" focus-chat-input)
+  (.on ($ "#gameScreenChatInput") "keydown" keydown-chat-input)
+  )
 
 ;;------------------------------------------------------------------------------
 ;; Page Initialization / Cleanup
@@ -195,8 +264,7 @@
   (dom/set-page-body! (page-shell))
   (add-events)
   (client.game.core/init)
-  (reset! initialized true)
-  )
+  (reset! initialized true))
 
 (defn- init
   []
