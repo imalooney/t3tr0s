@@ -170,18 +170,29 @@
               (when (or (not= board new-board)
                         (not= theme new-theme))
 
-                ; NOTE: Comment the following form out if we
-                ;       do not want to send the player screen to the server.
-                (if @battle
-                  (socket/emit "update-player"
-                    {:theme (:theme @state) :board new-board}))
-
                 (history/draw-history! (:history @state))
                 (draw-board! "game-canvas" new-board cell-size new-theme rows-cutoff)
                 (draw-board! "next-canvas" (next-piece-board next-piece) cell-size new-theme)
                 (if (:recording @vcr)
                   (record-frame!)))
               (recur new-board new-theme))))))))
+
+(defn go-go-emit-updates!
+  []
+  (go
+    (loop [prev-data nil]
+
+      ; emit update to the server if relevant attributes have changed
+      (let [data (select-keys @state [:piece :position :board :theme])]
+        (when (not= prev-data data)
+          (socket/emit "update-player" {:theme (:theme @state) :board (drawable-board)}))
+
+        ; quit or schedule another update
+        (let [quit (:quit-chan @state)
+              [_ ch] (alts! [quit (timeout 16)])]
+          (when-not (= ch quit)
+            (recur data)))))))
+
 
 ;;------------------------------------------------------------
 ;; Game-driven STATE CHANGES
@@ -586,6 +597,9 @@
 
   (display-points!)
   (try-publish-score!)
+
+  (when @battle
+    (go-go-emit-updates!))
 
   (socket/on "set-state" on-set-state))
 
