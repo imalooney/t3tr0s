@@ -40,7 +40,10 @@
   "#/mc"    {:init client.mc/init    :cleanup client.mc/cleanup}
   "#/solo-game"   {:init client.game/init-solo   :cleanup client.game/cleanup}
   "#/battle-game" {:init client.game/init-battle :cleanup client.game/cleanup}
-  "#/dashboard"   {:init client.dashboard/init :cleanup client.dashboard/cleanup}})
+  "#/dashboard"   {:init client.dashboard/init :cleanup client.dashboard/cleanup}
+
+  ;; TODO: not finished yet
+  "#/game2" {:init client.game/init-battle2 :cleanup client.game/cleanup}})
 
 (defn- dispatch-hash!
   "Call the appropriate function for the given URL hash."

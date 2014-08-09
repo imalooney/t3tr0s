@@ -451,17 +451,36 @@ body {
   top: 0;
 }
 
-.game-6dc02 {
+@activeBtnBackground: #fff;
+@activeBtnText: #2b2b2b;
+@inactiveBtnBackground: #484848;
+@inactiveBtnText: #7a7a7a;
+
+.game-inactive-6dc02 {
   .hdr-btn();
-  background: #484848;
-  color: #7a7a7a;
-  right: 200px;
+  background: @inactiveBtnBackground;
+  color: @inactiveBtnText;
+  right: 125px;
 }
 
-.dashboard-3a58e {
+.game-active-0634a {
   .hdr-btn();
-  background: #fff;
-  color: #2b2b2b;
+  background: @activeBtnBackground;
+  color: @activeBtnText;
+  right: 125px;
+}
+
+.stats-active-3a58e {
+  .hdr-btn();
+  background: @activeBtnBackground;
+  color: @activeBtnText;
+  right: 0px;
+}
+
+.stats-inative-be0f6 {
+  .hdr-btn();
+  background: @inactiveBtnBackground;
+  color: @inactiveBtnText;
   right: 0px;
 }
 
@@ -469,7 +488,7 @@ body {
   margin: 30px 0;
 }
 
-.boards-4b797 {
+.wrapper-4b797 {
   min-height: 600px;
   position: relative;
 }
@@ -608,4 +627,120 @@ body {
 
 .spacer-67b8d {
   width: 20px;
+}
+
+//------------------------------------------------------------------------------
+// Battle Game Screen
+//------------------------------------------------------------------------------
+
+.game-eb427 {
+  .shadow-4f24e;
+  border: 10px solid #fff;
+  left: 0;
+  position: absolute;
+  top: 0;
+}
+
+.next-9dbb7 {
+  .shadow-4f24e;
+  background: #fff;
+  left: 400px;
+  padding: 10px;
+  position: absolute;
+  top: 0;
+  width: 160px;
+}
+
+.legend-4d59b {
+  .transition(0.5s);
+  .opacity(0.5);
+
+  color: #fff;
+  position: absolute;
+  text-align: center;
+  top: 0;
+  left: -115px;
+}
+
+.legend-4d59b:hover {
+  .transition(0.2s);
+  .opacity(1);
+}
+
+.label-29ee4 {
+  font-size: 14px;
+  margin-bottom: 30px;
+}
+
+.key-6221e {
+  border: 2px solid #fff;
+  display: inline-block;
+  font-size: 9px;
+  margin-bottom: 10px;
+  padding: 2px 4px;
+}
+
+.key-af1cf {
+  border: 2px solid #fff;
+  display: inline-block;
+  font-size: 12px;
+  margin-bottom: 10px;
+  padding: 2px 4px;
+}
+
+.next-2f9f7 {
+  border: 2px solid #e2e2e2;
+  margin-bottom: 20px;
+}
+
+.chat-ad045 {
+  .shadow-4f24e;
+  background: #fff;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 345px;
+}
+
+.messages-8e193 {
+  height: 320px;
+  overflow-y: scroll;
+}
+
+.top-6b3a9 {
+  border-bottom: 1px solid #d7d7d7;
+  font-size: 17px;
+  padding: 10px;
+  text-transform: uppercase;
+}
+
+.bottom-237dd {
+  border-top: 1px solid #b0b0b0;
+}
+
+.input-bd1e5 {
+  .serious-font();
+  .box-sizing();
+  border: 0;
+  padding: 10px;
+  width: 100%;
+}
+
+.input-bd1e5:focus {
+  outline: 0;
+}
+
+.msg-c6ec3 {
+  border-top: 1px solid #b0b0b0;
+  padding: 10px;
+}
+
+.name-9c6f3 {
+  font-size: 18px;
+  margin-bottom: 5px;
+}
+
+.msg-8e805 {
+  .serious-font();
+  font-size: 13px;
 }

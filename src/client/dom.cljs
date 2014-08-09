@@ -8,12 +8,8 @@
 ;; DOM Helper Functions
 ;;------------------------------------------------------------------------------
 
-(defn by-id
-  "Returns a DOM element."
-  [el-or-id]
-  (if (= (type el-or-id) js/String)
-    (.getElementById js/document el-or-id)
-    el-or-id))
+(defn by-id [id]
+  (.getElementById js/document id))
 
 (defn set-html! [el html]
   (aset (by-id el) "innerHTML" html))

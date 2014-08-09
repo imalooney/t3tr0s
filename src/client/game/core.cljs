@@ -2,6 +2,7 @@
   (:require-macros
     [cljs.core.async.macros :refer [go alt!]])
   (:require
+    [client.dom :as dom]
     [client.util :as util]
     [cljs.reader :refer [read-string]]
     [client.game.history :as history]
@@ -111,6 +112,10 @@
 
 (def music-playing?
   "Boolean flag signaling if the music is playing or not"
+  (atom false))
+
+(def chat-input-has-focus?
+  "Boolean flag signaling when the chat text input has focus."
   (atom false))
 
 ;;------------------------------------------------------------
@@ -240,7 +245,12 @@
   []
   (.html ($ "#score") (str "Score: " (util/format-number (:score @state))))
   (.html ($ "#level") (str "Level: " (:level @state)))
-  (.html ($ "#lines") (str "Lines: " (:total-lines @state))))
+  (.html ($ "#lines") (str "Lines: " (:total-lines @state)))
+
+  ;; TODO: make this more efficient / can be combined with the above function
+  (.html ($ "#gameScreenScore") (util/format-number (:score @state)))
+  (.html ($ "#gameScreenLines") (:total-lines @state))
+  )
 
 (defn try-publish-score!
   "Inform the server of our current state."
@@ -477,7 +487,7 @@
 (defn- toggle-music!
   "Toggles the music on or off"
   []
-  (if-not @paused?(swap! music-playing? not)))
+  (if-not @paused? (swap! music-playing? not)))
 
 (defn add-key-events
   "Add all the key inputs."
