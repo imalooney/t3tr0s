@@ -223,11 +223,7 @@
   (.focus (dom/by-id "gameScreenChatInput")))
 
 (defn- blur-chat-input []
-  (reset! client.game.core/chat-input-has-focus? false)
-  
-  ;; TODO: this is not working...
-  ;;(.focus (aget js/document "body"))
-  )
+  (reset! client.game.core/chat-input-has-focus? false))
 
 (defn- focus-chat-input []
   (reset! client.game.core/chat-input-has-focus? true))
@@ -236,6 +232,7 @@
 ;;   for the game when we tab out of this input element
 ;;   currently not working
 (defn- keydown-chat-input [js-evt]
+  (.stopPropagation js-evt)
   (if (= 13 (aget js-evt "keyCode"))
     (let [input-el (dom/by-id "gameScreenChatInput")
           msg (aget input-el "value")]
