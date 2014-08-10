@@ -389,7 +389,13 @@
         s (mod total-seconds 60)
         s-str (if (< s 10) (str "0" s) s)
         time-str (str m ":" s-str)]
-    (dom/set-html! "timeLeft" time-str)))
+    (dom/set-html! "timeLeft" time-str))
+
+  ;; clear the ids atom when the round is over
+  ;; NOTE: this is a hack, but it should do the trick to reset ids every round
+  (if (= total-seconds 0)
+    (reset! ids {}))
+  )
 
 (defn- shuffle-page-state []
   (reset! page-state (shuffle test-state)))
