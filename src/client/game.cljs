@@ -4,6 +4,7 @@
     [cljs.reader :refer [read-string]]
     hiccups.runtime
     client.game.core
+    client.state
     [client.dom :as dom]
     [client.socket :as socket]
     [client.util :as util]))
@@ -212,6 +213,10 @@
 ;; var objDiv = document.getElementById("your_div");
 ;; objDiv.scrollTop = objDiv.scrollHeight;
 
+(defn- on-change-chat [_ _ old-chat new-chat]
+  (util/log new-chat)
+  )
+
 ;;------------------------------------------------------------------------------
 ;; DOM Events
 ;;------------------------------------------------------------------------------
@@ -238,7 +243,8 @@
           msg (aget input-el "value")]
 
       ;; TODO: send chat message here
-      (util/log (str "chat message: " msg))
+      ;;(util/log (str "chat message: " msg))
+      (socket/send-chat msg)
 
       (aset input-el "value" ""))))
 
@@ -256,6 +262,7 @@
 
 ;; TODO: not finished yet!
 (defn- init2 []
+  (add-watch client.state/chat :game-screen on-change-chat)
   (reset! initialized false)
   (dom/set-bw-background!)
   (dom/set-page-body! (page-shell))
@@ -294,6 +301,8 @@
 
 (defn cleanup
   []
+
+  (remove-watch client.state/chat :game-screen)
 
   ; Leave the game room.
   (socket/emit "leave-game")
