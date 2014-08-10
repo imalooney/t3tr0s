@@ -22,6 +22,9 @@
 (def small-row-height 399)
 (def small-row-width 200)
 
+;; TODO: finish this idea
+(def max-num-places-to-show 100)
+
 ;;------------------------------------------------------------------------------
 ;; Dummy Data for Debugging / Testing
 ;;------------------------------------------------------------------------------
@@ -146,6 +149,8 @@
     [:div {:id (str id "-name")}]
     [:canvas.canvas-b534a {:id (str id "-canvas")}]
     [:div {:id (str id "-score")}]])
+
+;; TODO: I'm sure large-place and small-place could be combined cleanly
 
 (hiccups/defhtml large-place [p]
   [:div.place-2288d
@@ -282,15 +287,20 @@
   (.css ($ "#boardsContainer")
     "height" (str (calc-height num-boards) "px")))
 
-(defn- update-place! [p]
+(defn- add-place-if-needed! [p]
   (if-not (dom/by-id (place-id p))
     (.append ($ "#boardsContainer")
       (if (<= p 3) (large-place p) (small-place p)))))
 
 (defn- update-place-numbers! [num-places]
-  (doall (map update-place! (range 1 (inc num-places))))
-  ;; TODO: need to clear places that are no longer in use
-  ;;   ie: someone dropped off
+  (doall (map add-place-if-needed! (range 1 (inc num-places))))
+
+  ;; remove places that are no longer in use
+  (.each ($ "#boardsContainer .place-2288d") (fn [_idx $el]
+    (let [id (aget $el "id")
+          place-num (int (.replace id "dashboardPlace" ""))]
+      (if (> place-num num-places)
+        (.remove $el)))))
   )
 
 (defn- create-board-container-if-needed! [id]
@@ -328,13 +338,20 @@
   ))
 
 (defn- update-all-boards! [boards]
-  (doall (map-indexed update-board! boards)))
+  (doall (map-indexed update-board! boards))
+
+  ;; clean up boards that are no longer used
+  (let [board-ids (into #{} (vals @ids))]
+    (.each ($ "#boardsContainer .container-13c1f") (fn [_idx $el]
+      (let [id (aget $el "id")]
+        (if-not (contains? board-ids id)
+          (.remove $el))))))
+  )
 
 (defn- on-change-page-state [_ _ _ new-s]
   (set-container-height! (count new-s))
   (update-place-numbers! (count new-s))
-  (update-all-boards! new-s)
-  )
+  (update-all-boards! new-s))
 
 (add-watch page-state :main on-change-page-state)
 
