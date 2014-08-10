@@ -17,8 +17,8 @@
 
 (def express (js/require "express"))
 (def compression (js/require "compression"))
-(def http    (js/require "http"))
-(def socket  (js/require "socket.io"))
+(def http (js/require "http"))
+(def socketio (js/require "socket.io"))
 
 ;;------------------------------------------------------------------------------
 ;; Config
@@ -320,6 +320,44 @@
     (send-lobby-players-update! io)
     (signal-num-players-in-lobby!)))
 
+(def socket-id (util/uuid))
+
+(defn- short-cid [cid]
+  (subs cid 0 6))
+
+(defn- emit-to-socket [event-name data]
+  (.emit (aget js/global socket-id) event-name (pr-str data)))
+
+(defn- on-connect [data-str]
+  (let [cid (read-string data-str)]
+    (util/tlog (str "Client " (short-cid cid) " has connected"))))
+
+(defn- on-update-name [data-str]
+  (let [data (read-string data-str)]
+    (util/tlog (str "Client " (short-cid (:cid data)) " is now known as \"" (:username data) "\""))))
+
+(def chat (atom []))
+
+(defn- on-change-chat [_ _ _ new-c]
+  (emit-to-socket "chat-update-d4779" new-c))
+
+(add-watch chat :main on-change-chat)
+
+(def max-num-chat 100)
+
+;; save the chat message in the @chat atom
+(defn- on-chat-msg [data-str]
+  (let [data (read-string data-str)]
+    (swap! chat (fn [c]
+      (if (= (count c) max-num-chat)
+        (into [] (rest (conj c data)))
+        (conj c data))))))
+
+(defn- on-game-update [data-str]
+  (let [data (read-string data-str)]
+    (util/log data)
+    ))
+
 ;;------------------------------------------------------------------------------
 ;; Socket Setup
 ;;------------------------------------------------------------------------------
@@ -332,6 +370,11 @@
   (.on socket "create-html-gif" #(create-html-gif (read-string %) socket))
   (.on socket "create-canvas-gif" #(create-canvas-gif (read-string %)))
 
+  ;; TODO: this is not really finished yet
+  (.on socket "connect-42b28" on-connect)
+  (.on socket "set-name-d67ca" on-update-name)
+  (.on socket "chat-msg-c3785" on-chat-msg)
+  (.on socket "game-update-e25be" on-game-update)
 
   (let [pid (gen-player-id!)]
 
@@ -417,7 +460,9 @@
 (defn -main [& args]
   (let [app    (express)
         server (.createServer http app)
-        io     (.listen socket server)]
+        io     (.listen socketio server)]
+
+    (aset js/global socket-id io)
 
     ; configure express app
     (doto app

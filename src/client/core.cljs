@@ -15,19 +15,6 @@
 (def $ js/jQuery)
 
 ;;------------------------------------------------------------------------------
-;; Client ID
-;;------------------------------------------------------------------------------
-
-;; get the client-id from localStorage or create a new one if needed
-(def client-id
-  (if-let [id (aget js/localStorage "client-id")]
-    id
-    (util/uuid)))
-
-;; save client-id to localStorage
-(aset js/localStorage "client-id" client-id)
-
-;;------------------------------------------------------------------------------
 ;; URL routing
 ;;------------------------------------------------------------------------------
 
@@ -75,22 +62,26 @@
 
 (defn- init []
 
-  ; Connect to REPL for development.
+  ;; Connect to REPL for development.
   (if (aget js/window "T3TR0S_CONFIG" "use-repl")
     (repl/connect!))
 
   ;; initialize the socket connection
   (socket/connect!)
 
-  ; Send user information to server, and again when requested.
+  ;; send the username if we have it
+  (if-let [username (aget js/localStorage "username")]
+    (socket/send-username username))
+
+  ;; Send user information to server, and again when requested.
   (send-login!)
   (socket/on "request-name" send-login!)
 
-  ; Add custom hash routing.
+  ;; Add custom hash routing.
   (enable-hash-routing!)
 
-  ; We have to dispatch the initial hash
-  ; because only changes are auto-dispatched.
+  ;; We have to dispatch the initial hash
+  ;; because only changes are auto-dispatched.
   (dispatch-hash! (aget js/location "hash")))
 
-(.addEventListener js/window "load" init)
+($ init)

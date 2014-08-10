@@ -83,8 +83,9 @@
 
   (add-events)
 
-  ;; Populate name field if they have a name stored in localStorage.
-  (.val ($ "#nameInput") (get-username))
+  ;; Populate name field if they have a name stored in localStorage
+  (if-let [username (aget js/localStorage "username")]
+    (aset (dom/by-id "nameInput") "value" username))
 
   ;; Put focus on username field.
   (.focus (dom/by-id "nameInput"))
