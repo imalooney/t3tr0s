@@ -35,8 +35,15 @@
 ;; Set App State Functions
 ;;------------------------------------------------------------------------------
 
-(defn set-page-body! [h]
-  (set-html! "appContainer" h))
+(def ^:private app-container-id (util/uuid))
+
+;; NOTE: this function should only be called once on global init
+(defn init! []
+  (if-not (by-id app-container-id)
+    (.prepend ($ "body") (str "<div id=" app-container-id "></div>"))))
+
+(defn set-page-body! [html]
+  (set-html! app-container-id html))
 
 (defn set-color-background! []
   (-> ($ "body")

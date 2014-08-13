@@ -5,6 +5,7 @@
     client.game
     client.chat
     client.mc
+    [client.dom :as dom]
     [client.login :refer [send-login!]]
     [client.repl :as repl]
     [client.socket :as socket]
@@ -76,6 +77,9 @@
   ;; Send user information to server, and again when requested.
   (send-login!)
   (socket/on "request-name" send-login!)
+
+  ;; initialize the DOM
+  (dom/init!)
 
   ;; Add custom hash routing.
   (enable-hash-routing!)
