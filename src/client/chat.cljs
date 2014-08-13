@@ -15,7 +15,7 @@
 (defn get-username
   "Gets the currently stored username."
   []
-  (if-let [username (aget js/sessionStorage "username")]
+  (if-let [username (aget js/localStorage "username")]
     username
     ""))
 

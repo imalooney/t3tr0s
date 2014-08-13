@@ -11,19 +11,25 @@
 (defn by-id [id]
   (.getElementById js/document id))
 
-(defn set-html! [el html]
-  (aset (by-id el) "innerHTML" html))
+(defn set-html! [id html]
+  (aset (by-id id) "innerHTML" html))
 
-(defn show-el! [el]
-  (aset (by-id el) "style" "display" ""))
+(defn show-el! [id]
+  (aset (by-id id) "style" "display" ""))
 
-(defn hide-el! [el]
-  (aset (by-id el) "style" "display" "none"))
+(defn hide-el! [id]
+  (aset (by-id id) "style" "display" "none"))
 
-(defn remove-el! [el]
-  (let [el1 (by-id el)
-        parent-el (aget el1 "parentNode")]
-    (.removeChild parent-el el1)))
+(defn remove-el! [id]
+  (let [el (by-id id)
+        parent-el (aget el "parentNode")]
+    (.removeChild parent-el el)))
+
+(defn get-value [id]
+  (aget (by-id id) "value"))
+
+(defn set-value! [id v]
+  (aset (by-id id) "value" v))
 
 ;;------------------------------------------------------------------------------
 ;; Set App State Functions
