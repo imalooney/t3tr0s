@@ -1,0 +1,7 @@
+{
+  "verbose":false,
+  "watch": [
+    "server.js",
+    "config.json"
+  ]
+ }
