@@ -1,6 +1,6 @@
 (ns client.game.core
   (:require-macros
-    [cljs.core.async.macros :refer [go alt!]])
+    [cljs.core.async.macros :refer [go go-loop alt!]])
   (:require
     [client.dom :as dom]
     [client.util :as util]
@@ -68,9 +68,16 @@
   "The state of the game."
   (atom nil))
 
+(def key-states
+  "The state of the directional keys."
+  (atom nil))
+
 (defn init-state!
   "Set the initial state of the game."
   []
+  (reset! key-states {:left false
+                      :right false
+                      :down false})
   (reset! state {:next-piece nil
                  :piece nil
                  :position nil
@@ -324,7 +331,7 @@
         new-board (write-piece-to-board piece x y board)]
     (swap! state assoc :board new-board
                        :piece nil
-                       :soft-drop false)
+                       :soft-drop false) ; reset soft drop
     (swap! state update-in [:history (-> @state :history count dec)]
                  assoc :height (tower-height new-board)
                        :collapsed (get-filled-row-indices new-board))
@@ -361,9 +368,14 @@
 
   (go
     (loop []
-      (let [soft-speed 25
+      (let [soft-speed 35
             level-speed (get-level-speed (:level @state))
-            speed (if (:soft-drop @state)
+
+            ; only soft-drop if we're currently not shifting
+            shifting (or (:left @key-states) (:right @key-states))
+            soft-drop (and (not shifting) (:soft-drop @state))
+
+            speed (if soft-drop
                     (min soft-speed level-speed)
                     level-speed)
             time-chan (timeout speed)
@@ -496,8 +508,10 @@
         key-name #(-> % .-keyCode key-names)
         key-down (fn [e]
                    (case (key-name e)
-                    ;; TODO: remove this - replace with themes value
-                     :one   (change-theme! 0 e)
+                     ;; TODO: remove this - replace with themes value
+                     :one   (if (.-shiftKey e)
+                              (change-theme! 10 e)
+                              (change-theme! 0 e))
                      :two   (change-theme! 1 e)
                      :three (change-theme! 2 e)
                      :four  (if (.-shiftKey e)
@@ -512,39 +526,50 @@
                      :p     (do (toggle-pause-game!) (.preventDefault e))
                      :m     (do (toggle-music!) (.preventDefault e))
                      nil)
-                   (if (and (:piece @state) (not @paused?))
+                   (when (and (:piece @state) (not @paused?))
                      (case (key-name e)
-                       :down  (do (put! down-chan true) (.preventDefault e))
-                       :left  (do (try-move! -1  0)     (.preventDefault e))
-                       :right (do (try-move!  1  0)     (.preventDefault e))
-                       :space (do (hard-drop!)          (.preventDefault e))
-                       :up    (do (try-rotate!)         (.preventDefault e))
-                       nil)
-                     (when (#{:down :left :right :space :up} (key-name e))
-                       (.preventDefault e))))
+                       :down  (put! down-chan true)
+                       :left  (do (try-move! -1  0) (swap! key-states assoc :left true))
+                       :right (do (try-move!  1  0) (swap! key-states assoc :right true))
+                       :space (hard-drop!)
+                       :up    (try-rotate!)
+                       nil))
+                   (when (#{:down :left :right :space :up} (key-name e))
+                     (.preventDefault e)))
         key-up (fn [e]
                  (when-not (:quit @state)
                    (case (key-name e)
+                     :left (swap! key-states assoc :left false)
+                     :right (swap! key-states assoc :right false)
                      :down  (put! down-chan false)
                      ;:shift (toggle-record!)
-                     nil)))]
+                     nil)
+                   (when (#{:left :right} (key-name e))
+                     ; force gravity to reset
+                     (put! pause-grav 0)
+                     (put! resume-grav 0))
+                   ))]
 
     ; Add key events
     (.addEventListener js/window "keydown" key-down)
     (.addEventListener js/window "keyup" key-up)
 
-    ; Listen to the down key, but ignore repeats.
+    ; Prevent the player from holding the down-key
+    ; for more than one piece-drop.
+    ;
+    ; The soft-drop state is set to:
+    ;   = the state of the down-key when it CHANGES
+    ;   = off, after a piece is locked
     (let [uc (unique down-chan)]
-      (go
-        (loop []
-          (let [[value c] (alts! [(:quit-chan @state) uc])]
-            (when (= c uc)
-              (swap! state assoc :soft-drop value)
+      (go-loop []
+        (let [[value c] (alts! [(:quit-chan @state) uc])]
+          (when (= c uc)
+            (swap! state assoc :soft-drop value)
 
-              ; force gravity to reset
-              (put! pause-grav 0)
-              (put! resume-grav 0)
-              (recur))))))
+            ; force gravity to reset
+            (put! pause-grav 0)
+            (put! resume-grav 0)
+            (recur)))))
 
     ; Remove key events when quitting
     (go
