@@ -11,6 +11,10 @@
 ;; PAINTING (for showing the game on a canvas)
 ;;------------------------------------------------------------
 
+(def tilemap-orig-real (let [img (js/Image.)]
+                         (aset img "src" "tilemap-orig-real.png")
+                         img))
+
 (def tilemap-tengen (let [img (js/Image.)]
                       (aset img "src" "tilemap-tengen.png")
                       img))
@@ -57,6 +61,14 @@
   [theme value]
   (let [string-value (str value)]
     (cond 
+
+      ; ORIGINAL REAL
+      (= theme 10)
+      (let [[k a] (piece-type-adj value)
+            row 0
+            col (value-position k)
+            size 32]
+        [tilemap-orig-real row col size])
 
       ; TENGEN
       (= theme 2)
