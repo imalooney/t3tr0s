@@ -23,7 +23,7 @@
 (hiccups/defhtml footer []
   [:script {:src "/socket.io/socket.io.js"}]
   [:script {:src "/js/jquery-1.11.1.min.js"}]
-  [:script {:src "/js/jquery.velocity-0.10.0.min.js"}]
+  [:script {:src "/js/jquery.velocity-0.11.8.min.js"}]
   [:script "window.T3TR0S_CONFIG = " (.stringify js/JSON (client-config)) ";"]
   (if (:minified-client server.core.config)
     [:script {:src "/js/client.min.js"}]

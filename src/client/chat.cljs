@@ -139,7 +139,7 @@
   []
 
   ; Navigate to the battle page.
-  (aset js/location "hash" "#/battle-game"))
+  (aset js/location "hash" "#/play"))
 
 (defn- on-players-update
   "Called when the player informatin is updated."
