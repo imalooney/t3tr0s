@@ -69,9 +69,14 @@
       [:div.play-active-0634a "Play"]
       [:a.spectate-inative-be0f6 {:href "#/spectate"} "Spectate"]]
     [:div.wrapper-4b797
-      [:canvas#game-canvas.game-eb427]
+      [:div.game-0a564
+        [:canvas#mainGameCanvas.canvas-eb427]
+        [:div#themeYear.year-050bf]
+        [:div#themePlatform.platform-2952d]]
       (next-piece-and-stats)
       (keys-legend)
+      [:audio#music {:src "audio/theme.mp3" :preload "none" :loop "loop"}
+        "Your browser does not support audio."]
       ;; TODO: make it so this doesn't have to be in the DOM
       [:canvas#history-canvas {:style "display:none"}]
       ;; TODO: opponent boards go here
@@ -82,7 +87,7 @@
     [:img {:src "/img/t3tr0s_logo_200w.png" :alt ""}]]
   [:div.player-view
     [:div.wrap-3b65f
-      [:canvas#game-canvas]]
+      [:canvas#mainGameCanvas]]
     [:div.right-1d870
       [:div.scoreboard-d49ce
         [:div.left-5c06b
@@ -96,12 +101,10 @@
        [:div.time-left-1369c]]
       [:canvas#history-canvas]
       [:div.change-theme-6bd50 "Press keys 0-9 to change your theme"]
-      [:audio#music {:src "audio/theme.mp3" :preload "none" :loop "loop"}]
-      [:div#theme]
-      [:div#theme-details]]
-      ; [:div#theme "1984"]
-      ; [:div#theme-details "Electronika 60"]]
-    [:section#arena]])
+      [:div#themeYear.year-56bca]
+      [:div#themePlatform.platform-ff2d7]
+      [:audio#music {:src "audio/theme.mp3" :preload "none" :loop "loop"}
+        "Your browser does not support audio."]]])
 
 (hiccups/defhtml countdown-html []
   [:h1#countdown "Connecting..."])
@@ -199,8 +202,7 @@
   (client.game.core/init)
   (reset! initialized true))
 
-(defn- init
-  []
+(defn- init []
   (reset! initialized false)
   (dom/set-bw-background!)
 

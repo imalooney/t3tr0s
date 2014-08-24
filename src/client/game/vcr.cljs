@@ -1,5 +1,6 @@
 (ns client.game.vcr
   (:require
+    [client.dom :as dom]
     [client.socket :as socket]))
 
 ;;------------------------------------------------------------------------------
@@ -39,7 +40,7 @@
   "Start recording."
   []
   (js/console.log "starting record")
-  (swap! vcr assoc :canvas (.getElementById js/document "game-canvas")
+  (swap! vcr assoc :canvas (dom/by-id "mainGameCanvas")
                    :prev-ms nil
                    :recording true
                    :frames [])

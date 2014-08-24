@@ -154,24 +154,6 @@
           (.drawImage ctx img sx sy sw sh dx dy dw dh)))
       nil)))
 
-(defn create-opponent-canvas!
-  "Draw each opponents board"
-  [id]
-  (if (nil? (dom/by-id id))
-    (let [arena (dom/by-id "arena")
-          canvas (.createElement js/document "canvas")]
-      (.appendChild arena canvas)
-      (aset canvas "id" id)
-      (size-canvas! id empty-board (opponent-scale cell-size))
-      )))
-
-(defn delete-opponent-canvas!
-  [id]
-  (let [arena (dom/by-id "arena")
-        canvas (dom/by-id id)]
-    (if-not (nil? canvas)
-      (.removeChild arena canvas))))
-
 ;;------------------------------------------------------------
 ;; FX Canvas
 ;;------------------------------------------------------------
@@ -184,7 +166,7 @@
 
 (defn init-fx-canvas!
   []
-  (set! fx-source   (.. js/document (getElementById "game-canvas")))
+  (set! fx-source   (dom/by-id "mainGameCanvas"))
   (set! fx-w        (.. fx-source -width))
   (set! fx-h        (.. fx-source -height))
   (set! fx-canvas   (.. js/fx canvas))

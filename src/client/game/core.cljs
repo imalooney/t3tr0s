@@ -30,12 +30,9 @@
     [client.game.rules :refer [get-points
                                level-up?
                                get-level-speed]]
-    [client.game.paint :refer [delete-opponent-canvas!
-                               create-opponent-canvas!
-                               size-canvas!
+    [client.game.paint :refer [size-canvas!
                                cell-size
                                draw-board!]]
-    [client.game.multiplayer :refer [opponent-scale]]
     [client.game.vcr :refer [vcr toggle-record! record-frame!]]
     [client.socket :as socket]
     [cljs.core.async :refer [close! put! chan <! timeout unique alts!]]))
@@ -121,30 +118,25 @@
   "Boolean flag signaling if the music is playing or not"
   (atom false))
 
-(def chat-input-has-focus?
-  "Boolean flag signaling when the chat text input has focus."
-  (atom false))
-
-;;------------------------------------------------------------
-;; STATE MONITOR
-;;------------------------------------------------------------
+;;------------------------------------------------------------------------------
+;; State Monitor
+;;------------------------------------------------------------------------------
 
 (defn- on-music-playing-change [_ _ _ new-state]
-  (let [music-el (.getElementById js/document "music")]
+  (let [music-el (dom/by-id "music")]
     (if new-state
       (.play music-el)
       (.pause music-el))))
 
 (add-watch music-playing? :music on-music-playing-change)
 
-
 (defn- update-theme [_ _ old-state new-state]
   (if (not= (:theme old-state)
             (:theme new-state))
     (let [theme-num (:theme new-state)
           theme (get themes theme-num)]
-      (.html ($ "#theme") (:year theme))
-      (.html ($ "#theme-details") (:platform theme)))))
+      (.html ($ "#themeYear") (:year theme))
+      (.html ($ "#themePlatform") (:platform theme)))))
 
 (add-watch state :theme-change update-theme)
 
@@ -183,7 +175,7 @@
                         (not= theme new-theme))
 
                 (history/draw-history! (:history @state))
-                (draw-board! "game-canvas" new-board cell-size new-theme rows-cutoff)
+                (draw-board! "mainGameCanvas" new-board cell-size new-theme rows-cutoff)
                 (draw-board! "next-canvas" (next-piece-board next-piece) cell-size new-theme)
                 (if (:recording @vcr)
                   (record-frame!)))
@@ -581,18 +573,6 @@
       (.removeEventListener js/window "keyup" key-up))))
 
 ;;------------------------------------------------------------
-;; Opponent drawing
-;;------------------------------------------------------------
-
-(defn on-opponent-update
-  [{:keys [id level board theme]}]
-
-  (create-opponent-canvas! id)
-
-  (draw-board! id board (opponent-scale cell-size) theme)
-  )
-
-;;------------------------------------------------------------
 ;; Entry Point
 ;;------------------------------------------------------------
 
@@ -614,7 +594,7 @@
     (let [board (drawable-board)
           theme (:theme @state)
           next-piece (:next-piece @state)]
-      (draw-board! "game-canvas" board cell-size theme rows-cutoff)
+      (draw-board! "mainGameCanvas" board cell-size theme rows-cutoff)
       (draw-board! "next-canvas" (next-piece-board next-piece) cell-size theme)))
   )
 
@@ -625,7 +605,7 @@
 
   (history/init-canvas! "history-canvas")
 
-  (size-canvas! "game-canvas" empty-board cell-size rows-cutoff)
+  (size-canvas! "mainGameCanvas" empty-board cell-size rows-cutoff)
   (size-canvas! "next-canvas" (next-piece-board) cell-size)
 
   (try-spawn-piece!)
