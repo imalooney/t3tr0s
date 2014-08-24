@@ -67,16 +67,9 @@
   "The state of the game."
   (atom nil))
 
-(def key-states
-  "The state of the directional keys."
-  (atom nil))
-
 (defn init-state!
   "Set the initial state of the game."
   []
-  (reset! key-states {:left false
-                      :right false
-                      :down false})
   (reset! state {:next-piece nil
                  :piece nil
                  :position nil
@@ -367,12 +360,7 @@
     (loop []
       (let [soft-speed 35
             level-speed (get-level-speed (:level @state))
-
-            ; only soft-drop if we're currently not shifting
-            shifting (or (:left @key-states) (:right @key-states))
-            soft-drop (and (not shifting) (:soft-drop @state))
-
-            speed (if soft-drop
+            speed (if (:soft-drop @state)
                     (min soft-speed level-speed)
                     level-speed)
             time-chan (timeout speed)
@@ -526,8 +514,8 @@
                    (when (and (:piece @state) (not @paused?))
                      (case (key-name e)
                        :down  (put! down-chan true)
-                       :left  (do (try-move! -1  0) (swap! key-states assoc :left true))
-                       :right (do (try-move!  1  0) (swap! key-states assoc :right true))
+                       :left  (try-move! -1 0)
+                       :right (try-move!  1 0)
                        :space (hard-drop!)
                        :up    (try-rotate!)
                        nil))
@@ -536,8 +524,6 @@
         key-up (fn [e]
                  (when-not (:quit @state)
                    (case (key-name e)
-                     :left (swap! key-states assoc :left false)
-                     :right (swap! key-states assoc :right false)
                      :down  (put! down-chan false)
                      ;:shift (toggle-record!)
                      nil)
