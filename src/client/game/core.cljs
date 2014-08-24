@@ -176,7 +176,7 @@
 
                 (history/draw-history! (:history @state))
                 (draw-board! "mainGameCanvas" new-board cell-size new-theme rows-cutoff)
-                (draw-board! "next-canvas" (next-piece-board next-piece) cell-size new-theme)
+                (draw-board! "nextPieceCanvas" (next-piece-board next-piece) cell-size new-theme)
                 (if (:recording @vcr)
                   (record-frame!)))
               (recur new-board new-theme))))))))
@@ -595,7 +595,7 @@
           theme (:theme @state)
           next-piece (:next-piece @state)]
       (draw-board! "mainGameCanvas" board cell-size theme rows-cutoff)
-      (draw-board! "next-canvas" (next-piece-board next-piece) cell-size theme)))
+      (draw-board! "nextPieceCanvas" (next-piece-board next-piece) cell-size theme)))
   )
 
 (defn init []
@@ -606,7 +606,7 @@
   (history/init-canvas! "history-canvas")
 
   (size-canvas! "mainGameCanvas" empty-board cell-size rows-cutoff)
-  (size-canvas! "next-canvas" (next-piece-board) cell-size)
+  (size-canvas! "nextPieceCanvas" (next-piece-board) cell-size)
 
   (try-spawn-piece!)
   (add-key-events)

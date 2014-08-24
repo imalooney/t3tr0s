@@ -51,7 +51,7 @@
 (hiccups/defhtml next-piece-and-stats []
   [:div.next-9dbb7
     [:div.label-39b9c "Next"]
-    [:canvas#next-canvas.next-2f9f7]
+    [:canvas#nextPieceCanvas.next-2f9f7]
     [:div.label-39b9c "Score"]
     [:div#gameScreenScore.metric-b93a8]
     [:div.line-8975a]
@@ -92,7 +92,7 @@
       [:div.scoreboard-d49ce
         [:div.left-5c06b
           [:div.next-df9e7 "Next"]
-          [:canvas#next-canvas]]
+          [:canvas#nextPieceCanvas]]
         [:div.right-6aa51
           [:div#score.push-down-e2e2a]
           [:div#level.push-down-e2e2a]
