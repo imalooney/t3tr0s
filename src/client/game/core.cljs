@@ -47,9 +47,11 @@
 
 (def themes {
   0 {:year "1984" :platform "Electronika 60"}
+  10 {:year "1984" :platform "Electronika 60"}
   1 {:year "1986" :platform "MS DOS"}
   2 {:year "1986" :platform "Tengen/Atari Arcade"}
   3 {:year "1989" :platform "Gameboy"}
+  13 {:year "1989" :platform "Gameboy"}
   4 {:year "1989" :platform "NES"}
   5 {:year "1989" :platform "Sega Genesis"}
   6 {:year "1998" :platform "Gameboy color"}
