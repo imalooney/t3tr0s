@@ -84,6 +84,18 @@
   "The leaders in the current game."
   (atom []))
 
+(def initial-piece-counts
+  {:I 0
+   :T 0
+   :O 0
+   :J 0
+   :L 0
+   :Z 0
+   :S 0})
+
+(def piece-counts
+  (atom {}))
+
 (defn rank-players
   "Get players for the given game sorted by rank for the given mode."
   [game-id mode]
@@ -115,6 +127,9 @@
 (defn go-go-game!
   "Start a game."
   [io mode]
+
+  ; Reset the piece counts.
+  (reset! piece-counts initial-piece-counts)
 
   ; Empty the leaders.
   (swap! leaders empty)
@@ -261,6 +276,10 @@
 (defn- on-update-player
   "Called when player sends an updated state."
   [data pid socket io]
+
+  (when-let [new-piece (:new-piece data)]
+    (swap! piece-counts update-in [new-piece] inc)
+    (.. io (to "dashboard") (emit "piece-stats" (pr-str @piece-counts))))
 
   ;; NOTE: commented this out because it makes the log very noisy
   ;;(util/tlog "player " pid " updated")

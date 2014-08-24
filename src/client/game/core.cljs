@@ -227,6 +227,9 @@
                  conj {:height (-> @state :board tower-height)
                        :drop-y (second start-position)
                        :collapsed #{}})
+    (when @battle
+      (socket/emit "update-player" piece))
+
     (put! resume-grav 0))
 
 (defn try-spawn-piece!
