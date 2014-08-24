@@ -1,4 +1,4 @@
-(ns client.stats
+(ns client.spectate
   (:require-macros [hiccups.core :as hiccups])
   (:require
     [cljs.reader :refer [read-string]]
@@ -212,8 +212,8 @@
   [:div.wrapper-2ba66
     [:div.hdr-93a4f
       [:img.logo-dd80d {:src "/img/t3tr0s_logo_200w.png" :alt "T3TR0S Logo"}]
-      [:div#battleGameLink.game-inactive-6dc02 "Game"]
-      [:div.stats-active-3a58e "Stats"]]
+      [:a.play-inactive-6dc02 {:href "#/play"} "Play"]
+      [:div.spectate-active-3a58e "Spectate"]]
     ;; NOTE: this button is for testing purposes
     [:button#shuffleBtn {:style "padding: 12px 24px; display: none"} "Shuffle!"]
     [:div#boardsContainer.wrapper-4b797
@@ -405,12 +405,8 @@
 ;; DOM Events
 ;;------------------------------------------------------------------------------
 
-(defn- click-battle-link []
-  (aset js/window "location" "hash" "#/battle-game"))
-
 (defn- add-events []
-  (.on ($ "#shuffleBtn") "click" shuffle-page-state)
-  (.on ($ "#battleGameLink") "click" click-battle-link))
+  (.on ($ "#shuffleBtn") "click" shuffle-page-state))
 
 ;;------------------------------------------------------------------------------
 ;; Page Initialization / Cleanup

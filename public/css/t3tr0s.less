@@ -75,8 +75,8 @@ body {
   border: 4px solid @borderColor;
   color: #fff;
   font-size: 36px;
-  height: 63px;
-  padding: 5px 15px 0 15px;
+  line-height: 36px;
+  padding: 15px 15px 7px 15px;
   text-transform: uppercase;
   .box-shadow(0 0 0 4px #fff);
 }
@@ -107,13 +107,22 @@ body {
   }
 }
 
+@loginBtnWidth: 225px;
+
 #soloBtn {
-  width: 260px;
+  display: inline-block;
+  float: left;
+  text-align: center;
+  text-decoration: none;
+  width: @loginBtnWidth;
 }
 
 #battleBtn {
+  display: inline-block;
   float: right;
-  width: 260px;
+  text-align: center;
+  text-decoration: none;
+  width: @loginBtnWidth;
 }
 
 #playBtn {
@@ -430,7 +439,7 @@ body {
 }
 
 //------------------------------------------------------------------------------
-// Stats
+// Spectate
 //------------------------------------------------------------------------------
 
 .wrapper-2ba66 {
@@ -447,11 +456,13 @@ body {
   position: relative;
 }
 
-.hdr-btn() {
+.hdr-link() {
   cursor: pointer;
+  display: block;
   font-size: 24px;
   padding: 15px 20px;
   position: absolute;
+  text-decoration: none;
   text-transform: uppercase;
   top: 0;
 }
@@ -461,29 +472,29 @@ body {
 @inactiveBtnBackground: #484848;
 @inactiveBtnText: #7a7a7a;
 
-.game-inactive-6dc02 {
-  .hdr-btn();
+.play-inactive-6dc02 {
+  .hdr-link();
   background: @inactiveBtnBackground;
   color: @inactiveBtnText;
-  right: 125px;
+  right: 170px;
 }
 
-.game-active-0634a {
-  .hdr-btn();
+.play-active-0634a {
+  .hdr-link();
   background: @activeBtnBackground;
   color: @activeBtnText;
-  right: 125px;
+  right: 170px;
 }
 
-.stats-active-3a58e {
-  .hdr-btn();
+.spectate-active-3a58e {
+  .hdr-link();
   background: @activeBtnBackground;
   color: @activeBtnText;
   right: 0px;
 }
 
-.stats-inative-be0f6 {
-  .hdr-btn();
+.spectate-inative-be0f6 {
+  .hdr-link();
   background: @inactiveBtnBackground;
   color: @inactiveBtnText;
   right: 0px;
@@ -635,7 +646,7 @@ body {
 }
 
 //------------------------------------------------------------------------------
-// Battle Game Screen
+// Play Screen
 //------------------------------------------------------------------------------
 
 .game-eb427 {

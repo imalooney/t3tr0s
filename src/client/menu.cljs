@@ -4,8 +4,6 @@
     hiccups.runtime
     [client.dom :as dom]))
 
-(def $ js/$)
-
 ;;------------------------------------------------------------------------------
 ;; HTML
 ;;------------------------------------------------------------------------------
@@ -14,24 +12,17 @@
   [:div.wrapper-cd25d
     [:img {:src "/img/t3tr0s_logo_850w.png" :alt "T3TR0S Logo"}]
     [:div#menuInnerWrapper
-      [:button#soloBtn.green-btn-f67eb "Solo"]
-      [:button#battleBtn.blue-btn-41e23 "Battle"]
+      [:a#soloBtn.green-btn-f67eb {:href "#/play-solo"} "Solo"]
+      [:a#battleBtn.blue-btn-41e23 {:href "#/login"} "Battle"]
       [:div.clr-22ff3]]])
 
 ;;------------------------------------------------------------------------------
 ;; Page initialization.
 ;;------------------------------------------------------------------------------
 
-(defn- add-events []
-  (.click ($ "#soloBtn") #(aset js/location "hash" "#/solo-game"))
-  (.click ($ "#battleBtn") #(aset js/location "hash" "#/login")))
-
-(defn init
-  []
+(defn init []
   (dom/set-color-background!)
-  (dom/set-page-body! (menu-html))
-  (add-events))
+  (dom/set-page-body! (menu-html)))
 
-(defn cleanup
-  []
+(defn cleanup []
   nil)

@@ -1,10 +1,10 @@
 (ns client.core
   (:require
     client.chat
-    client.game
     client.menu
     client.mc
-    client.stats
+    client.play
+    client.spectate
     [client.dom :as dom]
     [client.login :refer [send-login!]]
     [client.repl :as repl]
@@ -26,12 +26,13 @@
   "#/lobby" {:init client.chat/init  :cleanup client.chat/cleanup}
   "#/menu"  {:init client.menu/init  :cleanup client.menu/cleanup}
   "#/mc"    {:init client.mc/init    :cleanup client.mc/cleanup}
-  "#/solo-game"   {:init client.game/init-solo   :cleanup client.game/cleanup}
-  "#/battle-game" {:init client.game/init-battle :cleanup client.game/cleanup}
-  "#/stats"   {:init client.stats/init :cleanup client.stats/cleanup}
+  "#/play-solo" {:init client.play/init-solo   :cleanup client.play/cleanup}
+  "#/play"      {:init client.play/init-battle :cleanup client.play/cleanup}
 
-  ;; TODO: not finished yet
-  "#/game2" {:init client.game/init-battle2 :cleanup client.game/cleanup}})
+  ;; NOTE: play2 is a work in progress
+  "#/play2"     {:init client.play/init-battle2 :cleanup client.play/cleanup}
+
+  "#/spectate"  {:init client.spectate/init :cleanup client.spectate/cleanup}})
 
 (defn- dispatch-hash!
   "Call the appropriate function for the given URL hash."

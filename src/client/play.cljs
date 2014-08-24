@@ -1,4 +1,4 @@
-(ns client.game
+(ns client.play
   (:require-macros [hiccups.core :as hiccups])
   (:require
     [cljs.reader :refer [read-string]]
@@ -66,8 +66,8 @@
   [:div.wrapper-08ed4
     [:div.hdr-93a4f
       [:img.logo-dd80d {:src "/img/t3tr0s_logo_200w.png" :alt "T3TR0S Logo"}]
-      [:div.game-active-0634a "Game"]
-      [:div#statsLink.stats-inative-be0f6 "Stats"]]
+      [:div.play-active-0634a "Play"]
+      [:a.spectate-inative-be0f6 {:href "#/spectate"} "Spectate"]]
     [:div.wrapper-4b797
       [:canvas#game-canvas.game-eb427]
       (next-piece-and-stats)
@@ -181,11 +181,9 @@
 ;; DOM Events
 ;;------------------------------------------------------------------------------
 
-(defn- click-stats-link []
-  (aset js/window "location" "hash" "#/stats"))
-
 (defn- add-events []
-  (.on ($ "#statsLink") "click" click-stats-link)
+  ;; TODO: events go here
+  nil
   )
 
 ;;------------------------------------------------------------------------------
