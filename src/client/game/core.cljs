@@ -481,8 +481,8 @@
   []
   (reset! paused-board @state)
   (reset! paused-music @music-playing?)
-  #_(go-go-game-over!)
-  #_(swap! state assoc :piece nil)
+  (go-go-game-over!)
+  (swap! state assoc :piece nil)
   (put! pause-grav 0)
   (reset! paused? true)
   (reset! music-playing? false))
