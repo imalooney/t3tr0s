@@ -1,4 +1,4 @@
-(ns client.dashboard
+(ns client.stats
   (:require-macros [hiccups.core :as hiccups])
   (:require
     [cljs.reader :refer [read-string]]

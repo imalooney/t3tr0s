@@ -1,10 +1,10 @@
 (ns client.core
   (:require
-    client.dashboard
-    client.menu
-    client.game
     client.chat
+    client.game
+    client.menu
     client.mc
+    client.stats
     [client.dom :as dom]
     [client.login :refer [send-login!]]
     [client.repl :as repl]
@@ -28,7 +28,7 @@
   "#/mc"    {:init client.mc/init    :cleanup client.mc/cleanup}
   "#/solo-game"   {:init client.game/init-solo   :cleanup client.game/cleanup}
   "#/battle-game" {:init client.game/init-battle :cleanup client.game/cleanup}
-  "#/dashboard"   {:init client.dashboard/init :cleanup client.dashboard/cleanup}
+  "#/stats"   {:init client.stats/init :cleanup client.stats/cleanup}
 
   ;; TODO: not finished yet
   "#/game2" {:init client.game/init-battle2 :cleanup client.game/cleanup}})

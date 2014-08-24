@@ -222,7 +222,7 @@
 ;;------------------------------------------------------------------------------
 
 (defn- click-stats-link []
-  (aset js/window "location" "hash" "#/dashboard"))
+  (aset js/window "location" "hash" "#/stats"))
 
 (defn- click-chat-messages []
   (.focus (dom/by-id "gameScreenChatInput")))
