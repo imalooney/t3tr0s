@@ -112,7 +112,9 @@
       ; DEFAULT TILEMAP
       :else
         (let [[k _] (piece-type-adj value)
-              row theme
+              row (if (= theme 19)
+                    10
+                    theme)
               col (value-position k)]
           [tilemap row col]))
     )

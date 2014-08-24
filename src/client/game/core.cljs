@@ -57,7 +57,8 @@
   6 {:year "1998" :platform "Gameboy color"}
   7 {:year "2000" :platform "TI-83"}
   8 {:year "2002" :platform "Flash"}
-  9 {:year "2012" :platform "Facebook"}})
+  9 {:year "2012" :platform "Facebook"}
+  19 {:year "2014" :platform "Mario"}})
 
 ;;------------------------------------------------------------
 ;; STATE OF THE GAME
@@ -507,7 +508,9 @@
                      :seven (change-theme! 6 e)
                      :eight (change-theme! 7 e)
                      :nine  (change-theme! 8 e)
-                     :zero  (change-theme! 9 e)
+                     :zero  (if (.-shiftKey e)
+                              (change-theme! 19 e)
+                              (change-theme! 9 e))
                      :p     (do (toggle-pause-game!) (.preventDefault e))
                      :m     (do (toggle-music!) (.preventDefault e))
                      nil)
