@@ -80,15 +80,17 @@
       ; GAMEBOY I-PIECE
       (and (= theme 3) (= (subs string-value 0 1) "I"))
         (let [[k a] (piece-type-adj value)
-              row (value-position k)
-              col a]
+              row 0
+              col a
+              size 32]
           [tilemap-gameboy row col])
 
       ; GAMEBOY COLOR I-PIECE
       (and (= theme 6) (= (subs string-value 0 1) "I"))
         (let [[k a] (piece-type-adj value)
-              row (value-position k)
-              col a]
+              row 0
+              col a
+              size 32]
           [tilemap-gameboy-color row col])
 
       ; GAMEBOY REAL

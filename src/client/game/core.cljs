@@ -216,7 +216,7 @@
   (go
     (doseq [y (reverse (range n-rows))]
       (<! (timeout 10))
-      (swap! state assoc-in [:board y] game-over-row))))
+      (swap! state assoc-in [:board y] (game-over-row)))))
 
 (defn spawn-piece!
   "Spawns the given piece at the starting position."

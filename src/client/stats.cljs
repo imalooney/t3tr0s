@@ -208,6 +208,7 @@
   [:div#timeLeft.metric-b93a8])
 
 (hiccups/defhtml page-shell []
+  [:div.white-f2034]
   [:div.wrapper-2ba66
     [:div.hdr-93a4f
       [:img.logo-dd80d {:src "/img/t3tr0s_logo_200w.png" :alt "T3TR0S Logo"}]
