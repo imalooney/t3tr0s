@@ -91,8 +91,7 @@
                  :history []}))
 
 ; required for pausing/resuming the gravity routine
-(def pause-grav (chan))
-(def resume-grav (chan))
+(def stop-grav (chan))
 
 (def battle
   "Boolean flag signaling whether we are in solo or battle mode."
@@ -206,6 +205,8 @@
       (<! (timeout 10))
       (swap! state assoc-in [:board y] (game-over-row)))))
 
+(declare go-go-gravity!)
+
 (defn spawn-piece!
   "Spawns the given piece at the starting position."
   [piece]
@@ -218,7 +219,7 @@
     (when @battle
       (socket/emit "update-player" piece))
 
-    (put! resume-grav 0))
+    (go-go-gravity!))
 
 (defn try-spawn-piece!
   "Checks if new piece can be written to starting position."
@@ -326,7 +327,7 @@
     (swap! state update-in [:history (-> @state :history count dec)]
                  assoc :height (tower-height new-board)
                        :collapsed (get-filled-row-indices new-board))
-    (put! pause-grav 0)
+    (stop-gravity!)
 
     ; If collapse routine returns a channel...
     ; then wait for it before spawning a new piece.
@@ -353,34 +354,27 @@
 (defn go-go-gravity!
   "Starts the gravity routine."
   []
-  ; Make sure gravity starts in paused mode.
-  ; Spawning the piece will signal the first "resume".
-  (put! pause-grav 0)
+  (go-loop []
+    (let [soft-speed 35
+          level-speed (get-level-speed (:level @state))
+          speed (if (:soft-drop @state)
+                  (min soft-speed level-speed)
+                  level-speed)
+          time- (timeout speed)
+          quit (:quit-chan @state)
+          [_ c] (alts! [time- stop-grav quit])]
+      (when (= c time-)
+        (apply-gravity!)
+        (recur)))))
 
-  (go
-    (loop []
-      (let [soft-speed 35
-            level-speed (get-level-speed (:level @state))
-            speed (if (:soft-drop @state)
-                    (min soft-speed level-speed)
-                    level-speed)
-            time-chan (timeout speed)
-            quit-chan (:quit-chan @state)
-            [_ c] (alts! [time-chan pause-grav quit-chan])]
+(defn stop-gravity!
+  []
+  (put! stop-grav 0))
 
-        (condp = c
-
-          pause-grav
-          (let [[_ c] (alts! [resume-grav quit-chan])]
-            (if (= c resume-grav)
-              (recur)))
-
-          time-chan
-          (do
-            (apply-gravity!)
-            (recur))
-
-          nil)))))
+(defn refresh-gravity!
+  []
+  (stop-gravity!)
+  (go-go-gravity!))
 
 
 ;;------------------------------------------------------------
@@ -458,7 +452,7 @@
   "Restores the state of the board pre-pausing, and resumes gravity"
   []
   (reset! state @paused-board)
-  (put! resume-grav 0)
+  (go-go-gravity!)
   (reset! paused? false)
   (reset! music-playing? @paused-music))
 
@@ -469,7 +463,7 @@
   (reset! paused-music @music-playing?)
   (go-go-game-over!)
   (swap! state assoc :piece nil)
-  (put! pause-grav 0)
+  (stop-gravity!)
   (reset! paused? true)
   (reset! music-playing? false))
 
@@ -546,10 +540,7 @@
         (let [[value c] (alts! [(:quit-chan @state) uc])]
           (when (= c uc)
             (swap! state assoc :soft-drop value)
-
-            ; force gravity to reset
-            (put! pause-grav 0)
-            (put! resume-grav 0)
+            (refresh-gravity!)
             (recur)))))
 
     ; Remove key events when quitting
@@ -597,7 +588,6 @@
   (try-spawn-piece!)
   (add-key-events)
   (go-go-draw!)
-  (go-go-gravity!)
 
   (display-points!)
   (try-publish-score!)
