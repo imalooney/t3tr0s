@@ -14,31 +14,35 @@
   [level-lines]
   (>= level-lines 10))
 
-(defn get-level-speed 
+(defn grav-speed
   "Determine speed of gravity at current level in ms/drop."
-  [level]
-  ; GameBoy Tetris speed:
-  ; http://tetrisconcept.net/wiki/Tetris_%28Game_Boy%29
-  (let [frames (case (min 20 level)
-                0 	53
-                1 	49
-                2 	45
-                3 	41
-                4 	37
-                5 	33
-                6 	28
-                7 	22
-                8 	17
-                9 	11
-                10 	10
-                11 	9
-                12 	8
-                13 	7
-                14 	6
-                15 	6
-                16 	5
-                17 	5
-                18 	4
-                19 	4
-                20 	3)]
-    (-> frames (/ 60) (* 1000) js/Math.floor)))
+  ([level] (grav-speed level false))
+  ([level is-soft-drop]
+   ; GameBoy Tetris speed:
+   ; http://tetrisconcept.net/wiki/Tetris_%28Game_Boy%29
+   (let [soft-frames 2
+         reg-frames (case (min 20 level)
+                      0 	53
+                      1 	49
+                      2 	45
+                      3 	41
+                      4 	37
+                      5 	33
+                      6 	28
+                      7 	22
+                      8 	17
+                      9 	11
+                      10 	10
+                      11 	9
+                      12 	8
+                      13 	7
+                      14 	6
+                      15 	6
+                      16 	5
+                      17 	5
+                      18 	4
+                      19 	4
+                      20 	3)
+         frames (if is-soft-drop soft-frames reg-frames)
+         speed (-> frames (/ 60) (* 1000))]
+     speed)))

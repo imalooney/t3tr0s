@@ -29,7 +29,7 @@
                                tower-height]]
     [client.game.rules :refer [get-points
                                level-up?
-                               get-level-speed]]
+                               grav-speed]]
     [client.game.paint :refer [size-canvas!
                                cell-size
                                draw-board!]]
@@ -206,6 +206,7 @@
       (swap! state assoc-in [:board y] (game-over-row)))))
 
 (declare go-go-gravity!)
+(declare stop-gravity!)
 
 (defn spawn-piece!
   "Spawns the given piece at the starting position."
@@ -237,7 +238,7 @@
         ; Show piece that we attempted to spawn, drawn behind the other pieces.
         ; Then pause before kicking off gameover animation.
         (swap! state update-in [:board] #(write-piece-behind-board piece x y %))
-        (<! (timeout (get-level-speed (:level @state))))
+        (<! (timeout (grav-speed (:level @state))))
         (go-go-game-over!)))))
 
 (defn display-points!
@@ -355,11 +356,7 @@
   "Starts the gravity routine."
   []
   (go-loop []
-    (let [soft-speed 35
-          level-speed (get-level-speed (:level @state))
-          speed (if (:soft-drop @state)
-                  (min soft-speed level-speed)
-                  level-speed)
+    (let [speed (grav-speed (:level @state) (:soft-drop @state))
           time- (timeout speed)
           quit (:quit-chan @state)
           [_ c] (alts! [time- stop-grav quit])]
