@@ -141,36 +141,3 @@
 
           (.drawImage ctx img sx sy sw sh dx dy dw dh)))
       nil)))
-
-;;------------------------------------------------------------
-;; FX Canvas
-;;------------------------------------------------------------
-
-(def fx-source nil)
-(def fx-canvas nil)
-(def fx-texture nil)
-(def fx-w nil)
-(def fx-h nil)
-
-(defn init-fx-canvas!
-  []
-  (set! fx-source   (dom/by-id "mainGameCanvas"))
-  (set! fx-w        (.. fx-source -width))
-  (set! fx-h        (.. fx-source -height))
-  (set! fx-canvas   (.. js/fx canvas))
-  (set! fx-texture  (.. fx-canvas (texture fx-source)))
-
-  (.. fx-source -parentNode (insertBefore fx-canvas fx-source))
-
-  )
-
-(defn draw-fx-canvas!
-  []
-  (.. fx-texture (loadContentsOf fx-source))
-  (.. fx-canvas
-      (draw fx-texture)
-      (bulgePinch (/ fx-w 2) (/ fx-h 2) (* fx-h 0.75) 0.12)
-      (vignette 0.25 0.74)
-      (update))
-  )
-
