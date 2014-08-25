@@ -11,33 +11,19 @@
 ;; PAINTING (for showing the game on a canvas)
 ;;------------------------------------------------------------
 
-(def tilemap-orig-real (let [img (js/Image.)]
-                         (aset img "src" "tilemap-orig-real.png")
-                         img))
+(defn get-image
+  [path]
+  (let [img (js/Image.)]
+    (aset img "src" path)
+    img))
 
-(def tilemap-tengen (let [img (js/Image.)]
-                      (aset img "src" "tilemap-tengen.png")
-                      img))
-
-(def tilemap-gameboy (let [img (js/Image.)]
-                      (aset img "src" "tilemap-gameboy.png")
-                      img))
-
-(def tilemap-gameboy-color (let [img (js/Image.)]
-                      (aset img "src" "tilemap-gameboy-color.png")
-                      img))
-
-(def tilemap-gameboy-real (let [img (js/Image.)]
-                            (aset img "src" "tilemap-gameboy-real.png")
-                            img))
-
-(def tilemap-gameboy-real-adj (let [img (js/Image.)]
-                                (aset img "src" "tilemap-gameboy-real-adj.png")
-                                img))
-
-(def tilemap (let [img (js/Image.)]
-               (aset img "src" "tilemap.png")
-               img))
+(def tilemap-orig-real        (get-image "tilemap-orig-real.png"))
+(def tilemap-tengen           (get-image "tilemap-tengen.png"))
+(def tilemap-gameboy          (get-image "tilemap-gameboy.png"))
+(def tilemap-gameboy-color    (get-image "tilemap-gameboy-color.png"))
+(def tilemap-gameboy-real     (get-image "tilemap-gameboy-real.png"))
+(def tilemap-gameboy-real-adj (get-image "tilemap-gameboy-real-adj.png"))
+(def tilemap                  (get-image "tilemap.png"))
 
 ; The size of a cell in pixels.
 (def cell-size 32)
