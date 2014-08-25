@@ -529,12 +529,7 @@
                    (case (key-name e)
                      :down  (put! down-chan false)
                      ;:shift (toggle-record!)
-                     nil)
-                   (when (#{:left :right} (key-name e))
-                     ; force gravity to reset
-                     (put! pause-grav 0)
-                     (put! resume-grav 0))
-                   ))]
+                     nil)))]
 
     ; Add key events
     (.addEventListener js/window "keydown" key-down)
