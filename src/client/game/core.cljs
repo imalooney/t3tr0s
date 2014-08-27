@@ -95,7 +95,16 @@
 (def quit-chan nil)
 
 ; required for pausing/resuming the gravity routine
+(declare go-go-gravity!)
+
 (def stop-grav (chan))
+(defn stop-gravity! []
+  (put! stop-grav 0))
+
+(defn refresh-gravity! []
+  (stop-gravity!)
+  (go-go-gravity!))
+
 
 (def battle
   "Boolean flag signaling whether we are in solo or battle mode."
@@ -116,6 +125,24 @@
 (def music-playing?
   "Boolean flag signaling if the music is playing or not"
   (atom false))
+
+;;------------------------------------------------------------------------------
+;; Piece Control Throttling
+;;------------------------------------------------------------------------------
+
+; These channels can received boolean signals indicating on/off status.
+; Duplicate signals are ignored with the (dedupe) transducer.
+(def move-down-chan (chan 1 (dedupe)))
+
+(defn go-go-control-soft-drop!
+  "Monitor move-down-chan to update the gravity speed."
+  []
+  (go-loop []
+    (let [[value c] (alts! [quit-chan move-down-chan])]
+      (when (= c move-down-chan)
+        (swap! state assoc :soft-drop value)
+        (refresh-gravity!)
+        (recur)))))
 
 ;;------------------------------------------------------------------------------
 ;; State Monitor
@@ -208,9 +235,6 @@
     (doseq [y (reverse (range n-rows))]
       (<! (timeout 10))
       (swap! state assoc-in [:board y] (game-over-row)))))
-
-(declare go-go-gravity!)
-(declare stop-gravity!)
 
 (defn spawn-piece!
   "Spawns the given piece at the starting position."
@@ -367,16 +391,6 @@
         (apply-gravity!)
         (recur)))))
 
-(defn stop-gravity!
-  []
-  (put! stop-grav 0))
-
-(defn refresh-gravity!
-  []
-  (stop-gravity!)
-  (go-go-gravity!))
-
-
 ;;------------------------------------------------------------
 ;; Input-driven STATE CHANGES
 ;;------------------------------------------------------------
@@ -510,9 +524,9 @@
                      nil)
                    (when (not @paused?)
                      (case (key-name e)
-                       :down  (put! down-chan true)
                        :left  (try-move! -1 0)
                        :right (try-move!  1 0)
+                       :down  (put! move-down-chan true)
                        :space (hard-drop!)
                        :up    (try-rotate!)
                        nil))
@@ -521,7 +535,7 @@
         key-up (fn [e]
                  (when-not (:quit @state)
                    (case (key-name e)
-                     :down  (put! down-chan false)
+                     :down  (put! move-down-chan false)
                      ;:shift (toggle-record!)
                      nil)))]
 
@@ -573,6 +587,8 @@
 
   (size-canvas! "mainGameCanvas" empty-board cell-size rows-cutoff)
   (size-canvas! "nextPieceCanvas" (next-piece-board) cell-size)
+
+  (go-go-control-soft-drop!)
 
   (try-spawn-piece!)
   (add-key-events)
