@@ -14,6 +14,12 @@
   [level-lines]
   (>= level-lines 10))
 
+; Delayed auto-shift.  See: http://tetris.wikia.com/wiki/DAS
+; Initial shift speed is the amount of time before a piece starts rapidly shifting.
+; Shift speed is the amount of time in between each rapid shift.
+(def initial-shift-speed 300)
+(def shift-speed 40)
+
 (defn grav-speed
   "Determine speed of gravity at current level in ms/drop."
   ([level] (grav-speed level false))

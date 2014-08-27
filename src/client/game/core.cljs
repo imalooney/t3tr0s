@@ -29,7 +29,9 @@
                                tower-height]]
     [client.game.rules :refer [get-points
                                level-up?
-                               grav-speed]]
+                               grav-speed
+                               initial-shift-speed
+                               shift-speed]]
     [client.game.paint :refer [size-canvas!
                                cell-size
                                draw-board!]]
@@ -132,6 +134,8 @@
 
 ; These channels can received boolean signals indicating on/off status.
 ; Duplicate signals are ignored with the (dedupe) transducer.
+(def move-left-chan (chan 1 (dedupe)))
+(def move-right-chan (chan 1 (dedupe)))
 (def move-down-chan (chan 1 (dedupe)))
 
 (defn go-go-control-soft-drop!
@@ -143,6 +147,30 @@
         (swap! state assoc :soft-drop value)
         (refresh-gravity!)
         (recur)))))
+
+(declare try-move!)
+
+(defn go-go-piece-shift!
+  "Shifts a piece in the given direction until given channel is closed."
+  [stop-chan dx]
+  (go-loop [speed initial-shift-speed]
+    (try-move! dx 0)
+    (let [time- (timeout speed)
+          [value c] (alts! [quit-chan stop-chan time-])]
+      (when (= c time-)
+        (recur shift-speed)))))
+
+(defn go-go-control-piece-shift!
+  "Monitors the given shift-chan to control piece-shifting."
+  [shift-chan dx]
+  (go-loop [stop-chan (chan)]
+    (let [[value c] (alts! [quit-chan shift-chan])]
+      (when (= c shift-chan)
+        (recur (if value
+                 (do (go-go-piece-shift! stop-chan dx)
+                     stop-chan)
+                 (do (close! stop-chan)
+                     (chan))))))))
 
 ;;------------------------------------------------------------------------------
 ;; State Monitor
@@ -524,9 +552,9 @@
                      nil)
                    (when (not @paused?)
                      (case (key-name e)
-                       :left  (try-move! -1 0)
-                       :right (try-move!  1 0)
                        :down  (put! move-down-chan true)
+                       :left  (put! move-left-chan true)
+                       :right (put! move-right-chan true)
                        :space (hard-drop!)
                        :up    (try-rotate!)
                        nil))
@@ -536,6 +564,8 @@
                  (when-not (:quit @state)
                    (case (key-name e)
                      :down  (put! move-down-chan false)
+                     :left  (put! move-left-chan false)
+                     :right (put! move-right-chan false)
                      ;:shift (toggle-record!)
                      nil)))]
 
@@ -589,6 +619,8 @@
   (size-canvas! "nextPieceCanvas" (next-piece-board) cell-size)
 
   (go-go-control-soft-drop!)
+  (go-go-control-piece-shift! move-left-chan -1)
+  (go-go-control-piece-shift! move-right-chan 1)
 
   (try-spawn-piece!)
   (add-key-events)
