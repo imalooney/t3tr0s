@@ -384,33 +384,33 @@
 (defn try-move!
   "Try moving the current piece to the given offset."
   [dx dy]
-  (let [[x y] (:position @state)
-        piece (:piece @state)
-        board (:board @state)
-        nx (+ dx x)
-        ny (+ dy y)]
-    (if (piece-fits? piece nx ny board)
-      (swap! state assoc :position [nx ny]))))
+  (when-let [piece (:piece @state)]
+    (let [[x y] (:position @state)
+          board (:board @state)
+          nx (+ dx x)
+          ny (+ dy y)]
+      (if (piece-fits? piece nx ny board)
+        (swap! state assoc :position [nx ny])))))
 
 (defn try-rotate!
   "Try rotating the current piece."
   []
-  (let [[x y] (:position @state)
-        piece (:piece @state)
-        board (:board @state)
-        new-piece (rotate-piece piece)]
-    (if (piece-fits? new-piece x y board)
-      (swap! state assoc :piece new-piece))))
+  (when-let [piece (:piece @state)]
+    (let [[x y] (:position @state)
+          board (:board @state)
+          new-piece (rotate-piece piece)]
+      (if (piece-fits? new-piece x y board)
+        (swap! state assoc :piece new-piece)))))
 
 (defn hard-drop!
   "Hard drop the current piece."
   []
-  (let [[x y] (:position @state)
-        piece (:piece @state)
-        board (:board @state)
-        ny (get-drop-pos piece x y board)]
-    (swap! state assoc :position [x ny])
-    (lock-piece!)))
+  (when-let [piece (:piece @state)]
+    (let [[x y] (:position @state)
+          board (:board @state)
+          ny (get-drop-pos piece x y board)]
+      (swap! state assoc :position [x ny])
+      (lock-piece!))))
 
 (defn change-theme!
   "Changes the boards theme"
@@ -508,7 +508,7 @@
                      :p     (do (toggle-pause-game!) (.preventDefault e))
                      :m     (do (toggle-music!) (.preventDefault e))
                      nil)
-                   (when (and (:piece @state) (not @paused?))
+                   (when (not @paused?)
                      (case (key-name e)
                        :down  (put! down-chan true)
                        :left  (try-move! -1 0)
