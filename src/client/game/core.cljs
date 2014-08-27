@@ -86,9 +86,13 @@
                  :soft-drop false
 
                  :quit false
-                 :quit-chan (chan)
 
                  :history []}))
+
+; This channel is closed when we want to shutdown all go-blocks
+; in order to exit the game.
+; It must be initialized to a new channel on init.
+(def quit-chan nil)
 
 ; required for pausing/resuming the gravity routine
 (def stop-grav (chan))
@@ -161,7 +165,7 @@
   (let [redraw-chan (make-redraw-chan)]
     (go
       (loop [board nil theme nil]
-        (let [[_ c] (alts! [(:quit-chan @state) redraw-chan])]
+        (let [[_ c] (alts! [quit-chan redraw-chan])]
           (if (= c redraw-chan)
             (let [new-board (drawable-board)
                   new-theme (:theme @state)
@@ -187,7 +191,7 @@
           (socket/emit "update-player" {:theme (:theme @state) :board (drawable-board)}))
 
         ; quit or schedule another update
-        (let [quit (:quit-chan @state)
+        (let [quit quit-chan
               [_ ch] (alts! [quit (timeout 16)])]
           (when-not (= ch quit)
             (recur data)))))))
@@ -358,8 +362,7 @@
   (go-loop []
     (let [speed (grav-speed (:level @state) (:soft-drop @state))
           time- (timeout speed)
-          quit (:quit-chan @state)
-          [_ c] (alts! [time- stop-grav quit])]
+          [_ c] (alts! [time- stop-grav quit-chan])]
       (when (= c time-)
         (apply-gravity!)
         (recur)))))
@@ -526,23 +529,9 @@
     (.addEventListener js/window "keydown" key-down)
     (.addEventListener js/window "keyup" key-up)
 
-    ; Prevent the player from holding the down-key
-    ; for more than one piece-drop.
-    ;
-    ; The soft-drop state is set to:
-    ;   = the state of the down-key when it CHANGES
-    ;   = off, after a piece is locked
-    (let [uc (unique down-chan)]
-      (go-loop []
-        (let [[value c] (alts! [(:quit-chan @state) uc])]
-          (when (= c uc)
-            (swap! state assoc :soft-drop value)
-            (refresh-gravity!)
-            (recur)))))
-
     ; Remove key events when quitting
     (go
-      (<! (:quit-chan @state))
+      (<! quit-chan)
       (.removeEventListener js/window "keydown" key-down)
       (.removeEventListener js/window "keyup" key-up))))
 
@@ -556,8 +545,8 @@
   (let [new-state (read-string data-str)]
 
     ; Freeze the game.
-    (if (:quit-chan @state)
-      (close! (:quit-chan @state)))
+    (if quit-chan
+      (close! quit-chan))
 
     ; Merge state with new state data.
     (swap! state merge new-state)
@@ -573,6 +562,9 @@
   )
 
 (defn init []
+
+  ; Create new quit channel that all go-blocks will monitor for closing.
+  (set! quit-chan (chan))
 
   (init-state!)
   (load-theme!)
@@ -596,7 +588,7 @@
 
 (defn cleanup []
   (swap! state assoc :quit true)
-  (if (:quit-chan @state)
-    (close! (:quit-chan @state)))
+  (if quit-chan
+    (close! quit-chan))
 
   (socket/removeListener "set-state"))
