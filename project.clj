@@ -6,12 +6,12 @@
     :url "https://github.com/imalooney/t3tr0s/blob/master/LICENSE"
     :distribution :repo}
 
-  :dependencies [[org.clojure/clojure "1.5.1"]
-                 [org.clojure/clojurescript "0.0-2234"]
-                 [org.clojure/core.async "0.1.267.0-0d7780-alpha"]
+  :dependencies [[org.clojure/clojure "1.6.0"]
+                 [org.clojure/clojurescript "0.0-2311"]
+                 [org.clojure/core.async "0.1.338.0-5c5012-alpha"]
                  [hiccups "0.3.0"]
                  [com.cemerick/piggieback "0.1.3"]
-                 [weasel "0.2.0"]]
+                 [weasel "0.4.0-SNAPSHOT"]]
 
   :plugins [[lein-cljsbuild "1.0.3"]]
 
@@ -38,7 +38,6 @@
       :source-paths ["src/server"]
       :compiler {
         :target :nodejs
-        :language-in :ecmascript5
         :output-to "server.js"
         :optimizations :simple}}}}
 
