@@ -218,38 +218,36 @@
   "Kicks off the drawing routine."
   []
   (let [redraw-chan (make-redraw-chan)]
-    (go
-      (loop [board nil theme nil]
-        (let [[_ c] (alts! [quit-chan redraw-chan])]
-          (if (= c redraw-chan)
-            (let [new-board (drawable-board)
-                  new-theme (:theme @state)
-                  next-piece (:next-piece @state)]
-              (when (or (not= board new-board)
-                        (not= theme new-theme))
+    (go-loop [board nil theme nil]
+      (let [[_ c] (alts! [quit-chan redraw-chan])]
+        (if (= c redraw-chan)
+          (let [new-board (drawable-board)
+                new-theme (:theme @state)
+                next-piece (:next-piece @state)]
+            (when (or (not= board new-board)
+                      (not= theme new-theme))
 
-                (history/draw-history! (:history @state))
-                (draw-board! "mainGameCanvas" new-board cell-size new-theme rows-cutoff)
-                (draw-board! "nextPieceCanvas" (next-piece-board next-piece) cell-size new-theme)
-                (if (:recording @vcr)
-                  (record-frame!)))
-              (recur new-board new-theme))))))))
+              (history/draw-history! (:history @state))
+              (draw-board! "mainGameCanvas" new-board cell-size new-theme rows-cutoff)
+              (draw-board! "nextPieceCanvas" (next-piece-board next-piece) cell-size new-theme)
+              (if (:recording @vcr)
+                (record-frame!)))
+            (recur new-board new-theme)))))))
 
 (defn go-go-emit-updates!
   []
-  (go
-    (loop [prev-data nil]
+  (go-loop [prev-data nil]
 
-      ; emit update to the server if relevant attributes have changed
-      (let [data (select-keys @state [:piece :position :board :theme])]
-        (when (not= prev-data data)
-          (socket/emit "update-player" {:theme (:theme @state) :board (drawable-board)}))
+    ; emit update to the server if relevant attributes have changed
+    (let [data (select-keys @state [:piece :position :board :theme])]
+      (when (not= prev-data data)
+        (socket/emit "update-player" {:theme (:theme @state) :board (drawable-board)}))
 
-        ; quit or schedule another update
-        (let [quit quit-chan
-              [_ ch] (alts! [quit (timeout 16)])]
-          (when-not (= ch quit)
-            (recur data)))))))
+      ; quit or schedule another update
+      (let [quit quit-chan
+            [_ ch] (alts! [quit (timeout 16)])]
+        (when-not (= ch quit)
+          (recur data))))))
 
 
 ;;------------------------------------------------------------
