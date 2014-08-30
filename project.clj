@@ -37,11 +37,13 @@
      :server {
       :source-paths ["src/server"]
       :compiler {
+        :language-in :ecmascript5
+        :language-out :ecmascript5
         :target :nodejs
         :output-to "server.js"
         :optimizations :simple}}}}
 
   :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}
   :injections [(require 'weasel.repl.websocket)
-               (def brepl #(cemerick.piggieback/cljs-repl :repl-env (weasel.repl.websocket/repl-env)))]
-  )
+               (def brepl #(cemerick.piggieback/cljs-repl :repl-env
+                             (weasel.repl.websocket/repl-env)))])
