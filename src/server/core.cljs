@@ -459,7 +459,6 @@
       #(.leave socket "mc"))
 
     ; Start the game
-    #_(.on socket "start-lines" #(close! if-not @game-mode (go-go-game! io :line)))
     (.on socket "start-time" #(close! @start-game-chan))
 
     ; Stop the game.
