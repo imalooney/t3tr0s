@@ -45,8 +45,8 @@
 ;; Events
 ;;------------------------------------------------------------------------------
 
-(defn- on-form-submit [e]
-  (.preventDefault e)
+(defn- on-form-submit [js-evt]
+  (.preventDefault js-evt)
   (let [username (dom/get-value "nameInput")]
     ;; TODO: more username validation here
     (when (not= username "")
