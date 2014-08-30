@@ -42,10 +42,6 @@
 
 @loginBtnWidth: 225px;
 @gameBodyWidth: 840px;
-@activeBtnBackground: #fff;
-@activeBtnText: #2b2b2b;
-@inactiveBtnBackground: #484848;
-@inactiveBtnText: #7a7a7a;
 
 //------------------------------------------------------------------------------
 // Mixins (must start with a capital letter)
@@ -60,17 +56,6 @@
   padding: 15px 15px 7px 15px;
   text-transform: uppercase;
   .box-shadow(0 0 0 4px #fff);
-}
-
-.HeaderLink() {
-  cursor: pointer;
-  display: block;
-  font-size: 24px;
-  padding: 15px 20px;
-  position: absolute;
-  text-decoration: none;
-  text-transform: uppercase;
-  top: 0;
 }
 
 .FunFont() {
@@ -484,18 +469,25 @@ body {
   position: relative;
 }
 
-.play-active-0634a {
-  .HeaderLink();
-  background: @activeBtnBackground;
-  color: @activeBtnText;
-  right: 170px;
+.spectate-link-02d2e {
+  background: #484848;
+  color: #7a7a7a;
+  cursor: pointer;
+  display: block;
+  font-size: 22px;
+  padding: 15px 20px 10px 20px;
+  position: absolute;
+  right: 0px;
+  text-decoration: none;
+  text-transform: uppercase;
+  top: 30px;
+  .transition(0.1s);
 }
 
-.spectate-inative-be0f6 {
-  .HeaderLink();
-  background: @inactiveBtnBackground;
-  color: @inactiveBtnText;
-  right: 0px;
+.spectate-link-02d2e:hover {
+  background: #fff;
+  color: #2b2b2b;
+  .transition(0.2s);
 }
 
 .logo-dd80d {

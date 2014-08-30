@@ -75,7 +75,7 @@
     [:div.hdr-93a4f
       [:img.logo-dd80d {:src "/img/t3tr0s_logo_200w.png" :alt "T3TR0S Logo"}]
       (if battle-mode?
-        [:a.spectate-inative-be0f6 {:href "#/spectate" :target "_blank"}
+        [:a.spectate-link-02d2e {:href "#/spectate" :target "_blank"}
           "Spectate"])]
     [:div.wrapper-4b797
       [:div.game-0a564
