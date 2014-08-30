@@ -8,6 +8,8 @@
     [client.pages.spectate :as spectate-page]
     [client.util :as util]))
 
+(def function? js/goog.isFunction)
+
 ;;------------------------------------------------------------------------------
 ;; Routes
 ;;------------------------------------------------------------------------------
@@ -16,8 +18,8 @@
 
 (def routes {
   ;; initial page + login
-  "/menu"  [menu-page/init!]
-  "/login" [login-page/init!]
+  "/menu"  menu-page/init!
+  "/login" login-page/init!
 
   ;; solo play screen
   "/play-solo" [play-page/init-solo! play-page/cleanup!]
@@ -34,7 +36,7 @@
   "/play2" [play-page/init-battle2! play-page/cleanup!]
 
   ;; redirects - where is my HTTP 301? :)
-  "/dashboard" [#(aset js/document "location" "hash" "/spectate")]
+  "/dashboard" #(aset js/document "location" "hash" "/spectate")
   })
 
 (def previous-page-cleanup-fn (atom nil))
@@ -42,14 +44,14 @@
 (defn- on-hash-change []
   (let [new-route (.replace (aget js/document "location" "hash") #"^#" "")
         page (get routes new-route)
-        init-fn (first page)
-        cleanup-fn (second page)]
-    (if-not (or page init-fn)
+        init-fn (if (vector? page) (first page) page)
+        cleanup-fn (if (vector? page) (second page))]
+    (if-not (function? init-fn)
       (aset js/document "location" "hash" default-route)
       (do
-        ;; run cleanup function from last page
+        ;; run cleanup function from the last page
         (if (and @previous-page-cleanup-fn
-                 (js/goog.isFunction @previous-page-cleanup-fn))
+                 (function? @previous-page-cleanup-fn))
           (@previous-page-cleanup-fn))
 
         ;; run init function for the new page
