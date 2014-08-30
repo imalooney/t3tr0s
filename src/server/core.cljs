@@ -407,72 +407,65 @@
 ;; Socket Setup
 ;;------------------------------------------------------------------------------
 
-(defn init-socket
+(defn on-socket-connect
   "Initialize the web socket."
   [io socket]
-
-  ; Create gif whenever "create-canvas-gif" is emitted.
-  (.on socket "create-html-gif" #(create-html-gif (read-string %) socket))
-  (.on socket "create-canvas-gif" #(create-canvas-gif (read-string %)))
-
-  ;; TODO: this is not really finished yet
-  (.on socket "connect-42b28" on-connect)
-  ;;(.on socket "set-name-d67ca" on-update-name)
-  (.on socket "chat-msg-c3785" on-chat-msg)
-  (.on socket "game-update-e25be" on-game-update)
-
   (let [pid (util/uuid)]
 
     (util/tlog "player " (pprint-pid pid) " connected")
 
-    ; Attach player id to socket.
-    (aset socket "pid" pid)
-
-    ; Add to player table as "Anon" for now.
+    ;; Add to player table as "Anon" for now.
     (swap! players assoc pid anon-player)
 
-    ; Request that the client emit an "update-name" message back
-    ; in case the server restarts and we need user info again.
-    (.emit socket "request-name")
+    (doto socket
+      ;; Create gif whenever "create-canvas-gif" is emitted.
+      (.on "create-html-gif" #(create-html-gif (read-string %) socket))
+      (.on "create-canvas-gif" #(create-canvas-gif (read-string %)))
 
-    ; Remove player from table when disconnected.
-    (.on socket "disconnect" #(on-disconnect pid))
+      ;; TODO: this is not really finished yet
+      (.on "connect-42b28" on-connect)
+      (.on "chat-msg-c3785" on-chat-msg)
+      (.on "game-update-e25be" on-game-update)
 
-    ; Update player name when requested.
-    (.on socket "update-name" #(on-update-name pid %))
+      ;; Request that the client emit an "update-name" message back
+      ;; in case the server restarts and we need user info again.
+      (.emit "request-name")
 
-    (.on socket "join-lobby" #(on-join-lobby pid socket io))
-    (.on socket "leave-lobby" #(on-leave-lobby pid socket io))
-    (.on socket "chat-message" #(on-chat-message % pid socket))
+      ;; Remove player from table when disconnected.
+      (.on "disconnect" #(on-disconnect pid))
 
-    ; Join/leave the game.
-    (.on socket "join-game" #(.join socket "game"))
-    (.on socket "leave-game" #(.leave socket "game"))
+      ;; Update player name when requested.
+      (.on "update-name" #(on-update-name pid %))
 
-    ; Join/leave the dashboard.
-    (.on socket "join-dashboard" #(on-join-dashboard socket io))
+      (.on "join-lobby" #(on-join-lobby pid socket io))
+      (.on "leave-lobby" #(on-leave-lobby pid socket io))
+      (.on "chat-message" #(on-chat-message % pid socket))
 
-    (.on socket "leave-dashboard" #(.leave socket "dashboard"))
+      ;; Join/leave the game.
+      (.on "join-game" #(.join socket "game"))
+      (.on "leave-game" #(.leave socket "game"))
 
-    ; Receive the update from the player.
-    (.on socket "update-player" #(on-update-player pid socket io %))
+      ;; Join/leave the dashboard.
+      (.on "join-dashboard" #(on-join-dashboard socket io))
+      (.on "leave-dashboard" #(.leave socket "dashboard"))
 
-    ; Request access to the MC role.
-    (.on socket "request-mc" #(on-request-mc pid socket %))
+      ;; Receive the update from the player.
+      (.on "update-player" #(on-update-player pid socket io %))
 
-    ; Leave the MC role.
-    (.on socket "leave-mc" #(.leave socket "mc"))
+      ;; Request access to the MC role.
+      (.on "request-mc" #(on-request-mc pid socket %))
 
-    ; Start the game
-    (.on socket "start-time" #(close! @start-game-chan))
+      ;; Leave the MC role.
+      (.on "leave-mc" #(.leave socket "mc"))
 
-    ; Stop the game.
-    (.on socket "stop-game" on-stop-game)
+      ;; Start the game
+      (.on "start-time" #(close! @start-game-chan))
 
-    ; Update game times
-    (.on socket "update-times" #(on-update-times (read-string %) socket))
+      ;; Stop the game.
+      (.on "stop-game" on-stop-game)
 
-    ))
+      ;; Update game times
+      (.on "update-times" #(on-update-times (read-string %) socket)))))
 
 ;;------------------------------------------------------------------------------
 ;; Main
@@ -485,22 +478,22 @@
 
     (aset js/global socket-id io)
 
-    ; configure express app
+    ;; configure express app
     (doto app
       (.use (compression))
       (.get "/" (fn [req res] (.send res (html/page-shell))))
       (.use (.static express (str js/__dirname "/public"))))
 
-    ; start server
+    ;; start server
     (if (:host config)
       (.listen server (:port config) (:host config))
       (.listen server (:port config)))
     (util/tlog "t3tr0s server listening on port " (:port config))
 
-    ; wait for next game to start
+    ;; wait for next game to start
     (go-go-next-game-countdown! io)
 
-    ; configure sockets
-    (.sockets.on io "connection" #(init-socket io %))))
+    ;; configure sockets
+    (.sockets.on io "connection" #(on-socket-connect io %))))
 
 (set! *main-cli-fn* -main)
