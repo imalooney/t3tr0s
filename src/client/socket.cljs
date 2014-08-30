@@ -12,17 +12,17 @@
 ;;------------------------------------------------------------------------------
 
 (defn send-username [username]
-  (emit "set-name-d67ca" {
+  (emit "set-name2" {
     :cid state/client-id
     :username username }))
 
 (defn send-chat [msg]
-  (emit "chat-msg-c3785" {
+  (emit "chat-msg2" {
     :cid state/client-id
     :msg msg }))
 
 (defn send-game-state [game-state]
-  (emit "game-update-e25be" {
+  (emit "game-update2" {
     :cid state/client-id
     :state game-state }))
 
@@ -56,7 +56,7 @@
   (aset js/window socket-id (js/io))
 
   ;; listen for updates
-  (on "chat-update-d4779" receive-chat-update))
+  (on "chat-update2" receive-chat-update))
 
 ;; TODO: make this function multi-arity:
 ;; - (socket/removeListener "foo" "bar" "baz")

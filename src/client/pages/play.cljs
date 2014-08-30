@@ -85,7 +85,7 @@
 (hiccups/defhtml game-html []
   [:div.top-62e29
     [:img {:src "/img/t3tr0s_logo_200w.png" :alt ""}]]
-  [:div.player-view
+  [:div.player-view-085a1
     [:div.wrap-3b65f
       [:canvas#mainGameCanvas]]
     [:div.right-1d870

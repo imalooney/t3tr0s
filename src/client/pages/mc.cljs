@@ -80,12 +80,12 @@
   [:div.inner-6ae9d
     [:div.login-5983e
       [:label#time-left.timeleft-69be1]
-      [:div.input-container-c8147
+      [:div
         [:div.input-4a3e3
-          [:label.label-66a3b "Round duration:"]
+          [:label "Round duration:"]
           [:input#duration.input-48f1f {:type "text" :value (:duration @game-settings)}]]
         [:div.input-4a3e3
-          [:label.label-66a3b "Time between rounds:"]
+          [:label "Time between rounds:"]
           [:input#cooldown.input-48f1f {:type "text" :value (:cooldown @game-settings)}]]
       [:div.button-container-8e52e
         [:button#startBtn.green-btn-f67eb "Start Now"]
@@ -120,7 +120,7 @@
     [:div.login-5983e
       [:form
         [:div.input-4a3e3
-          [:label.label-66a3b "MC password:"]
+          [:label "MC password:"]
           [:input#password.input-48f1f {:type "password"}]]
         [:button#submitPasswordBtn.red-btn-2c9ab "OK"]]]])
 

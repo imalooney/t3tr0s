@@ -1,3 +1,7 @@
+//------------------------------------------------------------------------------
+// Fonts
+//------------------------------------------------------------------------------
+
 @font-face {
   font-family: 'Open Sans';
   font-style: normal;
@@ -32,18 +36,73 @@
   font-style: normal;
 }
 
-.serious-font() {
-  font-family: "Open Sans";
+//------------------------------------------------------------------------------
+// Variables
+//------------------------------------------------------------------------------
+
+@loginBtnWidth: 225px;
+@gameBodyWidth: 840px;
+@activeBtnBackground: #fff;
+@activeBtnText: #2b2b2b;
+@inactiveBtnBackground: #484848;
+@inactiveBtnText: #7a7a7a;
+
+//------------------------------------------------------------------------------
+// Mixins (must start with a capital letter)
+//------------------------------------------------------------------------------
+
+.Btn(@backgroundColor, @borderColor) {
+  background: @backgroundColor;
+  border: 4px solid @borderColor;
+  color: #fff;
+  font-size: 36px;
+  line-height: 36px;
+  padding: 15px 15px 7px 15px;
+  text-transform: uppercase;
+  .box-shadow(0 0 0 4px #fff);
 }
 
-.fun-font() {
+.HeaderLink() {
+  cursor: pointer;
+  display: block;
+  font-size: 24px;
+  padding: 15px 20px;
+  position: absolute;
+  text-decoration: none;
+  text-transform: uppercase;
+  top: 0;
+}
+
+.FunFont() {
   font-family: "JosefinSlabSemiBold";
 }
 
+.SeriousFont() {
+  font-family: "Open Sans";
+}
+
+.Score() {
+  .SeriousFont();
+  color: #fff;
+  text-align: right;
+}
+
+.WhiteShadow() {
+  .box-shadow(10px 10px 0px 0px rgba(66, 66, 66, 0.5));
+}
+
+//------------------------------------------------------------------------------
+// Tag Selectors
+//------------------------------------------------------------------------------
+
 body {
   background-color: #111; // default
-  .fun-font();
+  .FunFont();
 }
+
+//------------------------------------------------------------------------------
+// UUCSS Classes
+//------------------------------------------------------------------------------
 
 .bg-color-c025c {
   background-attachment: fixed, scroll;
@@ -70,27 +129,16 @@ body {
 // Buttons
 //------------------------------------------------------------------------------
 
-.btn(@backgroundColor, @borderColor) {
-  background: @backgroundColor;
-  border: 4px solid @borderColor;
-  color: #fff;
-  font-size: 36px;
-  line-height: 36px;
-  padding: 15px 15px 7px 15px;
-  text-transform: uppercase;
-  .box-shadow(0 0 0 4px #fff);
-}
-
 .red-btn-2c9ab {
-  .btn(#b92231, #c64c57);
+  .Btn(#b92231, #c64c57);
 }
 
 .blue-btn-41e23 {
-  .btn(#2d9eca, #54b0d5);
+  .Btn(#2d9eca, #54b0d5);
 }
 
 .green-btn-f67eb {
-  .btn(#6cac00, #87bc2e);
+  .Btn(#6cac00, #87bc2e);
 }
 
 //------------------------------------------------------------------------------
@@ -106,8 +154,6 @@ body {
     width: 600px;
   }
 }
-
-@loginBtnWidth: 225px;
 
 #soloBtn {
   display: inline-block;
@@ -181,10 +227,8 @@ body {
   }
 }
 
-.input-container-c8147 {
-  .input-4a3e3 {
-    width: 487px;
-  }
+.input-4a3e3 {
+  width: 487px;
 }
 
 //------------------------------------------------------------------------------
@@ -203,15 +247,9 @@ body {
   padding-top: 45px;
 }
 
-@gameBodyWidth: 840px;
-
-.player-view {
+.player-view-085a1 {
   width: @gameBodyWidth;
   margin: 0 auto;
-}
-
-.shadow-4f24e {
-  .box-shadow(10px 10px 0px 0px rgba(66, 66, 66, 0.5));
 }
 
 .top-62e29 {
@@ -226,34 +264,24 @@ body {
 }
 
 .wrap-3b65f {
-  .shadow-4f24e;
+  background-color: #fff;
   float: left;
   padding: 10px;
-  background-color: #fff;
+  .WhiteShadow();
 }
 
 .right-1d870 {
   float: right;
-  width: 460px;
   font-size: 35px;
-}
-
-.next-header {
-  float: left;
-  display: inline-block;
-  margin: 40px 40px 0 0;
+  width: 460px;
 }
 
 #nextPieceCanvas {
   vertical-align: top;
 }
 
-.game-stats {
-  margin: 20px 0;
-}
-
 .scoreboard-d49ce {
-  .shadow-4f24e;
+  .WhiteShadow();
   background-color: #fff;
   font-size: 24px;
   padding: 12px;
@@ -424,7 +452,7 @@ body {
 //------------------------------------------------------------------------------
 
 .table-9be14 {
-  color: white;
+  color: #fff;
   width: 100%;
 }
 
@@ -456,45 +484,15 @@ body {
   position: relative;
 }
 
-.hdr-link() {
-  cursor: pointer;
-  display: block;
-  font-size: 24px;
-  padding: 15px 20px;
-  position: absolute;
-  text-decoration: none;
-  text-transform: uppercase;
-  top: 0;
-}
-
-@activeBtnBackground: #fff;
-@activeBtnText: #2b2b2b;
-@inactiveBtnBackground: #484848;
-@inactiveBtnText: #7a7a7a;
-
-.play-inactive-6dc02 {
-  .hdr-link();
-  background: @inactiveBtnBackground;
-  color: @inactiveBtnText;
-  right: 170px;
-}
-
 .play-active-0634a {
-  .hdr-link();
+  .HeaderLink();
   background: @activeBtnBackground;
   color: @activeBtnText;
   right: 170px;
-}
-
-.spectate-active-3a58e {
-  .hdr-link();
-  background: @activeBtnBackground;
-  color: @activeBtnText;
-  right: 0px;
 }
 
 .spectate-inative-be0f6 {
-  .hdr-link();
+  .HeaderLink();
   background: @inactiveBtnBackground;
   color: @inactiveBtnText;
   right: 0px;
@@ -548,7 +546,7 @@ body {
 }
 
 .large-name-2eee0 {
-  .serious-font();
+  .SeriousFont();
   color: #fff;
   font-size: 22px;
   max-width: 140px; // so names don't spill over
@@ -559,7 +557,7 @@ body {
 }
 
 .small-name-ecd97 {
-  .serious-font();
+  .SeriousFont();
   color: #fff;
   font-size: 18px;
   max-width: 128px; // so names don't spill over
@@ -569,14 +567,8 @@ body {
   white-space: nowrap;
 }
 
-.score() {
-  .serious-font();
-  color: #fff;
-  text-align: right;
-}
-
 .large-score-a2b90 {
-  .score();
+  .Score();
   font-size: 26px;
   // NOTE: this needs to be kept in sync with
   //   client.stats.large-board-cell-size
@@ -584,7 +576,7 @@ body {
 }
 
 .small-score-7d14a {
-  .score();
+  .Score();
   font-size: 22px;
   // NOTE: this needs to be kept in sync with
   //   client.stats.small-board-cell-size
@@ -618,7 +610,7 @@ body {
 }
 
 .metric-b93a8 {
-  .serious-font();
+  .SeriousFont();
   font-size: 28px;
   font-weight: 600;
   margin: 0;
@@ -636,7 +628,7 @@ body {
 }
 
 .number-ca2a6 {
-  .serious-font();
+  .SeriousFont();
   font-size: 14px;
   text-align: right;
 }
@@ -656,8 +648,8 @@ body {
 }
 
 .canvas-eb427 {
-  .shadow-4f24e;
   border: 10px solid #fff;
+  .WhiteShadow();
 }
 
 .year-050bf {
@@ -674,13 +666,13 @@ body {
 }
 
 .next-9dbb7 {
-  .shadow-4f24e;
   background: #fff;
   padding: 10px;
   position: absolute;
   right: 0;
   top: 0;
   width: 160px;
+  .WhiteShadow();
 }
 
 .legend-4d59b {
@@ -737,58 +729,6 @@ body {
 .next-2f9f7 {
   border: 2px solid #e2e2e2;
   margin-bottom: 20px;
-}
-
-.chat-ad045 {
-  .shadow-4f24e;
-  background: #fff;
-  position: absolute;
-  right: 0;
-  top: 0;
-  width: 345px;
-}
-
-.messages-8e193 {
-  height: 320px;
-  overflow-y: scroll;
-}
-
-.top-6b3a9 {
-  border-bottom: 1px solid #d7d7d7;
-  font-size: 17px;
-  padding: 10px;
-  text-transform: uppercase;
-}
-
-.bottom-237dd {
-  border-top: 1px solid #b0b0b0;
-}
-
-.input-bd1e5 {
-  .serious-font();
-  .box-sizing();
-  border: 0;
-  padding: 10px;
-  width: 100%;
-}
-
-.input-bd1e5:focus {
-  outline: 0;
-}
-
-.msg-c6ec3 {
-  border-top: 1px solid #b0b0b0;
-  padding: 10px;
-}
-
-.name-9c6f3 {
-  font-size: 18px;
-  margin-bottom: 5px;
-}
-
-.msg-8e805 {
-  .serious-font();
-  font-size: 13px;
 }
 
 .white-f2034 {

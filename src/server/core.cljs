@@ -355,7 +355,7 @@
 (def chat (atom []))
 
 (defn- on-change-chat [_ _ _ new-c]
-  (emit-to-socket "chat-update-d4779" new-c))
+  (emit-to-socket "chat-update2" new-c))
 
 (add-watch chat :main on-change-chat)
 
@@ -419,8 +419,8 @@
       (.on "create-canvas-gif" #(create-canvas-gif (read-string %)))
 
       ;; TODO: this is not really finished yet
-      (.on "chat-msg-c3785" on-chat-msg)
-      (.on "game-update-e25be" on-game-update)
+      (.on "chat-msg2" on-chat-msg)
+      (.on "game-update2" on-game-update)
 
       ;; Request that the client emit an "update-name" message back
       ;; in case the server restarts and we need user info again.

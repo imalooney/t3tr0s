@@ -27,7 +27,7 @@
   [:div.inner-6ae9d
     [:div.chat-logo-e38e3
       [:img {:src "/img/t3tr0s_logo_200w.png" :width "160px"}]
-      [:span.span-4e536.time-left-8a651 "Waiting to play..."]]
+      [:span#lobbyTimeLeft.span-4e536 "Waiting to play..."]]
     [:div#chat-and-player-container
       [:div#chat-messages]
       [:div#player-list-container
@@ -129,7 +129,7 @@
 (defn- on-time-left
   "Called when server sends a time-left update."
   [seconds]
-  (.html ($ ".time-left-8a651")
+  (.html ($ "#lobbyTimeLeft")
     (cond
       (pos? seconds) (str "Time Until Next Game: " (util/seconds->time-str seconds))
       (zero? seconds) "Waiting to play...")))
