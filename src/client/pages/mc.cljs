@@ -32,7 +32,7 @@
   (swap! game-settings merge new-settings))
 
 ;;------------------------------------------------------------------------------
-;; Stop Game page
+;; Stop Game
 ;;------------------------------------------------------------------------------
 
 (hiccups/defhtml stop-html []
@@ -73,7 +73,7 @@
   (.click ($ "#stopBtn") on-click-stop-btn))
 
 ;;------------------------------------------------------------------------------
-;; Start Game page
+;; Start Game
 ;;------------------------------------------------------------------------------
 
 (hiccups/defhtml start-html []
@@ -112,7 +112,7 @@
   (.click ($ "#updateTimes") click-update-times-btn))
 
 ;;------------------------------------------------------------------------------
-;; Password page
+;; Password
 ;;------------------------------------------------------------------------------
 
 (hiccups/defhtml password-html []
@@ -124,8 +124,8 @@
           [:input#password.input-48f1f {:type "password"}]]
         [:button#submitPasswordBtn.red-btn-2c9ab "OK"]]]])
 
-(defn- click-login-as-mc [e]
-  (.preventDefault e)
+(defn- click-login-as-mc [js-evt]
+  (.preventDefault js-evt)
   (socket/emit "request-mc" (.val ($ "#password"))))
 
 (defn- on-grant-mc
@@ -157,6 +157,7 @@
 (defn init!
   []
   (dom/set-bw-background!)
+
   ; Listen for any settings updates
   (socket/on "settings-update" #(on-settings-update (read-string %)))
 
