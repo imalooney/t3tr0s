@@ -55,12 +55,8 @@
   ;; create the socket object
   (aset js/window socket-id (js/io))
 
-  ;; inform the server that we are connected
-  ;;(emit "connect-42b28" state/client-id)
-
   ;; listen for updates
-  (on "chat-update-d4779" receive-chat-update)
-  )
+  (on "chat-update-d4779" receive-chat-update))
 
 ;; TODO: make this function multi-arity:
 ;; - (socket/removeListener "foo" "bar" "baz")

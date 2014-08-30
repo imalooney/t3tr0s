@@ -347,10 +347,6 @@
 (defn- emit-to-socket [event-name data]
   (.emit (aget js/global socket-id) event-name (pr-str data)))
 
-(defn- on-connect [data-str]
-  (let [cid (read-string data-str)]
-    (util/tlog (str "Client " cid " has connected"))))
-
 (defn- on-update-name [pid data-str]
   (let [data (read-string data-str)]
     (swap! players update-in [pid] merge data)
@@ -423,7 +419,6 @@
       (.on "create-canvas-gif" #(create-canvas-gif (read-string %)))
 
       ;; TODO: this is not really finished yet
-      (.on "connect-42b28" on-connect)
       (.on "chat-msg-c3785" on-chat-msg)
       (.on "game-update-e25be" on-game-update)
 
