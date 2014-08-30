@@ -26,14 +26,13 @@
 
   ;; the "game loop" screens
   "/lobby" [lobby-page/init! lobby-page/cleanup!]
-  "/play"  [play-page/init-battle! play-page/cleanup!]
+  "/play-battle" [play-page/init-battle! play-page/cleanup!]
+
+  ;; spectate
   "/spectate" [spectate-page/init! spectate-page/cleanup!]
 
   ;; MC / admin
   "/mc" [mc-page/init! mc-page/cleanup!]
-
-  ;; experimental - work in progress
-  "/play2" [play-page/init-battle2! play-page/cleanup!]
 
   ;; redirects - where is my HTTP 301? :)
   "/dashboard" #(aset js/document "location" "hash" "/spectate")

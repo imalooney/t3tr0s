@@ -297,14 +297,9 @@
 
 (defn display-points!
   []
-  (.html ($ "#score") (str "Score: " (util/format-number (:score @state))))
-  (.html ($ "#level") (str "Level: " (:level @state)))
-  (.html ($ "#lines") (str "Lines: " (:total-lines @state)))
-
-  ;; TODO: make this more efficient / can be combined with the above function
   (.html ($ "#gameScreenScore") (util/format-number (:score @state)))
   (.html ($ "#gameScreenLines") (:total-lines @state))
-  )
+  (.html ($ "#gameScreenLevel") (inc (:level @state))))
 
 (defn try-publish-score!
   "Inform the server of our current state."
@@ -611,7 +606,7 @@
   (init-state!)
   (load-theme!)
 
-  (history/init-canvas! "history-canvas")
+  (history/init-canvas! "historyCanvas")
 
   (size-canvas! "mainGameCanvas" empty-board cell-size rows-cutoff)
   (size-canvas! "nextPieceCanvas" (next-piece-board) cell-size)

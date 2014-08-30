@@ -8,25 +8,6 @@
   emit)
 
 ;;------------------------------------------------------------------------------
-;; Client --> Server
-;;------------------------------------------------------------------------------
-
-(defn send-username [username]
-  (emit "set-name2" {
-    :cid state/client-id
-    :username username }))
-
-(defn send-chat [msg]
-  (emit "chat-msg2" {
-    :cid state/client-id
-    :msg msg }))
-
-(defn send-game-state [game-state]
-  (emit "game-update2" {
-    :cid state/client-id
-    :state game-state }))
-
-;;------------------------------------------------------------------------------
 ;; Server --> Client
 ;;------------------------------------------------------------------------------
 

@@ -1,23 +1,14 @@
 (ns client.pages.lobby
   (:require-macros [hiccups.core :as hiccups])
   (:require
+    [cljs.reader :refer [read-string]]
     hiccups.runtime
     [client.dom :as dom]
-    [client.pages.login :refer [get-color]]
     [client.socket :as socket]
-    [cljs.reader :refer [read-string]]
+    client.state
     [client.util :as util]))
 
 (def $ js/jQuery)
-
-;; TODO: move this elsewhere, also move (get-color) elsewhere
-
-(defn get-username
-  "Gets the currently stored username."
-  []
-  (if-let [username (aget js/localStorage "username")]
-    username
-    ""))
 
 ;;------------------------------------------------------------------------------
 ;; HTML
@@ -113,8 +104,8 @@
   (let [msg (get-message)]
     (when-not (= msg "")
       (add-message! {:type "msg"
-                     :user (get-username)
-                     :color (get-color)
+                     :user @client.state/username
+                     :color client.state/chat-color
                      :msg msg})
       (send-message!)
       (clear-message!)
@@ -137,9 +128,7 @@
 (defn on-start-game
   "Called when we receive the go-ahead from the server to start the game."
   []
-
-  ; Navigate to the battle page.
-  (aset js/location "hash" "#/play"))
+  (aset js/document "location" "hash" "#/play-battle"))
 
 (defn- on-players-update
   "Called when the player information is updated."
@@ -156,10 +145,7 @@
    ["start-game" on-start-game]
    ["players-update" on-players-update]])
 
-(defn init!
-  "Starts the chat page"
-  []
-
+(defn- init2! []
   (dom/set-bw-background!)
   (dom/set-page-body! (chat-html))
 
@@ -174,11 +160,19 @@
   (doseq [[event-name handler] socket-events]
     (socket/on event-name handler)))
 
+(defn init!
+  "Starts the chat page"
+  []
+  ;; user should not be able to see this page unless they have set their username
+  (if-not @client.state/username
+    (aset js/document "location" "hash" "/login")
+    (init2!)))
+
 (defn cleanup!
   []
   ;; Leave the "lobby" room.
   (socket/emit "leave-lobby")
 
-  ; stop listening for updates
+  ;; stop listening for updates
   (doseq [[event-name _] socket-events]
     (socket/removeListener event-name)))

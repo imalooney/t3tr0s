@@ -4,8 +4,8 @@
 
 ;; NOTE: this module contains "global state" information
 
-;; create a new UUID everytime the page loads
-(def client-id (util/uuid))
+;; use a random color everytime the page loads
+(def chat-color (rand-int 7))
 
 ;;------------------------------------------------------------------------------
 ;; Global State Atoms

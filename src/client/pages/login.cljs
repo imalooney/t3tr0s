@@ -3,6 +3,7 @@
   (:require
     [client.dom :as dom]
     [client.socket :as socket]
+    client.state
     [client.util :as util]
     hiccups.runtime))
 
@@ -25,33 +26,21 @@
       (login-inner)]])
 
 ;;------------------------------------------------------------------------------
-;; Username storage.
+;; Events
 ;;------------------------------------------------------------------------------
-
-(defn get-color
-  "Gets the currently stored user color."
-  []
-  (if-let [color (aget js/sessionStorage "color")]
-    color
-    0))
 
 (defn send-login!
   "Send the login information to the server."
-  ([] (send-login! (aget js/localStorage "username")))
-  ([username]
-    (socket/emit "update-name" {:user username :color (get-color)})))
-
-;;------------------------------------------------------------------------------
-;; Events
-;;------------------------------------------------------------------------------
+  [username]
+    (socket/emit "update-name" {:user username
+                                :color client.state/chat-color}))
 
 (defn- on-form-submit [js-evt]
   (.preventDefault js-evt)
   (let [username (dom/get-value "nameInput")]
     ;; TODO: more username validation here
     (when (not= username "")
-      (aset js/localStorage "username" username)
-      (aset js/sessionStorage "color" (rand-int 7))
+      (reset! client.state/username username)
       (send-login! username)
       (aset js/location "hash" "#/lobby"))))
 
@@ -72,10 +61,6 @@
     (dom/set-page-body! (login-html)))
 
   (add-events)
-
-  ;; Populate name field if they have a name stored in localStorage
-  (if-let [username (aget js/localStorage "username")]
-    (dom/set-value! "nameInput" username))
 
   ;; Put focus on username field.
   (.focus (dom/by-id "nameInput")))
