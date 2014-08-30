@@ -78,8 +78,4 @@
     (dom/set-value! "nameInput" username))
 
   ;; Put focus on username field.
-  (.focus (dom/by-id "nameInput"))
-  )
-
-(defn cleanup []
-  nil)
+  (.focus (dom/by-id "nameInput")))

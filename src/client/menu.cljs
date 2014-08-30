@@ -17,12 +17,9 @@
       [:div.clr-22ff3]]])
 
 ;;------------------------------------------------------------------------------
-;; Page initialization.
+;; Page Initialization
 ;;------------------------------------------------------------------------------
 
 (defn init []
   (dom/set-color-background!)
   (dom/set-page-body! (menu-html)))
-
-(defn cleanup []
-  nil)
