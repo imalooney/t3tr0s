@@ -1,4 +1,4 @@
-(ns client.mc
+(ns client.pages.mc
   (:require-macros [hiccups.core :as hiccups])
   (:require
     [cljs.reader :refer [read-string]]
@@ -154,7 +154,7 @@
 ;; Page Init / Cleanup
 ;;------------------------------------------------------------------------------
 
-(defn init
+(defn init!
   []
   (dom/set-bw-background!)
   ; Listen for any settings updates
@@ -162,7 +162,7 @@
 
   (init-password-page!))
 
-(defn cleanup
+(defn cleanup!
   []
   ; Leave the MC role.
   (socket/emit "leave-mc")

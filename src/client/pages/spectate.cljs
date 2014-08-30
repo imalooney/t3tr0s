@@ -1,4 +1,4 @@
-(ns client.spectate
+(ns client.pages.spectate
   (:require-macros [hiccups.core :as hiccups])
   (:require
     [cljs.reader :refer [read-string]]
@@ -413,7 +413,7 @@
 ;; ie: waiting for game to start, show results of previous round, etc
 ;; should show *something* no matter what
 
-(defn init []
+(defn init! []
   (dom/set-bw-background!)
   (dom/set-page-body! (page-shell))
   (add-events)
@@ -435,7 +435,7 @@
 
   (on-time-left 0))
 
-(defn cleanup
+(defn cleanup!
   []
   (socket/emit "leave-dashboard")
   (socket/removeListener "board-update")

@@ -1,4 +1,4 @@
-(ns client.login
+(ns client.pages.login
   (:require-macros [hiccups.core :as hiccups])
   (:require
     [client.dom :as dom]
@@ -62,7 +62,7 @@
 ;; Page Initialization
 ;;------------------------------------------------------------------------------
 
-(defn init []
+(defn init! []
   (dom/set-color-background!)
 
   ;; this just helps prevent the image "flashing" when you transition from the

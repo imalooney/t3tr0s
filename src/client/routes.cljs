@@ -1,10 +1,11 @@
 (ns client.routes
   (:require
-    client.chat
-    client.menu
-    client.mc
-    client.play
-    client.spectate
+    [client.pages.lobby :as lobby-page]
+    [client.pages.login :as login-page]
+    [client.pages.menu :as menu-page]
+    [client.pages.mc :as mc-page]
+    [client.pages.play :as play-page]
+    [client.pages.spectate :as spectate-page]
     [client.dom :as dom]
     [client.util :as util]))
 
@@ -16,22 +17,22 @@
 
 (def routes {
   ;; initial page + login
-  "/menu"  [client.menu/init]
-  "/login" [client.login/init]
+  "/menu"  [menu-page/init!]
+  "/login" [login-page/init!]
 
   ;; solo play screen
-  "/play-solo" [client.play/init-solo client.play/cleanup]
+  "/play-solo" [play-page/init-solo! play-page/cleanup!]
 
   ;; the "game loop" screens
-  "/lobby" [client.chat/init client.chat/cleanup]
-  "/play"  [client.play/init-battle client.play/cleanup]
-  "/spectate" [client.spectate/init client.spectate/cleanup]
+  "/lobby" [lobby-page/init! lobby-page/cleanup!]
+  "/play"  [play-page/init-battle! play-page/cleanup!]
+  "/spectate" [spectate-page/init! spectate-page/cleanup!]
 
   ;; MC / admin
-  "/mc" [client.mc/init client.mc/cleanup]
+  "/mc" [mc-page/init! mc-page/cleanup!]
 
   ;; experimental - work in progress
-  "/play2" [client.play/init-battle2 client.play/cleanup]
+  "/play2" [play-page/init-battle2! play-page/cleanup!]
 
   ;; redirects - where is my HTTP 301? :)
   "/dashboard" [#(aset js/document "location" "hash" "/spectate")]

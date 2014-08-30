@@ -1,4 +1,4 @@
-(ns client.play
+(ns client.pages.play
   (:require-macros [hiccups.core :as hiccups])
   (:require
     [cljs.reader :refer [read-string]]
@@ -217,20 +217,20 @@
       (init-countdown))
     (init-game)))
 
-(defn init-solo []
+(defn init-solo! []
   (reset! client.game.core/battle false)
   (init))
 
-(defn init-battle []
+(defn init-battle! []
   (reset! client.game.core/battle true)
   (init))
 
 ;; NOTE: work in progress; will eventually become "init-battle"
-(defn init-battle2 []
+(defn init-battle2! []
   (reset! client.game.core/battle true)
   (init2))
 
-(defn cleanup
+(defn cleanup!
   []
   ; Leave the game room.
   (socket/emit "leave-game")

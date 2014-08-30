@@ -1,9 +1,9 @@
-(ns client.chat
+(ns client.pages.lobby
   (:require-macros [hiccups.core :as hiccups])
   (:require
     hiccups.runtime
     [client.dom :as dom]
-    [client.login :refer [get-color]]
+    [client.pages.login :refer [get-color]]
     [client.socket :as socket]
     [cljs.reader :refer [read-string]]
     [client.util :as util]))
@@ -156,7 +156,7 @@
    ["start-game" on-start-game]
    ["players-update" on-players-update]])
 
-(defn init
+(defn init!
   "Starts the chat page"
   []
 
@@ -174,7 +174,7 @@
   (doseq [[event-name handler] socket-events]
     (socket/on event-name handler)))
 
-(defn cleanup
+(defn cleanup!
   []
   ;; Leave the "lobby" room.
   (socket/emit "leave-lobby")

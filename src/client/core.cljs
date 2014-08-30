@@ -1,7 +1,7 @@
 (ns client.core
   (:require
     client.dom
-    [client.login :refer [send-login!]]
+    [client.pages.login :refer [send-login!]]
     [client.repl :as repl]
     client.routes
     [client.socket :as socket]
@@ -15,7 +15,7 @@
 ;; Global App Init
 ;;------------------------------------------------------------------------------
 
-(defn- init []
+(defn- init! []
 
   ;; Connect to REPL for development.
   (if (aget js/window "T3TR0S_CONFIG" "use-repl")
@@ -38,4 +38,4 @@
   ;; init routing
   (client.routes/init!))
 
-($ init)
+($ init!)

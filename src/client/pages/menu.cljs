@@ -1,4 +1,4 @@
-(ns client.menu
+(ns client.pages.menu
   (:require-macros [hiccups.core :as hiccups])
   (:require
     hiccups.runtime
@@ -20,6 +20,6 @@
 ;; Page Initialization
 ;;------------------------------------------------------------------------------
 
-(defn init []
+(defn init! []
   (dom/set-color-background!)
   (dom/set-page-body! (menu-html)))
