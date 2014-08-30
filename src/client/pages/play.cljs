@@ -9,6 +9,8 @@
     [client.socket :as socket]
     [client.util :as util]))
 
+(declare cleanup!)
+
 (def $ js/jQuery)
 
 ;;------------------------------------------------------------------------------
@@ -153,13 +155,11 @@
   (dom/set-page-body! (countdown-html))
   (socket/on "countdown" on-countdown))
 
-(declare cleanup)
-
 (defn on-game-over
   "Called when game over message received from server."
   [str-data]
   (js/console.log "game over")
-  (cleanup)
+  (cleanup!)
   (let [data (read-string str-data)]
     (dom/set-page-body! (gameover-html data))
     (.click ($ "#game-over-btn") #(aset js/location "hash" "#/lobby"))))
