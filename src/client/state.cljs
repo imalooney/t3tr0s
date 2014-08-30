@@ -18,7 +18,7 @@
 ;; ie: in the lobby waiting, playing a round, how much time is left, etc
 (def round-state (atom nil))
 
-;; a map of all the players currently connected and their board states
+;; a map of all the players currently connected and their states
 (def players (atom {}))
 
 ;; current player's username
