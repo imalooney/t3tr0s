@@ -2,7 +2,8 @@
   (:require-macros
     [cljs.core.async.macros :refer [go]])
   (:require
-    [cljs.core.async :refer [<! timeout alts! close! chan sliding-buffer filter< put!]]
+    [cljs.core.async :refer [<! timeout alts! close! chan sliding-buffer
+                             filter< put!]]
     [clojure.walk]
     [cljs.reader :refer [read-string]]
     [server.gif :refer [create-html-gif create-canvas-gif]]
