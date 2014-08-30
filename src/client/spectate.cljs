@@ -208,12 +208,9 @@
   [:div#timeLeft.metric-b93a8])
 
 (hiccups/defhtml page-shell []
-  [:div.white-f2034]
   [:div.wrapper-2ba66
     [:div.hdr-93a4f
-      [:img.logo-dd80d {:src "/img/t3tr0s_logo_200w.png" :alt "T3TR0S Logo"}]
-      [:a.play-inactive-6dc02 {:href "#/play"} "Play"]
-      [:div.spectate-active-3a58e "Spectate"]]
+      [:img.logo-dd80d {:src "/img/t3tr0s_logo_200w.png" :alt "T3TR0S Logo"}]]
     ;; NOTE: this button is for testing purposes
     [:button#shuffleBtn {:style "padding: 12px 24px; display: none"} "Shuffle!"]
     [:div#boardsContainer.wrapper-4b797
@@ -333,10 +330,10 @@
       (.removeClass ($ (str "#" score-id)) "large-score-a2b90")
       (.addClass ($ (str "#" score-id)) "small-score-7d14a"))
 
+    ;; animate to the new place
     (.velocity ($ (str "#" id))
       (place->coords place)
-      (js-obj "duration" 200))
-  ))
+      (js-obj "duration" 200))))
 
 (defn- update-all-boards! [boards]
   (doall (map-indexed update-board! boards))
