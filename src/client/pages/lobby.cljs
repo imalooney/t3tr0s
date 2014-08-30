@@ -40,18 +40,18 @@
 
 (hiccups/defhtml chat-msg-html
   [{:keys [user color msg]}]
-  [:p.message
+  [:p.message-d7125
     [:span#user {:class (str "color-" color)} (str user ": ")]
-    [:span.txt (hiccups.runtime/escape-html msg)]])
+    [:span.txt-c8349 (hiccups.runtime/escape-html msg)]])
 
 (hiccups/defhtml chat-join-html
   [{:keys [user color]}]
-  [:p.message
+  [:p.message-d7125
     [:span#user {:class (str "color-" color)} (str user " joined the lobby")]])
 
 (hiccups/defhtml chat-leave-html
   [{:keys [user color]}]
-  [:p.message
+  [:p.message-d7125
     [:span#user {:class (str "color-" color)} (str user " left the lobby")]])
 
 (hiccups/defhtml player-name-html
@@ -93,7 +93,7 @@
   "lets us know if the scroll is all the way to the bottom"
   []
   (let [chat (.getElementById js/document "chat-messages")
-        msg-height (.prop (.first ($ ".message")) "offsetHeight")
+        msg-height (.prop (.first ($ ".message-d7125")) "offsetHeight")
         chat-visible-height (.-offsetHeight chat)
         chat-total-height (.-scrollHeight chat)
         scroll-position (.-scrollTop chat)]
@@ -142,7 +142,7 @@
   (aset js/location "hash" "#/play"))
 
 (defn- on-players-update
-  "Called when the player informatin is updated."
+  "Called when the player information is updated."
   [data]
   (.html ($ "#player-list") (player-list-html (read-string data))))
 
