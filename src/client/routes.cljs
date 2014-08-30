@@ -6,7 +6,6 @@
     [client.pages.mc :as mc-page]
     [client.pages.play :as play-page]
     [client.pages.spectate :as spectate-page]
-    [client.dom :as dom]
     [client.util :as util]))
 
 ;;------------------------------------------------------------------------------
