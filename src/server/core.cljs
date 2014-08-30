@@ -16,10 +16,10 @@
 ;; Node libraries
 ;;------------------------------------------------------------------------------
 
-(def express (js/require "express"))
+(def express     (js/require "express"))
 (def compression (js/require "compression"))
-(def http (js/require "http"))
-(def socketio (js/require "socket.io"))
+(def http        (js/require "http"))
+(def socketio    (js/require "socket.io"))
 
 ;;------------------------------------------------------------------------------
 ;; Config
