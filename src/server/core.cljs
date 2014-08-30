@@ -434,7 +434,7 @@
 
       (.on "join-lobby" #(on-join-lobby pid socket io))
       (.on "leave-lobby" #(on-leave-lobby pid socket io))
-      (.on "chat-message" #(on-chat-message % pid socket))
+      (.on "chat-message" #(on-chat-message (read-string %) pid socket))
 
       ;; Join/leave the game.
       (.on "join-game" #(.join socket "game"))
