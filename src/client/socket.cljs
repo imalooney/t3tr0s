@@ -1,24 +1,11 @@
 (ns client.socket
   (:require
     [cljs.reader :refer [read-string]]
-    client.state
+    [client.state :as state]
     [client.util :as util]))
 
 (declare
   emit)
-
-;;------------------------------------------------------------------------------
-;; Client ID
-;;------------------------------------------------------------------------------
-
-;; get the client-id from localStorage or create a new one if needed
-(def ^:private client-id
-  (if-let [id (aget js/localStorage "client-id")]
-    id
-    (util/uuid)))
-
-;; save client-id to localStorage
-(aset js/localStorage "client-id" client-id)
 
 ;;------------------------------------------------------------------------------
 ;; Client --> Server
@@ -26,18 +13,18 @@
 
 (defn send-username [username]
   (emit "set-name-d67ca" {
-    :cid client-id
+    :cid state/client-id
     :username username }))
 
 (defn send-chat [msg]
   (emit "chat-msg-c3785" {
-    :cid client-id
+    :cid state/client-id
     :msg msg }))
 
-(defn send-game-state [state]
+(defn send-game-state [game-state]
   (emit "game-update-e25be" {
-    :cid client-id
-    :state state }))
+    :cid state/client-id
+    :state game-state }))
 
 ;;------------------------------------------------------------------------------
 ;; Server --> Client
@@ -69,7 +56,7 @@
   (aset js/window socket-id (js/io))
 
   ;; inform the server that we are connected
-  (emit "connect-42b28" client-id)
+  ;;(emit "connect-42b28" state/client-id)
 
   ;; listen for updates
   (on "chat-update-d4779" receive-chat-update)

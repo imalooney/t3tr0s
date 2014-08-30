@@ -38,16 +38,6 @@
   "Table of connected players."
   (atom {}))
 
-(def player-count
-  "Total number of players who have connected since server started."
-  (atom 0))
-
-(defn gen-player-id!
-  "Create a new unique player ID."
-  []
-  (swap! player-count inc)
-  @player-count)
-
 (def anon-player {:user "Anon" :color 0})
 
 ;;------------------------------------------------------------------------------
@@ -276,31 +266,33 @@
 
 (defn- on-update-player
   "Called when player sends an updated state."
-  [data pid socket io]
+  [pid socket io data-str]
+  (let [player-data (read-string data-str)]
 
-  (when-let [new-piece (:new-piece data)]
-    (swap! piece-counts update-in [new-piece] inc)
-    (.. io (to "dashboard") (emit "piece-stats" (pr-str @piece-counts))))
+    (when-let [new-piece (:new-piece player-data)]
+      (swap! piece-counts update-in [new-piece] inc)
+      (.. io (to "dashboard") (emit "piece-stats" (pr-str @piece-counts))))
 
-  ;; NOTE: commented this out because it makes the log very noisy
-  ;;(util/tlog "player " pid " updated")
+    ;; NOTE: commented this out because it makes the log very noisy
+    ;;(util/tlog "player " pid " updated")
 
-  ; Merge in the updated data into the player structure.
-  ; Also update the game id, so we know which players are in the current game.
-  (swap! players update-in [pid] merge data {:game @game-count :pid pid})
+    ; Merge in the updated data into the player structure.
+    ; Also update the game id, so we know which players are in the current game.
+    (swap! players update-in [pid] merge player-data {:game @game-count :pid pid})
 
-  ; Call score update events.
-  (if (contains? data :score)
-    (on-score-update io))
+    ; Call score update events.
+    (if (contains? player-data :score)
+      (on-score-update io))
 
-  ; If player should be visible on dashboard, then emit to dashboard.
-  (if (contains? data :board)
-    (.. io (to "dashboard")
-           (emit "board-update"
-                 (pr-str (select-keys (get @players pid) [:board :pid :theme])))))
+    ; If player should be visible on dashboard, then emit to dashboard.
+    (if (contains? player-data :board)
+      (.. io (to "dashboard")
+             (emit "board-update"
+                   (pr-str (select-keys (get @players pid) [:board :pid :theme])))))
 
-  ; If player in lobby then send updated player list
-  (if (:in-lobby (get @players pid)) send-lobby-players-update! io))
+    ; If player in lobby then send updated player list
+    (if (:in-lobby (get @players pid))
+      (send-lobby-players-update! io))))
 
 (defn- on-update-times
   "Called when the MC updates the game time settings."
@@ -342,19 +334,27 @@
 
 (def socket-id (util/uuid))
 
-(defn- short-cid [cid]
-  (subs cid 0 6))
+(defn short-pid [pid]
+  (subs pid 0 6))
+
+(defn pprint-pid
+  "Returns either the username or a short version of the pid."
+  [pid]
+  (if-let [username (:username (get @players pid))]
+    username
+    (short-pid pid)))
 
 (defn- emit-to-socket [event-name data]
   (.emit (aget js/global socket-id) event-name (pr-str data)))
 
 (defn- on-connect [data-str]
   (let [cid (read-string data-str)]
-    (util/tlog (str "Client " (short-cid cid) " has connected"))))
+    (util/tlog (str "Client " cid " has connected"))))
 
-(defn- on-update-name [data-str]
+(defn- on-update-name [pid data-str]
   (let [data (read-string data-str)]
-    (util/tlog (str "Client " (short-cid (:cid data)) " is now known as \"" (:username data) "\""))))
+    (swap! players update-in [pid] merge data)
+    (util/tlog "player " (short-pid pid) " now known as \"" (:user data) "\"")))
 
 (def chat (atom []))
 
@@ -378,6 +378,31 @@
     (util/log data)
     ))
 
+(defn- on-join-dashboard [the-socket io]
+  (.join the-socket "dashboard")
+  (on-score-update io))
+
+(defn- on-disconnect [pid]
+  (util/tlog "player " (pprint-pid pid) " disconnected")
+  (swap! players dissoc pid)
+  (signal-num-players-in-lobby!))
+
+(defn- on-request-mc [pid the-socket password-attempt]
+  (if (= (read-string password-attempt) (:mc-password config))
+    (do
+      (util/tlog "player " (pprint-pid pid) " granted as MC")
+      (.join the-socket "mc")
+      (.emit the-socket "grant-mc" (pr-str @game-mode))
+      (.emit the-socket "settings-update" (pr-str @game-settings)))
+    (do
+      (util/tlog "player " (pprint-pid pid) " rejected as MC"))))
+
+(defn- on-stop-game
+  "Called when we receive the 'stop-game' event from the client."
+  []
+  (if (and @game-mode @quit-game-chan)
+    (close! @quit-game-chan)))
+
 ;;------------------------------------------------------------------------------
 ;; Socket Setup
 ;;------------------------------------------------------------------------------
@@ -392,13 +417,13 @@
 
   ;; TODO: this is not really finished yet
   (.on socket "connect-42b28" on-connect)
-  (.on socket "set-name-d67ca" on-update-name)
+  ;;(.on socket "set-name-d67ca" on-update-name)
   (.on socket "chat-msg-c3785" on-chat-msg)
   (.on socket "game-update-e25be" on-game-update)
 
-  (let [pid (gen-player-id!)]
+  (let [pid (util/uuid)]
 
-    (util/tlog "player " pid " connected")
+    (util/tlog "player " (pprint-pid pid) " connected")
 
     ; Attach player id to socket.
     (aset socket "pid" pid)
@@ -411,18 +436,10 @@
     (.emit socket "request-name")
 
     ; Remove player from table when disconnected.
-    (.on socket "disconnect"
-      #(do
-        (util/tlog "player " pid " disconnected")
-        (swap! players dissoc pid)
-        (signal-num-players-in-lobby!)))
+    (.on socket "disconnect" #(on-disconnect pid))
 
     ; Update player name when requested.
-    (.on socket "update-name"
-      #(let [data (read-string %)]
-        (util/tlog "player " pid " now known as \"" (:user data) "\"")
-        (util/tlog "player " pid " using color " (:color data))
-        (swap! players update-in [pid] merge data)))
+    (.on socket "update-name" #(on-update-name pid %))
 
     (.on socket "join-lobby" #(on-join-lobby pid socket io))
     (.on socket "leave-lobby" #(on-leave-lobby pid socket io))
@@ -433,39 +450,24 @@
     (.on socket "leave-game" #(.leave socket "game"))
 
     ; Join/leave the dashboard.
-    (.on socket "join-dashboard"
-         #(do
-            (.join socket "dashboard")
-            (on-score-update io)))
+    (.on socket "join-dashboard" #(on-join-dashboard socket io))
+
     (.on socket "leave-dashboard" #(.leave socket "dashboard"))
 
     ; Receive the update from the player.
-    (.on socket "update-player"
-      #(on-update-player (read-string %) pid socket io))
+    (.on socket "update-player" #(on-update-player pid socket io %))
 
     ; Request access to the MC role.
-    (.on socket "request-mc"
-      (fn [password]
-        (if (= (read-string password) (:mc-password config))
-          (do
-            (util/tlog "player " pid " granted as MC")
-            (.join socket "mc")
-            (.emit socket "grant-mc" (pr-str @game-mode))
-            (.emit socket "settings-update" (pr-str @game-settings)))
-          (do
-            (util/tlog "player " pid " rejected as MC")))))
+    (.on socket "request-mc" #(on-request-mc pid socket %))
 
     ; Leave the MC role.
-    (.on socket "leave-mc"
-      #(.leave socket "mc"))
+    (.on socket "leave-mc" #(.leave socket "mc"))
 
     ; Start the game
     (.on socket "start-time" #(close! @start-game-chan))
 
     ; Stop the game.
-    (.on socket "stop-game"
-      #(if (and @game-mode @quit-game-chan)
-        (close! @quit-game-chan)))
+    (.on socket "stop-game" on-stop-game)
 
     ; Update game times
     (.on socket "update-times" #(on-update-times (read-string %) socket))
