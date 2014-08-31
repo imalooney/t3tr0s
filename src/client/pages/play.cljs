@@ -85,7 +85,8 @@
       (keys-legend battle-mode?)
       [:audio#music {:src "audio/theme.mp3" :preload "none" :loop "loop"}
         "Your browser does not support audio."]
-      [:canvas#historyCanvas (if battle-mode? {:style "display:none"})]
+      [:div.history-6ce78 (if battle-mode? {:style "display:none"})
+        [:canvas#historyCanvas]]
       ;; TODO: opponent boards go here
       ]])
 
