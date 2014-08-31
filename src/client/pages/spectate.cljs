@@ -357,7 +357,7 @@
 ;; Socket Events
 ;;------------------------------------------------------------------------------
 
-;; Shaun - can we send the position information from the server on the 
+;; Shaun - can we send the position information from the server on the
 ;;   "board-update" event?
 ;; would be nice to not have to loop through page-state here
 (defn on-board-update
