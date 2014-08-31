@@ -136,7 +136,6 @@
 (defn on-game-over
   "Called when game over message received from server."
   [str-data]
-  (util/js-log "game over")
   (cleanup!)
   (let [data (read-string str-data)]
     (dom/set-page-body! (gameover-html data))
@@ -145,8 +144,7 @@
 (defn on-time-left
   "Called when server sends a time-left update."
   [total-seconds]
-  (.html ($ ".time-left-1369c") (str "Time Left: " (util/seconds->time-str total-seconds)))
-
+  
   (if (dom/by-id "gameScreenTimeLeft")
     (dom/set-html! "gameScreenTimeLeft" (util/seconds->time-str total-seconds)))
 
