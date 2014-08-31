@@ -113,7 +113,7 @@
               [:td {:class (str "color-" (mod i 7))} (:user player)]
               [:td (util/format-number (:score player))]
               [:td (:total-lines player)]])]]]
-    [:button#game-over-btn.red-btn-2c9ab "LOBBY"]])
+    [:button#gameOverBtn.red-btn-2c9ab "Lobby"]])
 
 (defn init-game
   "Show and start the game."
@@ -133,18 +133,21 @@
     (.html ($ "#countdown") i)
     (init-game true)))
 
+(defn- click-game-over-btn []
+  (aset js/document "location" "hash" "#/lobby"))
+
 (defn on-game-over
   "Called when game over message received from server."
   [str-data]
   (cleanup!)
   (let [data (read-string str-data)]
     (dom/set-page-body! (gameover-html data))
-    (.click ($ "#game-over-btn") #(aset js/location "hash" "#/lobby"))))
+    (.on ($ "#gameOverBtn") "click" click-game-over-btn)))
 
 (defn on-time-left
   "Called when server sends a time-left update."
   [total-seconds]
-  
+
   (if (dom/by-id "gameScreenTimeLeft")
     (dom/set-html! "gameScreenTimeLeft" (util/seconds->time-str total-seconds)))
 
