@@ -39,10 +39,9 @@
       [:span.key-af1cf {:style "width:70px"} "Space"]]
     [:div.label-29ee4 "Hard Drop"]
     (if-not battle-mode?
-      [:div
-        [:div
-          [:span.key-af1cf {:style "font-family:arial"} "P"]]
-        [:div.label-29ee4 "Pause game"]])
+      (hiccups/html
+        [:div [:span.key-af1cf {:style "font-family:arial"} "P"]]
+        [:div.label-29ee4 "Pause game"]))
     [:div
       [:span.key-af1cf {:style "font-family:arial"} "M"]]
     [:div.label-29ee4 "Music on / off"]
@@ -63,12 +62,12 @@
     [:div#gameScreenLines.metric-b93a8]
     [:div.line-8975a]
     (if battle-mode?
-      [:div
+      (hiccups/html
         [:div.label-39b9c "Time Left"]
-        [:div#gameScreenTimeLeft.metric-b93a8]]
-      [:div
+        [:div#gameScreenTimeLeft.metric-b93a8])
+      (hiccups/html
         [:div.label-39b9c "Level"]
-        [:div#gameScreenLevel.metric-b93a8]])])
+        [:div#gameScreenLevel.metric-b93a8]))])
 
 (hiccups/defhtml game-html [battle-mode?]
   [:div.wrapper-08ed4
