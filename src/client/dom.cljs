@@ -1,5 +1,6 @@
 (ns client.dom
   (:require
+    client.html
     [client.util :as util]))
 
 (def $ js/jQuery)
@@ -36,14 +37,34 @@
 ;;------------------------------------------------------------------------------
 
 (def ^:private app-container-id (util/uuid))
+(def ^:private panels-container-id (util/uuid))
+
+(defn set-app-body! [html]
+  (if-not (by-id app-container-id)
+    (.prepend ($ "body") (str "<div id=" app-container-id "></div>")))
+  (set-html! app-container-id html))
+
+(defn set-panel-body! [panel-num html]
+  (if-not (by-id panels-container-id)
+    (set-app-body! (client.html/panels panels-container-id)))
+  (set-html! (str "panel" panel-num) html))
 
 ;; NOTE: this function should only be called once on global init
 (defn init! []
-  (if-not (by-id app-container-id)
-    (.prepend ($ "body") (str "<div id=" app-container-id "></div>"))))
+  (if-not (by-id panels-container-id)
+    (set-app-body! (client.html/panels panels-container-id))))
 
-(defn set-page-body! [html]
-  (set-html! app-container-id html))
+(def panel-width 900)
+(def panel-animation-speed 200)
+
+(defn animate-to-panel
+  ([panel-num] (animate-to-panel panel-num (fn [] nil)))
+  ([panel-num next-fn]
+    (.velocity ($ (str "#" panels-container-id))
+      (js-obj "left" (str (* -1 panel-width (dec panel-num)) "px"))
+      (js-obj
+        "complete" next-fn
+        "duration" panel-animation-speed))))
 
 (defn set-color-background! []
   (-> ($ "body")

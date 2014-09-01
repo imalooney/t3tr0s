@@ -44,8 +44,13 @@
       (send-login! username)
       (aset js/location "hash" "#/lobby"))))
 
-(defn- add-events []
-  (.on ($ "#loginForm") "submit" on-form-submit))
+(def events-have-been-added? (atom false))
+
+;; this only needs to happen once
+(defn- add-events! []
+  (when-not @events-have-been-added?
+    (.on ($ "#loginForm") "submit" on-form-submit)
+    (reset! events-have-been-added? true)))
 
 ;;------------------------------------------------------------------------------
 ;; Page Initialization
@@ -53,14 +58,10 @@
 
 (defn init! []
   (dom/set-color-background!)
-
-  ;; this just helps prevent the image "flashing" when you transition from the
-  ;; menu page to the login page (99% of cases)
-  (if (dom/by-id "menuInnerWrapper")
-    (dom/set-html! "menuInnerWrapper" (login-inner))
-    (dom/set-page-body! (login-html)))
-
-  (add-events)
+  (dom/animate-to-panel 1)
+  (dom/hide-el! "menuContainer")
+  (dom/show-el! "loginContainer")
+  (add-events!)
 
   ;; Put focus on username field.
   (.focus (dom/by-id "nameInput")))

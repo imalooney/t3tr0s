@@ -15,43 +15,42 @@
 ;;------------------------------------------------------------------------------
 
 (hiccups/defhtml chat-html []
-  [:div.inner-6ae9d
-    [:div.chat-logo-e38e3
-      [:img {:src "/img/t3tr0s_logo_200w.png" :width "160px"}]
-      [:span#lobbyTimeLeft.span-4e536 "Waiting to play..."]]
-    [:div#chat-and-player-container
-      [:div#chat-messages]
-      [:div#player-list-container
-        [:div.player-list-title-7f811 "Players"]
-        [:div#player-list]]]
-    [:div.chat-e41e1
-      [:input#chatInput {:type "text" :placeholder "Type to chat..."}]
-      [:input#sendChatBtn.red-btn-2c9ab {:type "submit" :value "Send"}]
-      [:div.clr-22ff3]]])
+  [:div.hdr-93a4f
+    [:img.logo-dd80d {:src "/img/t3tr0s_logo_200w.png" :alt "T3TR0S Logo"}]
+    [:h1#lobbyTimeLeft.title-6637f "Waiting..."]]
+  [:div.wrapper-4b797
+    [:div.chat-wrapper-ac7fd
+      [:div.title-87c6c [:i.fa.fa-comments]]
+      [:div#chatMessages.chat-messages-5de97]
+      [:div.chat-input-30e3b
+        [:input#chatInput.input-6ab0c
+          {:type "text"
+           :placeholder "Type message and press enter"}]]]
+    [:div.players-wrapper-0624c
+      [:div.title-87c6c [:i.fa.fa-user]]
+      [:div#playersList.players-b766b]]])
 
 (hiccups/defhtml chat-msg-html
   [{:keys [user color msg]}]
-  [:p.message-d7125
-    [:span#user {:class (str "color-" color)} (str user ": ")]
-    [:span.txt-c8349 (hiccups.runtime/escape-html msg)]])
+  [:div.message-6ab4b
+    [:div.user-eb71d (hiccups.runtime/escape-html user)]
+    [:div.text-d43c1 (hiccups.runtime/escape-html msg)]])
 
 (hiccups/defhtml chat-join-html
   [{:keys [user color]}]
-  [:p.message-d7125
-    [:span#user {:class (str "color-" color)} (str user " joined the lobby")]])
+  [:div.message-6ab4b
+    [:div.joined-3a6ea (str user " joined the lobby")]])
 
 (hiccups/defhtml chat-leave-html
   [{:keys [user color]}]
-  [:p.message-d7125
-    [:span#user {:class (str "color-" color)} (str user " left the lobby")]])
+  [:div.message-6ab4b
+    [:div.left-bcb89 (str user " left the lobby")]])
 
-(hiccups/defhtml player-name-html
-  [{:keys [user color]}]
-  [:div {:class (str "player-name-3d2f0 color-" color)} user])
+(hiccups/defhtml player-name [p]
+  [:div.player-name-f93cf (:user p)])
 
-(hiccups/defhtml player-list-html
-  [players]
-  (map player-name-html players))
+(hiccups/defhtml player-list [players]
+  (map player-name players))
 
 ;;------------------------------------------------------------------------------
 ;; Chat
@@ -74,29 +73,14 @@
 
 (defn add-message!
   [msg]
-  (if-let [html (get {"join"  chat-join-html
-                      "leave" chat-leave-html
-                      "msg"   chat-msg-html}
+  (if-let [html-fn (get {"join"  chat-join-html
+                         "leave" chat-leave-html
+                         "msg"   chat-msg-html}
                      (:type msg))]
-    (.append ($ "#chat-messages") (html msg))))
+    (.append ($ "#chatMessages") (html-fn msg))))
 
-(defn scroll-at-bottom?
-  "lets us know if the scroll is all the way to the bottom"
-  []
-  (let [chat (.getElementById js/document "chat-messages")
-        msg-height (.prop (.first ($ ".message-d7125")) "offsetHeight")
-        chat-visible-height (.-offsetHeight chat)
-        chat-total-height (.-scrollHeight chat)
-        scroll-position (.-scrollTop chat)]
-    (<=  (- chat-total-height chat-visible-height msg-height) scroll-position)))
-
-(defn scroll-chat-area
-  "Scrolls the chat area to display the newest message"
-  [override]
-  (let [chat-area ($ "#chat-messages")
-        scroll-config (js-obj "scrollTop" (.prop chat-area "scrollHeight"))]
-    (if (or (scroll-at-bottom?) override)
-      (.animate chat-area scroll-config))))
+(defn scroll-to-bottom! []
+  (.scrollTop ($ "#chatMessages") 99999))
 
 (defn submit-message!
   "adds a message, sends it, removes it and scrolls the chat area"
@@ -109,31 +93,45 @@
                      :msg msg})
       (send-message!)
       (clear-message!)
-      (scroll-chat-area true))))
+      (scroll-to-bottom!))))
 
 (defn on-new-message
   "Called when we receive a chat message from the server."
   [data]
   (add-message! (read-string data))
-  (scroll-chat-area false))
+  (scroll-to-bottom!))
 
 (defn- on-time-left
   "Called when server sends a time-left update."
   [seconds]
   (.html ($ "#lobbyTimeLeft")
     (cond
-      (pos? seconds) (str "Time Until Next Game: " (util/seconds->time-str seconds))
-      (zero? seconds) "Waiting to play...")))
+      (pos? seconds) (str "Next Game in " (util/seconds->time-str seconds))
+      (zero? seconds) "Waiting...")))
 
 (defn on-start-game
   "Called when we receive the go-ahead from the server to start the game."
   []
   (aset js/document "location" "hash" "#/play-battle"))
 
-(defn- on-players-update
+(defn on-players-update
   "Called when the player information is updated."
-  [data]
-  (.html ($ "#player-list") (player-list-html (read-string data))))
+  [data-str]
+  (let [players (read-string data-str)
+        sorted-players (sort-by :user players)]
+    (.html ($ "#playersList") (player-list sorted-players))))
+
+(defn on-keydown-chat-input [js-evt]
+  (let [key-code (aget js-evt "keyCode")]
+    (if (= key-code 13)
+      (js/setTimeout submit-message! 1))))
+
+(defn on-click-messages-container []
+  (.focus (dom/by-id "chatInput")))
+
+(defn- add-events []
+  (.on ($ "#chatMessages") "click" on-click-messages-container)
+  (.on ($ "#chatInput") "keydown" on-keydown-chat-input))
 
 ;;------------------------------------------------------------------------------
 ;; Page Init / Cleanup
@@ -147,11 +145,9 @@
 
 (defn- init2! []
   (dom/set-bw-background!)
-  (dom/set-page-body! (chat-html))
-
-  ;; Add listeners
-  (.click ($ "#sendChatBtn") submit-message!)
-  (.keyup ($ "#chatInput") #(if (= (.-keyCode %) 13) (submit-message!)))
+  (dom/set-html! "panel2" (chat-html))
+  (add-events)
+  (dom/animate-to-panel 2)
 
   ;; Join the "lobby" room.
   (socket/emit "join-lobby")
@@ -160,12 +156,10 @@
   (doseq [[event-name handler] socket-events]
     (socket/on event-name handler)))
 
-(defn init!
-  "Starts the chat page"
-  []
+(defn init! []
   ;; user should not be able to see this page unless they have set their username
   (if-not @client.state/username
-    (aset js/document "location" "hash" "/login")
+    (aset js/document "location" "hash" "/menu")
     (init2!)))
 
 (defn cleanup!

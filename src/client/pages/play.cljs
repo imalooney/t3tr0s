@@ -52,7 +52,7 @@
     [:div.label-29ee4 "Change Theme"]])
 
 (hiccups/defhtml next-piece-and-stats [battle-mode?]
-  [:div.next-9dbb7
+  [:div.stats-daea8
     [:div.label-39b9c "Next"]
     [:canvas#nextPieceCanvas.next-2f9f7]
     [:div.label-39b9c "Score"]
@@ -69,13 +69,24 @@
         [:div.label-39b9c "Level"]
         [:div#gameScreenLevel.metric-b93a8]))])
 
+(hiccups/defhtml battle-header []
+  [:div.hdr-93a4f
+    [:img.logo-dd80d {:src "/img/t3tr0s_logo_200w.png" :alt "T3TR0S Logo"}]
+    [:h1.title-6637f "Battle Play"]
+    [:a.spectate-link-02d2e {:href "#/spectate" :target "_blank"}
+      "Spectate"]])
+
+(hiccups/defhtml solo-header []
+  [:div.hdr-93a4f
+    [:a {:href "#/menu"}
+      [:img.logo-dd80d {:src "/img/t3tr0s_logo_200w.png" :alt "T3TR0S Logo"}]]
+    [:h1.title-6637f "Solo Play"]])
+
 (hiccups/defhtml game-html [battle-mode?]
   [:div.wrapper-08ed4
-    [:div.hdr-93a4f
-      [:img.logo-dd80d {:src "/img/t3tr0s_logo_200w.png" :alt "T3TR0S Logo"}]
-      (if battle-mode?
-        [:a.spectate-link-02d2e {:href "#/spectate" :target "_blank"}
-          "Spectate"])]
+    (if battle-mode?
+      (battle-header)
+      (solo-header))
     [:div.wrapper-4b797
       [:div.game-0a564
         [:canvas#mainGameCanvas.canvas-eb427]
@@ -86,7 +97,7 @@
       [:audio#music {:src "audio/theme.mp3" :preload "none" :loop "loop"}
         "Your browser does not support audio."]
       [:div.history-6ce78 (if battle-mode? {:style "display:none"})
-        [:canvas#historyCanvas]]
+        [:canvas#historyCanvas.history-canvas-0d569]]
       ;; TODO: opponent boards go here
       ]])
 
@@ -94,31 +105,31 @@
   [:h1#countdown "Connecting..."])
 
 (hiccups/defhtml gameover-html [ranks]
-  [:div.inner-6ae9d
-    [:div.chat-logo-e38e3
-      [:img {:src "/img/t3tr0s_logo_200w.png" :width "160px"}]
-      [:span.span-4e536 "Game over"]]
-    [:div#chat-messages
-      [:table.table-9be14
-        [:thead
-          [:tr
-            [:th.th-147ad "place"]
-            [:th "name"]
-            [:th "score"]
-            [:th "lines"]]]
-        [:tbody
-          (for [[i player] (map-indexed vector ranks)]
-            [:tr.tr-cf247
-              [:td (str (+ i 1) ".")]
-              [:td {:class (str "color-" (mod i 7))} (:user player)]
-              [:td (util/format-number (:score player))]
-              [:td (:total-lines player)]])]]]
+  [:div.hdr-93a4f
+    [:img.logo-dd80d {:src "/img/t3tr0s_logo_200w.png" :alt "T3TR0S Logo"}]
+    [:h1.title-6637f "Game over"]]
+  [:div.results-1b4f3
+    [:table.table-9be14
+      [:thead
+        [:tr
+          [:th.th-147ad "place"]
+          [:th "name"]
+          [:th "score"]
+          [:th "lines"]]]
+      [:tbody
+        (for [[i player] (map-indexed vector ranks)]
+          [:tr.tr-cf247
+            [:td (str (+ i 1))]
+            [:td {:class (str "color-" (mod i 7))} (:user player)]
+            [:td (util/format-number (:score player))]
+            [:td (:total-lines player)]])]]]
+  [:div.wrapper-0a3ca
     [:button#gameOverBtn.red-btn-2c9ab "Lobby"]])
 
 (defn init-game
   "Show and start the game."
   [battle-mode?]
-  (dom/set-page-body! (game-html battle-mode?))
+  (dom/set-html! "panel3" (game-html battle-mode?))
   (client.game.core/init)
   (reset! game-started? true))
 
@@ -141,8 +152,9 @@
   [str-data]
   (cleanup!)
   (let [data (read-string str-data)]
-    (dom/set-page-body! (gameover-html data))
-    (.on ($ "#gameOverBtn") "click" click-game-over-btn)))
+    (dom/set-panel-body! 4 (gameover-html data))
+    (.on ($ "#gameOverBtn") "click" click-game-over-btn)
+    (dom/animate-to-panel 4)))
 
 (defn on-time-left
   "Called when server sends a time-left update."
@@ -164,27 +176,30 @@
 (defn- init-battle2 []
   (reset! client.game.core/battle true)
   (reset! game-started? false)
-  
+
   ;; join the "game" room to receive game-related messages
   (socket/emit "join-game")
   (socket/on "game-over" on-game-over)
   (socket/on "time-left" on-time-left)
   (socket/on "countdown" on-countdown)
-  
+
   (dom/set-bw-background!)
-  (dom/set-page-body! (countdown-html)))
+  (dom/set-panel-body! 3 (countdown-html))
+  (dom/animate-to-panel 3))
 
 (defn init-battle! []
   ;; user should not be able to see this page unless they have set their username
   (if-not @client.state/username
-    (aset js/document "location" "hash" "/login")
+    (aset js/document "location" "hash" "/menu")
     (init-battle2)))
 
 (defn init-solo! []
   (reset! client.game.core/battle false)
-  (reset! game-started? false)
+  (dom/set-panel-body! 2 (game-html false))
   (dom/set-bw-background!)
-  (init-game false))
+  (client.game.core/init)
+  (reset! game-started? true)
+  (dom/animate-to-panel 2))
 
 (defn cleanup!
   []

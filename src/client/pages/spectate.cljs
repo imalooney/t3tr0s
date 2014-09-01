@@ -415,7 +415,7 @@
 
 (defn init! []
   (dom/set-bw-background!)
-  (dom/set-page-body! (page-shell))
+  (dom/set-app-body! (page-shell))
   (add-events)
 
   (swap! page-state identity)

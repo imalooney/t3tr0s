@@ -65,7 +65,7 @@
 (defn init-stop-page!
   "Initialize the start game page."
   []
-  (dom/set-page-body! (stop-html))
+  (dom/set-html! "panel1" (stop-html))
 
   (socket/on "time-left" on-time-left)
   (socket/on "countdown" on-countdown)
@@ -107,7 +107,7 @@
 (defn init-start-page!
   "Initialize the start game page."
   []
-  (dom/set-page-body! (start-html))
+  (dom/set-html! "panel1" (start-html))
   (.click ($ "#startBtn") click-start-btn)
   (.click ($ "#updateTimes") click-update-times-btn))
 
@@ -135,10 +135,15 @@
      (init-stop-page!)
      (init-start-page!)))
 
-(defn init-password-page!
-  "Initialize the password page."
+;;------------------------------------------------------------------------------
+;; Page Init / Cleanup
+;;------------------------------------------------------------------------------
+
+(defn init!
   []
-  (dom/set-page-body! (password-html))
+  (dom/set-bw-background!)
+  (dom/set-html! "panel1" (password-html))
+  (dom/animate-to-panel 1)
 
   ; Request access as MC when user submits password.
   (.click ($ "#submitPasswordBtn") click-login-as-mc)
@@ -147,21 +152,11 @@
   ; when access as MC is granted.
   (socket/on "grant-mc" on-grant-mc)
 
-  ; Put focus on the password field.
-  (.focus (dom/by-id "password")))
-
-;;------------------------------------------------------------------------------
-;; Page Init / Cleanup
-;;------------------------------------------------------------------------------
-
-(defn init!
-  []
-  (dom/set-bw-background!)
-
   ; Listen for any settings updates
   (socket/on "settings-update" #(on-settings-update (read-string %)))
 
-  (init-password-page!))
+  ; Put focus on the password field.
+  (.focus (dom/by-id "password")))
 
 (defn cleanup!
   []
