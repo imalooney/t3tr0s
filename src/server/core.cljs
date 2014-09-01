@@ -38,7 +38,15 @@
   "Table of connected players."
   (atom {}))
 
-(def anon-player {:user "Anon" :color 0})
+(defn short-pid [pid]
+  (subs pid 0 6))
+
+(defn pprint-pid
+  "Returns either the username or a short version of the pid."
+  [pid]
+  (if-let [username (:user (get @players pid))]
+    username
+    (short-pid pid)))
 
 ;;------------------------------------------------------------------------------
 ;; Game Runner
@@ -254,7 +262,7 @@
   "Chat in the lobby"
   [msg pid socket]
   (let [d (assoc (get @players pid) :type "msg" :msg msg)]
-    (util/tlog "player " pid " says: \"" msg "\"")
+    (util/tlog "player " (pprint-pid pid) " says: \"" msg "\"")
     (.. socket -broadcast (to "lobby") (emit "new-message" (pr-str d)))))
 
 (defn- on-score-update
@@ -311,7 +319,7 @@
   "Player joins the lobby"
   [pid socket io]
   (let [data (assoc (get @players pid) :type "join")]
-    (util/tlog "player " pid " joined the lobby")
+    (util/tlog "player " (pprint-pid pid) " joined the lobby")
     (.. socket -broadcast (to "lobby") (emit "new-message" (pr-str data)))
     (.join socket "lobby")
     ; socket.io provides no way to get a count of players in a room
@@ -325,7 +333,7 @@
   "Player leaves the lobby"
   [pid socket io]
   (let [data (assoc (get @players pid) :type "leave")]
-    (util/tlog "player " pid " left the lobby")
+    (util/tlog "player " (pprint-pid pid) " left the lobby")
     (.. socket -broadcast (to "lobby") (emit "new-message" (pr-str data)))
     (.leave socket "lobby")
     (swap! players update-in [pid] dissoc :in-lobby)
@@ -333,16 +341,6 @@
     (signal-num-players-in-lobby!)))
 
 (def socket-id (util/uuid))
-
-(defn short-pid [pid]
-  (subs pid 0 6))
-
-(defn pprint-pid
-  "Returns either the username or a short version of the pid."
-  [pid]
-  (if-let [username (:username (get @players pid))]
-    username
-    (short-pid pid)))
 
 (defn- emit-to-socket [event-name data]
   (.emit (aget js/global socket-id) event-name (pr-str data)))
@@ -410,8 +408,8 @@
 
     (util/tlog "player " (pprint-pid pid) " connected")
 
-    ;; Add to player table as "Anon" for now.
-    (swap! players assoc pid anon-player)
+    ;; add to player table
+    (swap! players assoc pid {:color (rand-int 7) :pid pid})
 
     (doto socket
       ;; Create gif whenever "create-canvas-gif" is emitted.
