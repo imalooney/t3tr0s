@@ -385,13 +385,13 @@
   "Called when we receive new piece stats from the server."
   [data-str]
   (let [piece-counts (read-string data-str)]
-    (dom/set-html! "pieceCountI" (:I piece-counts))
-    (dom/set-html! "pieceCountS" (:S piece-counts))
-    (dom/set-html! "pieceCountJ" (:J piece-counts))
-    (dom/set-html! "pieceCountT" (:T piece-counts))
-    (dom/set-html! "pieceCountL" (:L piece-counts))
-    (dom/set-html! "pieceCountZ" (:Z piece-counts))
-    (dom/set-html! "pieceCountO" (:O piece-counts))))
+    (dom/set-html! "pieceCountI" (util/format-number (:I piece-counts)))
+    (dom/set-html! "pieceCountS" (util/format-number (:S piece-counts)))
+    (dom/set-html! "pieceCountJ" (util/format-number (:J piece-counts)))
+    (dom/set-html! "pieceCountT" (util/format-number (:T piece-counts)))
+    (dom/set-html! "pieceCountL" (util/format-number (:L piece-counts)))
+    (dom/set-html! "pieceCountZ" (util/format-number (:Z piece-counts)))
+    (dom/set-html! "pieceCountO" (util/format-number (:O piece-counts)))))
 
 (defn on-time-left
   "Called when receiving time-left update from server."
