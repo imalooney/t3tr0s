@@ -177,7 +177,7 @@
 ;;------------------------------------------------------------------------------
 
 (defn- on-music-playing-change [_ _ _ new-state]
-  (let [music-el (dom/by-id "music")]
+  (if-let [music-el (dom/by-id "music")]
     (if new-state
       (.play music-el)
       (.pause music-el))))
@@ -630,6 +630,7 @@
 
 (defn cleanup []
   (swap! state assoc :quit true)
+  (reset! music-playing? false)
   (if quit-chan
     (close! quit-chan))
 
