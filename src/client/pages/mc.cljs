@@ -86,7 +86,7 @@
     [:input#mcCooldownInput.mc-input-45faf
       {:type "text"
        :value (:cooldown @game-settings)}]
-    [:div.buttons-f6f12
+    [:div
       [:button#mcStartNowBtn.green-btn-f67eb "Start Now"]
       [:button#mcUpdateTimesBtn.blue-btn-41e23 "Update Times"]]])
 
