@@ -9,8 +9,8 @@
 ;;------------------------------------------------------------------------------
 
 (hiccups/defhtml panels [id]
-  [:div.outer-5031a
-    [:div.inner-a4472 {:id id}
+  [:div.panels-outer-1bae5
+    [:div.panels-inner-a4472 {:id id}
       [:div#panel1.panel-855f4]
       [:div#panel2.panel-855f4]
       [:div#panel3.panel-855f4]

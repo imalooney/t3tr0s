@@ -16,7 +16,10 @@
 
 (hiccups/defhtml login-form []
   [:form#loginForm
-    [:input#nameInput {:type "text" :placeholder "Enter your name..."}]
+    [:input#nameInput
+      {:maxlength 15
+       :placeholder "Enter your name..."
+       :type "text"}]
     [:button#playBtn.red-btn-2c9ab "Play"]])
 
 ;;------------------------------------------------------------------------------
