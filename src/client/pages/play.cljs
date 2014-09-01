@@ -72,7 +72,7 @@
 (hiccups/defhtml battle-header []
   [:div.hdr-93a4f
     [:img.logo-dd80d {:src "/img/t3tr0s_logo_200w.png" :alt "T3TR0S Logo"}]
-    [:h1.title-6637f "Battle Play"]
+    [:h1.title-6637f "Battle"]
     [:a.spectate-link-02d2e {:href "#/spectate" :target "_blank"}
       "Spectate"]])
 
@@ -80,7 +80,7 @@
   [:div.hdr-93a4f
     [:a {:href "#/menu"}
       [:img.logo-dd80d {:src "/img/t3tr0s_logo_200w.png" :alt "T3TR0S Logo"}]]
-    [:h1.title-6637f "Solo Play"]])
+    [:h1.title-6637f "Solo"]])
 
 (hiccups/defhtml game-html [battle-mode?]
   (if battle-mode?

@@ -59,6 +59,7 @@
 (defn init! []
   (dom/set-color-background!)
   (dom/animate-to-panel 1)
+  (dom/set-value! "nameInput" "")
   (dom/hide-el! "menuContainer")
   (dom/show-el! "loginContainer")
   (add-events!)

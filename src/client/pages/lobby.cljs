@@ -16,7 +16,8 @@
 
 (hiccups/defhtml chat-html []
   [:div.hdr-93a4f
-    [:img.logo-dd80d {:src "/img/t3tr0s_logo_200w.png" :alt "T3TR0S Logo"}]
+    [:a {:href "#/menu"}
+      [:img.logo-dd80d {:src "/img/t3tr0s_logo_200w.png" :alt "T3TR0S Logo"}]]
     [:h1#lobbyTimeLeft.title-6637f "Waiting..."]]
   [:div.wrapper-4b797
     [:div.chat-wrapper-ac7fd

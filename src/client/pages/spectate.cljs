@@ -210,7 +210,8 @@
 (hiccups/defhtml page-shell []
   [:div.wrapper-2ba66
     [:div.hdr-93a4f
-      [:img.logo-dd80d {:src "/img/t3tr0s_logo_200w.png" :alt "T3TR0S Logo"}]]
+      [:img.logo-dd80d {:src "/img/t3tr0s_logo_200w.png" :alt "T3TR0S Logo"}]
+      [:h1.title-6637f "Spectate"]]
     ;; NOTE: this button is for testing purposes
     [:button#shuffleBtn {:style "padding: 12px 24px; display: none"} "Shuffle!"]
     [:div#boardsContainer.wrapper-4b797
