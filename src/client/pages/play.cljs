@@ -102,7 +102,9 @@
     ])
 
 (hiccups/defhtml countdown-html []
-  [:h1#countdown.countdown-bc84d "Get Ready!"])
+  [:div.countdown-container-22a7f
+    [:div#getReadyMsg.ready-msg-e333a "Get" [:br] "Ready!"]
+    [:div#countdownNum.countdown-num-68cfb]])
 
 (hiccups/defhtml gameover-html [ranks]
   [:div.hdr-93a4f
@@ -142,7 +144,9 @@
   "Called when the countdown message is received from server."
   [i]
   (if (> i 0)
-    (.html ($ "#countdown") i)
+    (do
+      (dom/hide-el! "getReadyMsg")
+      (.html ($ "#countdownNum") i))
     (start-battle!)))
 
 (defn- click-game-over-btn []
