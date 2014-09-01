@@ -102,7 +102,7 @@
     ])
 
 (hiccups/defhtml countdown-html []
-  [:h1#countdown "Connecting..."])
+  [:h1#countdown.countdown-bc84d "Get Ready!"])
 
 (hiccups/defhtml gameover-html [ranks]
   [:div.hdr-93a4f
@@ -127,10 +127,10 @@
   [:div.wrapper-0a3ca
     [:button#gameOverBtn.red-btn-2c9ab "Lobby"]])
 
-(defn init-game
+(defn start-battle!
   "Show and start the game."
-  [battle-mode?]
-  (dom/set-html! "panel3" (game-html battle-mode?))
+  []
+  (dom/set-panel-body! 3 (game-html true))
   (client.game.core/init)
   (reset! game-started? true))
 
@@ -143,10 +143,10 @@
   [i]
   (if (> i 0)
     (.html ($ "#countdown") i)
-    (init-game true)))
+    (start-battle!)))
 
 (defn- click-game-over-btn []
-  (aset js/document "location" "hash" "#/lobby"))
+  (aset js/document "location" "hash" "/lobby"))
 
 (defn on-game-over
   "Called when game over message received from server."
@@ -167,7 +167,7 @@
   ;; if the players join late.  Otherwise, they
   ;; would never leave the countdown screen.
   (if-not @game-started?
-    (init-game true)))
+    (start-battle!)))
 
 ;;------------------------------------------------------------------------------
 ;; Page Initialization / Cleanup
