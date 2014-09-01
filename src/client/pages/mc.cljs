@@ -20,15 +20,14 @@
 
 (defn- on-change-game-settings [_ _ _ new-settings]
   (let [{:keys [duration cooldown]} new-settings]
-    (.val ($ "#duration") duration)
-    (.val ($ "#cooldown") cooldown)))
+    (.val ($ "#mcDurationInput") duration)
+    (.val ($ "#mcCooldownInput") cooldown)))
 
 (add-watch game-settings :main on-change-game-settings)
 
 (defn- on-settings-update
   "Update the game settings inputs"
   [new-settings]
-  (js/console.log "settings updated")
   (swap! game-settings merge new-settings))
 
 ;;------------------------------------------------------------------------------
@@ -36,20 +35,19 @@
 ;;------------------------------------------------------------------------------
 
 (hiccups/defhtml stop-html []
-  [:div.inner-6ae9d
-    [:div.login-5983e
-      [:label#time-left.timeleft-69be1]
-      [:button#stopBtn.red-btn-2c9ab "STOP"]]])
+  [:div.mc-wrapper-6af28
+    [:div#mcTimeLeft.timeleft-69be1]
+    [:button#mcStopBtn.red-btn-2c9ab "Stop"]])
 
 (defn on-time-left
   "Called when receiving time left from server."
   [i]
-  (.html ($ "#time-left") (str "Stopping in " i)))
+  (.html ($ "#mcTimeLeft") (str "Stopping in " i)))
 
 (defn on-countdown
   "Called when receiving countdown till start from server."
   [i]
-  (.html ($ "#time-left") (str "Starting in " i)))
+  (.html ($ "#mcTimeLeft") (str "Starting in " i)))
 
 (defn cleanup-stop-page!
   "Remove socket listeners specific to the stop page."
@@ -65,37 +63,38 @@
 (defn init-stop-page!
   "Initialize the start game page."
   []
-  (dom/set-app-body! (stop-html))
+  (dom/set-panel-body! 2 (stop-html))
+  (dom/animate-to-panel 2)
 
   (socket/on "time-left" on-time-left)
   (socket/on "countdown" on-countdown)
 
-  (.click ($ "#stopBtn") on-click-stop-btn))
+  (.click ($ "#mcStopBtn") on-click-stop-btn))
 
 ;;------------------------------------------------------------------------------
 ;; Start Game
 ;;------------------------------------------------------------------------------
 
 (hiccups/defhtml start-html []
-  [:div.inner-6ae9d
-    [:div.login-5983e
-      [:label#time-left.timeleft-69be1]
-      [:div
-        [:div.input-4a3e3
-          [:label "Round duration:"]
-          [:input#duration.input-48f1f {:type "text" :value (:duration @game-settings)}]]
-        [:div.input-4a3e3
-          [:label "Time between rounds:"]
-          [:input#cooldown.input-48f1f {:type "text" :value (:cooldown @game-settings)}]]
-      [:div.button-container-8e52e
-        [:button#startBtn.green-btn-f67eb "Start Now"]
-        [:button#updateTimes.blue-btn-41e23 "Update Times"]]]]])
+  [:div.mc-wrapper-6af28
+    [:div#mcTimeLeft.timeleft-69be1]
+    [:label.mc-label-382e6 "Round duration:"]
+    [:input#mcDurationInput.mc-input-45faf
+      {:type "text"
+       :value (:duration @game-settings)}]
+    [:label.mc-label-382e6 "Time between rounds:"]
+    [:input#mcCooldownInput.mc-input-45faf
+      {:type "text"
+       :value (:cooldown @game-settings)}]
+    [:div.buttons-f6f12
+      [:button#mcStartNowBtn.green-btn-f67eb "Start Now"]
+      [:button#mcUpdateTimesBtn.blue-btn-41e23 "Update Times"]]])
 
 (defn- get-times
   "Retrieve the time settings inputs"
   []
-  {:duration (js/parseInt (.val ($ "#duration")) 10)
-   :cooldown (js/parseInt (.val ($ "#cooldown")) 10)})
+  {:duration (int (.val ($ "#mcDurationInput")))
+   :cooldown (int (.val ($ "#mcCooldownInput")))})
 
 (defn- click-start-btn []
   (socket/emit "start-time")
@@ -107,33 +106,32 @@
 (defn init-start-page!
   "Initialize the start game page."
   []
-  (dom/set-app-body! (start-html))
-  (.click ($ "#startBtn") click-start-btn)
-  (.click ($ "#updateTimes") click-update-times-btn))
+  (dom/set-panel-body! 2 (start-html))
+  (dom/animate-to-panel 2)
+  (.click ($ "#mcStartNowBtn") click-start-btn)
+  (.click ($ "#mcUpdateTimesBtn") click-update-times-btn))
 
 ;;------------------------------------------------------------------------------
 ;; Password
 ;;------------------------------------------------------------------------------
 
 (hiccups/defhtml password-html []
-  [:div.inner-6ae9d
-    [:div.login-5983e
-      [:form
-        [:div.input-4a3e3
-          [:label "MC password:"]
-          [:input#password.input-48f1f {:type "password"}]]
-        [:button#submitPasswordBtn.red-btn-2c9ab "OK"]]]])
+  [:div.mc-wrapper-6af28
+    [:form#mcPasswordForm
+      [:input#mcPasswordInput.password-input-e6204
+        {:type "password" :placeholder "MC password"}]
+      [:button#mcSubmitPasswordBtn.red-btn-2c9ab "OK"]]])
 
-(defn- click-login-as-mc [js-evt]
+(defn- on-submit-password-form [js-evt]
   (.preventDefault js-evt)
-  (socket/emit "request-mc" (.val ($ "#password"))))
+  (socket/emit "request-mc" (.val ($ "#mcPasswordInput"))))
 
 (defn- on-grant-mc
   "Callback for handling the MC access grant."
   [str-data]
   (if-let [game-running (read-string str-data)]
-     (init-stop-page!)
-     (init-start-page!)))
+    (init-stop-page!)
+    (init-start-page!)))
 
 ;;------------------------------------------------------------------------------
 ;; Page Init / Cleanup
@@ -142,20 +140,21 @@
 (defn init!
   []
   (dom/set-bw-background!)
-  (dom/set-app-body! (password-html))
+  (dom/set-panel-body! 1 (password-html))
+  (dom/animate-to-panel 1)
 
-  ; Request access as MC when user submits password.
-  (.click ($ "#submitPasswordBtn") click-login-as-mc)
+  ;; Request access as MC when user submits password.
+  (.on ($ "#mcPasswordForm") "submit" on-submit-password-form)
 
-  ; Render either the stop page or the start page
-  ; when access as MC is granted.
+  ;; Render either the stop page or the start page
+  ;; when access as MC is granted.
   (socket/on "grant-mc" on-grant-mc)
 
-  ; Listen for any settings updates
+  ;; Listen for any settings updates
   (socket/on "settings-update" #(on-settings-update (read-string %)))
 
-  ; Put focus on the password field.
-  (.focus (dom/by-id "password")))
+  ;; Put focus on the password field.
+  (.focus (dom/by-id "mcPasswordInput")))
 
 (defn cleanup!
   []
