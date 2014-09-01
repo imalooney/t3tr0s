@@ -105,7 +105,8 @@
 
 (hiccups/defhtml gameover-html [ranks]
   [:div.hdr-93a4f
-    [:img.logo-dd80d {:src "/img/t3tr0s_logo_200w.png" :alt "T3TR0S Logo"}]
+    [:a {:href "#/menu"}
+      [:img.logo-dd80d {:src "/img/t3tr0s_logo_200w.png" :alt "T3TR0S Logo"}]]
     [:h1.title-6637f "Game over"]]
   [:div.results-1b4f3
     [:table.table-9be14
@@ -157,10 +158,9 @@
 
 (defn on-time-left
   "Called when server sends a time-left update."
-  [total-seconds]
+  [seconds-left]
 
-  (if (dom/by-id "gameScreenTimeLeft")
-    (dom/set-html! "gameScreenTimeLeft" (util/seconds->time-str total-seconds)))
+  (.html ($ "#gameScreenTimeLeft") (util/seconds->time-str seconds-left))
 
   ;; Use this as a mechanism for starting the game
   ;; if the players join late.  Otherwise, they
