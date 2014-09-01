@@ -28,7 +28,7 @@
           {:type "text"
            :placeholder "Type message and press enter"}]]]
     [:div.players-wrapper-0624c
-      [:div.title-87c6c [:i.fa.fa-user]]
+      [:div.title-87c6c [:i.fa.fa-user] [:span#playerCount]]
       [:div#playersList.players-b766b]]])
 
 (hiccups/defhtml chat-msg-html
@@ -115,12 +115,18 @@
   []
   (aset js/document "location" "hash" "/battle"))
 
+(defn player-count [num-players]
+  (if (= num-players 1)
+    "1 player"
+    (str num-players " players")))
+
 (defn on-players-update
   "Called when the player information is updated."
   [data-str]
   (let [players (read-string data-str)
         sorted-players (sort-by :user players)]
-    (.html ($ "#playersList") (player-list sorted-players))))
+    (.html ($ "#playersList") (player-list sorted-players))
+    (.html ($ "#playerCount") (player-count (count sorted-players)))))
 
 (defn on-keydown-chat-input [js-evt]
   (let [key-code (aget js-evt "keyCode")]
