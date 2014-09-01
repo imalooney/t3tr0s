@@ -154,7 +154,9 @@
   (dom/set-bw-background!)
   (dom/set-html! "panel2" (chat-html))
   (add-events)
-  (dom/animate-to-panel 2)
+  (dom/animate-to-panel 2 (fn []
+    ;; put the focus on the chat input when the animation is complete
+    (.focus (dom/by-id "chatInput"))))
 
   ;; Join the "lobby" room.
   (socket/emit "join-lobby")
