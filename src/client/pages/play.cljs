@@ -83,23 +83,22 @@
     [:h1.title-6637f "Solo Play"]])
 
 (hiccups/defhtml game-html [battle-mode?]
-  [:div.wrapper-08ed4
-    (if battle-mode?
-      (battle-header)
-      (solo-header))
-    [:div.wrapper-4b797
-      [:div.game-0a564
-        [:canvas#mainGameCanvas.canvas-eb427]
-        [:div#themeYear.year-050bf]
-        [:div#themePlatform.platform-2952d]]
-      (next-piece-and-stats battle-mode?)
-      (keys-legend battle-mode?)
-      [:audio#music {:src "audio/theme.mp3" :preload "none" :loop "loop"}
-        "Your browser does not support audio."]
-      [:div.history-6ce78 (if battle-mode? {:style "display:none"})
-        [:canvas#historyCanvas.history-canvas-0d569]]
-      ;; TODO: opponent boards go here
-      ]])
+  (if battle-mode?
+    (battle-header)
+    (solo-header))
+  [:div.wrapper-4b797
+    [:div.game-0a564
+      [:canvas#mainGameCanvas.canvas-eb427]
+      [:div#themeYear.year-050bf]
+      [:div#themePlatform.platform-2952d]]
+    (next-piece-and-stats battle-mode?)
+    (keys-legend battle-mode?)
+    [:audio#music {:src "audio/theme.mp3" :preload "none" :loop "loop"}
+      "Your browser does not support audio."]
+    [:div.history-6ce78 (if battle-mode? {:style "display:none"})
+      [:canvas#historyCanvas.history-canvas-0d569]]
+    ;; TODO: opponent boards go here
+    ])
 
 (hiccups/defhtml countdown-html []
   [:h1#countdown "Connecting..."])
