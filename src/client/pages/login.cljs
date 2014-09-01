@@ -2,6 +2,7 @@
   (:require-macros [hiccups.core :as hiccups])
   (:require
     [client.dom :as dom]
+    client.html
     [client.socket :as socket]
     client.state
     [client.util :as util]
@@ -13,17 +14,10 @@
 ;; HTML
 ;;------------------------------------------------------------------------------
 
-(hiccups/defhtml login-inner []
+(hiccups/defhtml login-form []
   [:form#loginForm
     [:input#nameInput {:type "text" :placeholder "Enter your name..."}]
-    [:button#playBtn.red-btn-2c9ab "Play"]]
-  [:div.clr-22ff3])
-
-(hiccups/defhtml login-html []
-  [:div.wrapper-cd25d
-    [:img {:src "/img/t3tr0s_logo_850w.png" :alt "T3TR0S Logo"}]
-    [:div#menuInnerWrapper
-      (login-inner)]])
+    [:button#playBtn.red-btn-2c9ab "Play"]])
 
 ;;------------------------------------------------------------------------------
 ;; Events
@@ -44,13 +38,8 @@
       (send-login! username)
       (aset js/location "hash" "#/lobby"))))
 
-(def events-have-been-added? (atom false))
-
-;; this only needs to happen once
 (defn- add-events! []
-  (when-not @events-have-been-added?
-    (.on ($ "#loginForm") "submit" on-form-submit)
-    (reset! events-have-been-added? true)))
+  (.on ($ "#loginForm") "submit" on-form-submit))
 
 ;;------------------------------------------------------------------------------
 ;; Page Initialization
@@ -59,9 +48,12 @@
 (defn init! []
   (dom/set-color-background!)
   (dom/animate-to-panel 1)
-  (dom/set-value! "nameInput" "")
-  (dom/hide-el! "menuContainer")
-  (dom/show-el! "loginContainer")
+
+  ;; NOTE: this should never really happen, but it's a safeguard
+  (if-not (dom/by-id "menuInner")
+    (dom/set-panel-body! 1 (client.html/menu)))
+
+  (dom/set-html! "menuInner" (login-form))
   (add-events!)
 
   ;; Put focus on username field.

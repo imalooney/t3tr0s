@@ -36,23 +36,32 @@
 ;; Set App State Functions
 ;;------------------------------------------------------------------------------
 
+(defn set-color-background! []
+  (-> ($ "body")
+    (.removeClass "bg-grey-e2019")
+    (.addClass "bg-color-c025c")))
+
+(defn set-bw-background! []
+  (-> ($ "body")
+    (.removeClass "bg-color-c025c")
+    (.addClass "bg-grey-e2019")))
+
 (def ^:private app-container-id (util/uuid))
 (def ^:private panels-container-id (util/uuid))
 
-(defn set-app-body! [html]
+(defn set-app-body!
+  "Fills the app with html from the root."
+  [html]
   (if-not (by-id app-container-id)
     (.prepend ($ "body") (str "<div id=" app-container-id "></div>")))
   (set-html! app-container-id html))
 
-(defn set-panel-body! [panel-num html]
+(defn set-panel-body!
+  "Fills a panel with html. Will create the panels if they do not exist."
+  [panel-num html]
   (if-not (by-id panels-container-id)
     (set-app-body! (client.html/panels panels-container-id)))
   (set-html! (str "panel" panel-num) html))
-
-;; NOTE: this function should only be called once on global init
-(defn init! []
-  (if-not (by-id panels-container-id)
-    (set-app-body! (client.html/panels panels-container-id))))
 
 (def panel-width 900)
 (def panel-animation-speed 200)
@@ -65,13 +74,3 @@
       (js-obj
         "complete" next-fn
         "duration" panel-animation-speed))))
-
-(defn set-color-background! []
-  (-> ($ "body")
-    (.removeClass "bg-grey-e2019")
-    (.addClass "bg-color-c025c")))
-
-(defn set-bw-background! []
-  (-> ($ "body")
-    (.removeClass "bg-color-c025c")
-    (.addClass "bg-grey-e2019")))

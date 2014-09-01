@@ -22,11 +22,11 @@
   "/login" login-page/init!
 
   ;; solo play screen
-  "/play-solo" [play-page/init-solo! play-page/cleanup!]
+  "/solo" [play-page/init-solo! play-page/cleanup!]
 
   ;; the "game loop" screens
   "/lobby" [lobby-page/init! lobby-page/cleanup!]
-  "/play-battle" [play-page/init-battle! play-page/cleanup!]
+  "/battle" [play-page/init-battle! play-page/cleanup!]
 
   ;; spectate
   "/spectate" [spectate-page/init! spectate-page/cleanup!]

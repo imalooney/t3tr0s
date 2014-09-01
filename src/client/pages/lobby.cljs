@@ -113,7 +113,7 @@
 (defn on-start-game
   "Called when we receive the go-ahead from the server to start the game."
   []
-  (aset js/document "location" "hash" "#/play-battle"))
+  (aset js/document "location" "hash" "/battle"))
 
 (defn on-players-update
   "Called when the player information is updated."

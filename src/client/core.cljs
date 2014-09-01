@@ -23,9 +23,6 @@
   ;; initialize the socket connection
   (socket/connect!)
 
-  ;; initialize the DOM
-  (client.dom/init!)
-
   ;; init routing
   (client.routes/init!))
 

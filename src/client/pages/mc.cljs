@@ -65,7 +65,7 @@
 (defn init-stop-page!
   "Initialize the start game page."
   []
-  (dom/set-html! "panel1" (stop-html))
+  (dom/set-app-body! (stop-html))
 
   (socket/on "time-left" on-time-left)
   (socket/on "countdown" on-countdown)
@@ -107,7 +107,7 @@
 (defn init-start-page!
   "Initialize the start game page."
   []
-  (dom/set-html! "panel1" (start-html))
+  (dom/set-app-body! (start-html))
   (.click ($ "#startBtn") click-start-btn)
   (.click ($ "#updateTimes") click-update-times-btn))
 
@@ -142,8 +142,7 @@
 (defn init!
   []
   (dom/set-bw-background!)
-  (dom/set-html! "panel1" (password-html))
-  (dom/animate-to-panel 1)
+  (dom/set-app-body! (password-html))
 
   ; Request access as MC when user submits password.
   (.click ($ "#submitPasswordBtn") click-login-as-mc)
