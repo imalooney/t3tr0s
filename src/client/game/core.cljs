@@ -249,7 +249,6 @@
         (when-not (= ch quit)
           (recur data))))))
 
-
 ;;------------------------------------------------------------
 ;; Game-driven STATE CHANGES
 ;;------------------------------------------------------------
@@ -265,16 +264,18 @@
 (defn spawn-piece!
   "Spawns the given piece at the starting position."
   [piece]
-    (swap! state assoc :piece piece
-                       :position start-position)
-    (swap! state update-in [:history]
-                 conj {:height (-> @state :board tower-height)
-                       :drop-y (second start-position)
-                       :collapsed #{}})
-    (when @battle
-      (socket/emit "update-player" piece))
+  (swap! state assoc :piece piece
+                     :position start-position)
 
-    (go-go-gravity!))
+  (swap! state update-in [:history]
+               conj {:height (-> @state :board tower-height)
+                     :drop-y (second start-position)
+                     :collapsed #{}})
+
+  (when @battle
+    (socket/emit "update-player" {:new-piece (:name piece)}))
+
+  (go-go-gravity!))
 
 (defn try-spawn-piece!
   "Checks if new piece can be written to starting position."

@@ -177,25 +177,25 @@
     [:tbody
       [:tr
         [:td.piece-fbcb9 [:img {:src "/img/pieces/i.png" :alt "I Piece" :style "width: 48px"}]]
-        [:td.number-ca2a6 "1,112"]
+        [:td.number-ca2a6 [:span#pieceCountI "0"]]
         [:td.spacer-67b8d]
         [:td.piece-fbcb9 [:img {:src "/img/pieces/s.png" :alt "S Piece" :style "width: 36px"}]]
-        [:td.number-ca2a6 "1,232"]]
+        [:td.number-ca2a6 [:span#pieceCountS "0"]]]
       [:tr
         [:td.piece-fbcb9 [:img {:src "/img/pieces/j.png" :alt "J Piece" :style "width: 36px"}]]
-        [:td.number-ca2a6 "1,224"]
+        [:td.number-ca2a6 [:span#pieceCountJ "0"]]
         [:td.spacer-67b8d]
         [:td.piece-fbcb9 [:img {:src "/img/pieces/t.png" :alt "T Piece" :style "width: 36px"}]]
-        [:td.number-ca2a6 "1,132"]]
+        [:td.number-ca2a6 [:span#pieceCountT "0"]]]
       [:tr
         [:td.piece-fbcb9 [:img {:src "/img/pieces/l.png" :alt "L Piece" :style "width: 36px"}]]
-        [:td.number-ca2a6 "1,400"]
+        [:td.number-ca2a6 [:span#pieceCountL "0"]]
         [:td.spacer-67b8d]
         [:td.piece-fbcb9 [:img {:src "/img/pieces/z.png" :alt "Z Piece" :style "width: 36px"}]]
-        [:td.number-ca2a6 "1,198"]]
+        [:td.number-ca2a6 [:span#pieceCountZ "0"]]]
       [:tr
         [:td.piece-fbcb9 [:img {:src "/img/pieces/o.png" :alt "O Piece" :style "width: 24px"}]]
-        [:td.number-ca2a6 "1,244"]]]])
+        [:td.number-ca2a6 [:span#pieceCountO "0"]]]]])
 
 (hiccups/defhtml stats []
   [:div.label-39b9c "Pieces"]
@@ -381,6 +381,18 @@
   (let [data (read-string str-data)]
     (reset! page-state data)))
 
+(defn- on-piece-stats
+  "Called when we receive new piece stats from the server."
+  [data-str]
+  (let [piece-counts (read-string data-str)]
+    (dom/set-html! "pieceCountI" (:I piece-counts))
+    (dom/set-html! "pieceCountS" (:S piece-counts))
+    (dom/set-html! "pieceCountJ" (:J piece-counts))
+    (dom/set-html! "pieceCountT" (:T piece-counts))
+    (dom/set-html! "pieceCountL" (:L piece-counts))
+    (dom/set-html! "pieceCountZ" (:Z piece-counts))
+    (dom/set-html! "pieceCountO" (:O piece-counts))))
+
 (defn on-time-left
   "Called when receiving time-left update from server."
   [total-seconds]
@@ -432,6 +444,7 @@
 
   (socket/on "board-update" on-board-update)
   (socket/on "leader-update" on-leader-update)
+  (socket/on "piece-stats" on-piece-stats)
   (socket/on "time-left" on-time-left)
 
   (on-time-left 0))
@@ -441,4 +454,5 @@
   (socket/emit "leave-dashboard")
   (socket/removeListener "board-update")
   (socket/removeListener "leader-update")
+  (socket/removeListener "piece-stats")
   (socket/removeListener "time-left"))

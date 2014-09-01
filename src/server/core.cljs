@@ -276,13 +276,10 @@
   "Called when player sends an updated state."
   [pid socket io data-str]
   (let [player-data (read-string data-str)]
-
+    ;; new piece
     (when-let [new-piece (:new-piece player-data)]
       (swap! piece-counts update-in [new-piece] inc)
       (.. io (to "dashboard") (emit "piece-stats" (pr-str @piece-counts))))
-
-    ;; NOTE: commented this out because it makes the log very noisy
-    ;;(util/tlog "player " pid " updated")
 
     ; Merge in the updated data into the player structure.
     ; Also update the game id, so we know which players are in the current game.
