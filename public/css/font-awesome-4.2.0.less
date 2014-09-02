@@ -1,9 +1,7 @@
-/*!
- *  Font Awesome 4.2.0 by @davegandy - http://fontawesome.io - @fontawesome
- *  License - http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License)
- */
-/* FONT PATH
- * -------------------------- */
+// Font Awesome 4.2.0 by @davegandy - http://fontawesome.io - @fontawesome
+// License - http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License)
+
+// FONT PATH
 @font-face {
   font-family: 'FontAwesome';
   src: url('../fonts/fontawesome-webfont.eot?v=4.2.0');
@@ -11,6 +9,7 @@
   font-weight: normal;
   font-style: normal;
 }
+
 .fa {
   display: inline-block;
   font: normal normal normal 14px/1 FontAwesome;
@@ -19,7 +18,17 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-/* makes the font 33% larger relative to the icon container */
+
+.fa-comments:before {
+  content: "\f086";
+}
+.fa-user:before {
+  content: "\f007";
+}
+
+// C. Oakman 02 Aug 2014
+// commenting these out as we don't use them in the application
+/*
 .fa-lg {
   font-size: 1.33333333em;
   line-height: 0.75em;
@@ -161,8 +170,6 @@
 .fa-inverse {
   color: #ffffff;
 }
-/* Font Awesome uses the Unicode Private Use Area (PUA) to ensure screen
-   readers do not read off random characters that represent icons */
 .fa-glass:before {
   content: "\f000";
 }
@@ -183,9 +190,6 @@
 }
 .fa-star-o:before {
   content: "\f006";
-}
-.fa-user:before {
-  content: "\f007";
 }
 .fa-film:before {
   content: "\f008";
@@ -553,9 +557,7 @@
 .fa-cogs:before {
   content: "\f085";
 }
-.fa-comments:before {
-  content: "\f086";
-}
+
 .fa-thumbs-o-up:before {
   content: "\f087";
 }
@@ -1670,3 +1672,4 @@
 .fa-meanpath:before {
   content: "\f20c";
 }
+*/
