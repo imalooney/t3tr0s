@@ -34,21 +34,21 @@
 (hiccups/defhtml chat-msg-html
   [{:keys [user color msg]}]
   [:div.message-6ab4b
-    [:div.user-eb71d (hiccups.runtime/escape-html user)]
+    [:div {:class (str "color-" color " user-eb71d")} (hiccups.runtime/escape-html user)]
     [:div.text-d43c1 (hiccups.runtime/escape-html msg)]])
 
 (hiccups/defhtml chat-join-html
   [{:keys [user color]}]
   [:div.message-6ab4b
-    [:div.joined-3a6ea (str user " joined the lobby")]])
+    [:div {:class (str "color-" color)} (str user " joined the lobby")]])
 
 (hiccups/defhtml chat-leave-html
   [{:keys [user color]}]
   [:div.message-6ab4b
-    [:div.left-bcb89 (str user " left the lobby")]])
+    [:div {:class (str "color-" color)} (str user " left the lobby")]])
 
 (hiccups/defhtml player-name [p]
-  [:div.player-name-f93cf (:user p)])
+  [:div {:class (str "color-" (:color p) " player-name-f93cf")}(:user p)])
 
 (hiccups/defhtml player-list [players]
   (map player-name players))
