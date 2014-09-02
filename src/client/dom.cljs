@@ -63,12 +63,15 @@
     (set-app-body! (client.html/panels panels-container-id)))
   (set-html! (str "panel" panel-num) html))
 
+(def current-panel (atom nil))
+
 (def panel-width 900)
 (def panel-animation-speed 200)
 
 (defn animate-to-panel
   ([panel-num] (animate-to-panel panel-num (fn [] nil)))
   ([panel-num next-fn]
+    (reset! current-panel panel-num)
     (.velocity ($ (str "#" panels-container-id))
       (js-obj "left" (str (* -1 panel-width (dec panel-num)) "px"))
       (js-obj

@@ -50,7 +50,6 @@
 
 (defn init! []
   (dom/set-color-background!)
-  (dom/animate-to-panel 1)
 
   ;; NOTE: this should never really happen, but it's a safeguard
   (if-not (dom/by-id "menuInner")
@@ -59,5 +58,7 @@
   (dom/set-html! "menuInner" (login-form))
   (add-events!)
 
-  ;; Put focus on username field.
-  (.focus (dom/by-id "nameInput")))
+  (if-not (= 1 @dom/current-panel)
+    (dom/animate-to-panel 1 (fn []
+      (.focus (dom/by-id "nameInput"))))
+    (.focus (dom/by-id "nameInput"))))
