@@ -107,6 +107,7 @@
   (stop-gravity!)
   (go-go-gravity!))
 
+(def game-over? (atom false))
 
 (def battle
   "Boolean flag signaling whether we are in solo or battle mode."
@@ -253,28 +254,46 @@
 ;; Game-driven STATE CHANGES
 ;;------------------------------------------------------------
 
-(defn game-over-modals-in-dom? []
-  (and (dom/by-id "gameOverModal") (dom/by-id "gameOverMsg")))
-
 (defn hide-game-over-modal! []
-  (when (game-over-modals-in-dom?)
-    (dom/hide-el! "gameOverModal")
+  (when (dom/by-id "overBoardModal")
+    (dom/hide-el! "overBoardModal")
     (dom/hide-el! "gameOverMsg")))
 
 (defn show-game-over-modal! []
-  (when (game-over-modals-in-dom?)
-    (dom/show-el! "gameOverModal")
+  (when (dom/by-id "overBoardModal")
+    (dom/show-el! "overBoardModal")
     (dom/show-el! "gameOverMsg")))
 
-(defn go-go-game-over!
-  "Kicks off game over routine. (and get to the chopper)"
-  []
+(defn hide-paused-modal! []
+  (when (dom/by-id "overBoardModal")
+    (dom/hide-el! "overBoardModal")
+    (dom/hide-el! "pausedMsg")))
+
+(defn show-paused-modal! []
+  (when (dom/by-id "overBoardModal")
+    (dom/show-el! "overBoardModal")
+    (dom/show-el! "pausedMsg")))
+
+(defn show-scramble-board-instant! [next-fn]
+  (go
+    (doseq [y (reverse (range n-rows))]
+      (swap! state assoc-in [:board y] (game-over-row)))
+    (next-fn)))
+
+(defn show-scramble-board! [next-fn]
   (go
     (doseq [y (reverse (range n-rows))]
       (<! (timeout 10))
       (swap! state assoc-in [:board y] (game-over-row)))
-    (<! (timeout 200))
-    (show-game-over-modal!)))
+    (when (and next-fn (goog/isFunction next-fn))
+      (<! (timeout 200))
+      (next-fn))))
+
+(defn go-go-game-over!
+  "Kicks off game over routine. (and get to the chopper)"
+  []
+  (reset! game-over? true)
+  (show-scramble-board! show-game-over-modal!))
 
 (defn spawn-piece!
   "Spawns the given piece at the starting position."
@@ -503,6 +522,12 @@
   "Restores the state of the board pre-pausing, and resumes gravity"
   []
   (reset! state @paused-board)
+
+  ;; NOTE: this is just a quick hack to make the modal disappear after the
+  ;;   scramble board is gone
+  ;; it was jarring visually otherwise
+  (js/setTimeout hide-paused-modal! 50)
+
   (go-go-gravity!)
   (reset! paused? false)
   (reset! music-playing? @paused-music))
@@ -512,7 +537,7 @@
   []
   (reset! paused-board @state)
   (reset! paused-music @music-playing?)
-  (go-go-game-over!)
+  (show-scramble-board-instant! show-paused-modal!)
   (swap! state assoc :piece nil)
   (stop-gravity!)
   (reset! paused? true)
@@ -521,11 +546,11 @@
 (defn toggle-pause-game!
   "Toggles pause on the game board"
   []
-  (if (not @battle)
+  (if (and (not @battle) (not @game-over?))
     (if @paused?
       (resume-game!)
       (pause-game!))
-    (js/console.log "Cant pause in battle mode")))
+    (util/js-log "Cant pause in battle mode or game over.")))
 
 (defn- toggle-music!
   "Toggles the music on or off"
@@ -615,6 +640,9 @@
   )
 
 (defn init []
+
+  (reset! game-over? false)
+  (reset! paused? false)
 
   (hide-game-over-modal!)
 

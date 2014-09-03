@@ -83,9 +83,11 @@
       [:img.logo-dd80d {:src "/img/t3tr0s_logo_200w.png" :alt "T3TR0S Logo"}]]
     [:h1.title-6637f "Solo"]])
 
-(hiccups/defhtml game-over-modal []
-  [:div#gameOverModal.modal-dc6ae {:style "display:none"}]
-  [:div#gameOverMsg.game-over-container-705be {:style "display:none"}
+(hiccups/defhtml board-modals []
+  [:div#overBoardModal.under-modal-dc6ae {:style "display:none"}]
+  [:div#pausedMsg.over-modal-705be {:style "display:none"}
+    [:div.paused-c09f0 "Paused"]]
+  [:div#gameOverMsg.over-modal-705be {:style "display:none"}
     [:div.game-over-4813e "Game Over"]
     [:button#newGameBtn.play-again-1e197 "New Game"]])
 
@@ -98,7 +100,7 @@
       [:canvas#mainGameCanvas.canvas-eb427]
       [:div#themeYear.year-050bf]
       [:div#themePlatform.platform-2952d]]
-    (game-over-modal)
+    (board-modals)
     (next-piece-and-stats battle-mode?)
     (keys-legend battle-mode?)
     [:audio#music {:src "audio/theme.mp3" :preload "none" :loop "loop"}
