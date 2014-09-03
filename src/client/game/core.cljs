@@ -253,13 +253,28 @@
 ;; Game-driven STATE CHANGES
 ;;------------------------------------------------------------
 
+(defn game-over-modals-in-dom? []
+  (and (dom/by-id "gameOverModal") (dom/by-id "gameOverMsg")))
+
+(defn hide-game-over-modal! []
+  (when (game-over-modals-in-dom?)
+    (dom/hide-el! "gameOverModal")
+    (dom/hide-el! "gameOverMsg")))
+
+(defn show-game-over-modal! []
+  (when (game-over-modals-in-dom?)
+    (dom/show-el! "gameOverModal")
+    (dom/show-el! "gameOverMsg")))
+
 (defn go-go-game-over!
   "Kicks off game over routine. (and get to the chopper)"
   []
   (go
     (doseq [y (reverse (range n-rows))]
       (<! (timeout 10))
-      (swap! state assoc-in [:board y] (game-over-row)))))
+      (swap! state assoc-in [:board y] (game-over-row)))
+    (<! (timeout 200))
+    (show-game-over-modal!)))
 
 (defn spawn-piece!
   "Spawns the given piece at the starting position."
@@ -600,6 +615,8 @@
   )
 
 (defn init []
+
+  (hide-game-over-modal!)
 
   ; Create new quit channel that all go-blocks will monitor for closing.
   (set! quit-chan (chan))

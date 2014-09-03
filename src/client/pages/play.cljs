@@ -83,6 +83,12 @@
       [:img.logo-dd80d {:src "/img/t3tr0s_logo_200w.png" :alt "T3TR0S Logo"}]]
     [:h1.title-6637f "Solo"]])
 
+(hiccups/defhtml game-over-modal []
+  [:div#gameOverModal.modal-dc6ae {:style "display:none"}]
+  [:div#gameOverMsg.game-over-container-705be {:style "display:none"}
+    [:div.game-over-4813e "Game Over"]
+    [:button#newGameBtn.play-again-1e197 "New Game"]])
+
 (hiccups/defhtml game-html [battle-mode?]
   (if battle-mode?
     (battle-header)
@@ -92,6 +98,7 @@
       [:canvas#mainGameCanvas.canvas-eb427]
       [:div#themeYear.year-050bf]
       [:div#themePlatform.platform-2952d]]
+    (game-over-modal)
     (next-piece-and-stats battle-mode?)
     (keys-legend battle-mode?)
     [:audio#music {:src "audio/theme.mp3" :preload "none" :loop "loop"}
@@ -129,10 +136,17 @@
   [:div.wrapper-0a3ca
     [:button#gameOverBtn.red-btn-2c9ab "Lobby"]])
 
+(defn click-new-game-btn [js-evt]
+  (.preventDefault js-evt)
+  (client.game.core/cleanup)
+  (client.game.core/init)
+  (reset! game-started? true))
+
 (defn start-battle!
   "Show and start the game."
   []
   (dom/set-panel-body! 3 (game-html true))
+  (.on ($ "#newGameBtn") "click" click-new-game-btn)
   (client.game.core/init)
   (reset! game-started? true))
 
@@ -200,6 +214,7 @@
 (defn init-solo! []
   (reset! client.game.core/battle false)
   (dom/set-panel-body! 2 (game-html false))
+  (.on ($ "#newGameBtn") "click" click-new-game-btn)
   (dom/set-bw-background!)
   (dom/animate-to-panel 2 (fn []
     (client.game.core/init)
