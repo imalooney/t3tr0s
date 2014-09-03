@@ -369,7 +369,8 @@
 (defn- on-disconnect [pid]
   (util/tlog "player " (pprint-pid pid) " disconnected")
   (swap! players dissoc pid)
-  (signal-num-players-in-lobby!))
+  (signal-num-players-in-lobby!)
+  (on-score-update (aget js/global socket-id)))
 
 (defn- on-request-mc [pid the-socket password-attempt]
   (if (= (read-string password-attempt) (:mc-password config))

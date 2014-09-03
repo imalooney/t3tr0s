@@ -144,11 +144,11 @@
 ;; HTML
 ;;------------------------------------------------------------------------------
 
-(hiccups/defhtml board-container [id]
-  [:div.container-13c1f {:id id}
-    [:div {:id (str id "-name")}]
-    [:canvas.canvas-b534a {:id (str id "-canvas")}]
-    [:div {:id (str id "-score")}]])
+(hiccups/defhtml board-container [pid]
+  [:div.container-13c1f {:id pid}
+    [:div {:id (str pid "-name")}]
+    [:canvas.canvas-b534a {:id (str pid "-canvas")}]
+    [:div {:id (str pid "-score")}]])
 
 ;; TODO: I'm sure large-place and small-place could be combined cleanly
 
@@ -218,28 +218,14 @@
       [:div.stats-2cda4 (stats)]]])
 
 ;;------------------------------------------------------------------------------
-;; Pid to UUID Mapping
-;;------------------------------------------------------------------------------
-
-(def ids
-  "Stores a mapping of pid --> UUID for use as DOM ids"
-  (atom {}))
-
-(defn- create-uuid-if-needed!
-  "creates a mapping of pid --> UUID in the ids atom if one does not already exist"
-  [n]
-  (if-not (get @ids n)
-    (swap! ids #(assoc % n (util/uuid)))))
-
-;;------------------------------------------------------------------------------
 ;; Dashboard State
 ;;------------------------------------------------------------------------------
 
 (def page-state (atom []))
 
-(defn- update-board-canvas! [id itm place]
+(defn- update-board-canvas! [pid itm place]
   (let [cell-size (if (<= place 3) large-board-cell-size small-board-cell-size)
-        canvas-id (str id "-canvas")]
+        canvas-id (str pid "-canvas")]
     (size-canvas! canvas-id (:board itm) cell-size rows-cutoff)
     (draw-board! canvas-id (:board itm) cell-size (:theme itm) rows-cutoff)))
 
@@ -302,18 +288,17 @@
         (.remove $el)))))
   )
 
-(defn- create-board-container-if-needed! [id]
-  (when-not (dom/by-id id)
-    (.append ($ "#boardsContainer") (board-container id))))
+(defn- create-board-container-if-needed! [pid]
+  (when-not (dom/by-id pid)
+    (.append ($ "#boardsContainer") (board-container pid))))
 
 (defn- update-board! [idx itm]
-  (create-uuid-if-needed! (:pid itm))
-  (create-board-container-if-needed! (get @ids (:pid itm)))
+  (create-board-container-if-needed! (:pid itm))
   (let [place (+ idx 1)
-        id (get @ids (:pid itm))
-        name-id (str id "-name")
-        score-id (str id "-score")]
-    (update-board-canvas! id itm place)
+        pid (:pid itm)
+        name-id (str pid "-name")
+        score-id (str pid "-score")]
+    (update-board-canvas! pid itm place)
     (dom/set-html! name-id (:user itm))
     (dom/set-html! score-id (-> itm :score util/format-number))
 
@@ -332,7 +317,7 @@
       (.addClass ($ (str "#" score-id)) "small-score-7d14a"))
 
     ;; animate to the new place
-    (.velocity ($ (str "#" id))
+    (.velocity ($ (str "#" pid))
       (place->coords place)
       (js-obj "duration" 200))))
 
@@ -340,10 +325,10 @@
   (doall (map-indexed update-board! boards))
 
   ;; clean up boards that are no longer used
-  (let [board-ids (into #{} (vals @ids))]
+  (let [pids (into #{} (map :pid boards))]
     (.each ($ "#boardsContainer .container-13c1f") (fn [_idx $el]
       (let [id (aget $el "id")]
-        (if-not (contains? board-ids id)
+        (if-not (contains? pids id)
           (.remove $el))))))
   )
 
@@ -369,16 +354,14 @@
 ;;   "board-update" event?
 ;; would be nice to not have to loop through page-state here
 (defn on-board-update
-  "Called when receiving a board update from a visible leader."
+  "Called when receiving a board update."
   [str-data]
   (let [board-state (read-string str-data)
-        pid (:pid board-state)
-        id (get @ids pid)]
-
+        pid (:pid board-state)]
     (doall (map-indexed
       (fn [idx itm]
         (if (= pid (:pid itm))
-          (update-board-canvas! id board-state (inc idx))))
+          (update-board-canvas! pid board-state (inc idx))))
       @page-state))))
 
 ;; TODO: this should be renamed from "leader", but need to change the backend
@@ -407,13 +390,7 @@
         s (mod total-seconds 60)
         s-str (if (< s 10) (str "0" s) s)
         time-str (str m ":" s-str)]
-    (dom/set-html! "timeLeft" time-str))
-
-  ;; clear the ids atom when the round is over
-  ;; NOTE: this is a hack, but it should do the trick to reset ids every round
-  (if (= total-seconds 0)
-    (reset! ids {}))
-  )
+    (dom/set-html! "timeLeft" time-str)))
 
 (defn- shuffle-page-state []
   (reset! page-state (shuffle test-state)))
