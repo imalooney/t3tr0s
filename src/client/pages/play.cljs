@@ -201,9 +201,9 @@
   (reset! client.game.core/battle false)
   (dom/set-panel-body! 2 (game-html false))
   (dom/set-bw-background!)
-  (client.game.core/init)
-  (reset! game-started? true)
-  (dom/animate-to-panel 2))
+  (dom/animate-to-panel 2 (fn []
+    (client.game.core/init)
+    (reset! game-started? true))))
 
 (defn cleanup!
   []
