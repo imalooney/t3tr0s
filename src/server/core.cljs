@@ -54,7 +54,7 @@
 
 (declare go-go-next-game-countdown!)
 
-(def game-count
+(def current-round-id
   "Number of games started since server started (used to identify games)"
   (atom 0))
 
@@ -92,12 +92,12 @@
   (atom {}))
 
 (defn rank-players
-  "Get players for the given game sorted by rank for the given mode."
-  [game-id mode]
+  "Get players for the given game sorted by rank."
+  [game-id]
   (->> (vals @players)
        (filter #(= game-id (:game %)))
        (sort-by :score)
-       (reverse)))
+       reverse))
 
 (defn go-go-countdown!
   "Start the countdown"
@@ -133,10 +133,10 @@
   (reset! game-mode mode)
 
   ; Update the game count to uniquely identify current game.
-  (swap! game-count inc)
+  (swap! current-round-id inc)
 
   ; Log the game start.
-  (util/tlog "Starting the game: " (name mode) " " @game-count)
+  (util/tlog "Starting the game: " (name mode) " " @current-round-id)
 
   ; Make lobby players navigate to a countdown screen.
   (.. io (to "lobby") (emit "start-game"))
@@ -167,7 +167,7 @@
               (recur (dec s)))))))
 
     ; Calculate final ranks.
-    (let [ranks (rank-players @game-count @game-mode)]
+    (let [ranks (rank-players @current-round-id)]
 
       ; Show ranks on server console.
       (util/tlog "Game Results:")
@@ -261,7 +261,7 @@
 (defn- on-score-update
   "Called when a player's score is updated."
   [io]
-  (let [ranks (rank-players @game-count @game-mode)]
+  (let [ranks (rank-players @current-round-id)]
     (.. io (to "dashboard") (emit "leader-update" (pr-str ranks)))))
 
 (defn- on-update-player
@@ -275,7 +275,8 @@
 
     ; Merge in the updated data into the player structure.
     ; Also update the game id, so we know which players are in the current game.
-    (swap! players update-in [pid] merge player-data {:game @game-count :pid pid})
+    (swap! players update-in [pid] merge player-data
+      {:game @current-round-id :pid pid})
 
     ; Call score update events.
     (if (contains? player-data :score)
