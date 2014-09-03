@@ -202,7 +202,7 @@
   (pieces-table)
   [:div.line-8975a]
   [:div.label-39b9c "Lines"]
-  [:div#totalLines.metric-b93a8 "1,214"]
+  [:div#totalLines.metric-b93a8 "0"]
   [:div.line-8975a]
   [:div.label-39b9c "Time Left"]
   [:div#timeLeft.metric-b93a8])
@@ -347,7 +347,14 @@
           (.remove $el))))))
   )
 
+(defn- update-total-lines! [players]
+  (dom/set-html! "totalLines"
+    (if (empty? players)
+      "0"
+      (reduce + (map :total-lines players)))))
+
 (defn- on-change-page-state [_ _ _ new-s]
+  (update-total-lines! new-s)
   (set-container-height! (count new-s))
   (update-place-numbers! (count new-s))
   (update-all-boards! new-s))

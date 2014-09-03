@@ -79,10 +79,6 @@
   (atom {:duration 300 ; Length in seconds of a multiplayer round. Default is 5 minutes.
          :cooldown 90})) ; Length in seconds before automatically starting a new game. Setting 0 requires manual start.
 
-(def leaders
-  "The leaders in the current game."
-  (atom []))
-
 (def initial-piece-counts
   {:I 0
    :T 0
@@ -129,9 +125,6 @@
 
   ; Reset the piece counts.
   (reset! piece-counts initial-piece-counts)
-
-  ; Empty the leaders.
-  (swap! leaders empty)
 
   ; Create new quit channel for this game.
   (reset! quit-game-chan (chan))
@@ -268,8 +261,7 @@
 (defn- on-score-update
   "Called when a player's score is updated."
   [io]
-  (let [ranks (take 10 (rank-players @game-count @game-mode))]
-    (reset! leaders ranks)
+  (let [ranks (rank-players @game-count @game-mode)]
     (.. io (to "dashboard") (emit "leader-update" (pr-str ranks)))))
 
 (defn- on-update-player
