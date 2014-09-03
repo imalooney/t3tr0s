@@ -526,7 +526,7 @@
   ;; NOTE: this is just a quick hack to make the modal disappear after the
   ;;   scramble board is gone
   ;; it was jarring visually otherwise
-  (js/setTimeout hide-paused-modal! 50)
+  (js/setTimeout hide-paused-modal! 20)
 
   (go-go-gravity!)
   (reset! paused? false)
