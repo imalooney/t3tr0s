@@ -17,8 +17,8 @@ past.
 
 ## Implementation
 
-__In the beginning__, we worked on the game at least once a week.  It got pretty
-crazy at the end closer to deadline, but our initial process is documented
+__In the beginning__, we worked on the game at least once a week.  It got p͏͌re̕tty
+c͇̩ͨr᷊̎͘aͤͪ̏z̒̃̃y̬ͣ̆ at the end closer to deadline, but our initial process is documented
 in blogs below:
 
 - [DevBlog 1](devblog/day01.md) - data, collision, rotation, drawing
