@@ -43,7 +43,7 @@ __In the end__, we wrapped up our work in the following forms:
 - [Interactive Guide to Tetris in ClojureScript](https://github.com/shaunlebron/t3tr0s-slides)
 - [A minimal version intended for readability](https://github.com/shaunlebron/t3tr0s-bare)
 
-[![r-slides](public/img/r-slides.png)](https://github.com/shaunlebron/t3tr0s-slides)[![r-bare](public/img/r-bare.png)](https://github.com/shaunlebron/t3tr0s-bare)
+<a href="https://github.com/shaunlebron/t3tr0s-slides"><img src="public/img/r-slides.png" width="465px"></a><a href="https://github.com/shaunlebron/t3tr0s-bare"><img src="public/img/r-bare.png" width="260px"></a>
 
 ## Setup
 
