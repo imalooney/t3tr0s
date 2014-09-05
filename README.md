@@ -40,8 +40,8 @@ in blogs below:
 
 __In the end__, we wrapped up our work in the following forms:
 
-- [Interactive Guide to Tetris in ClojureScript](https://github.com/shaunlebron/t3tr0s-slides)
-- [A minimal version intended for readability](https://github.com/shaunlebron/t3tr0s-bare)
+- [Interactive Guide to Tetris in ClojureScript](https://github.com/shaunlebron/t3tr0s-slides) (below on the left)
+- [A minimal version intended for readability](https://github.com/shaunlebron/t3tr0s-bare) (below on the right)
 
 <a href="https://github.com/shaunlebron/t3tr0s-slides"><img src="public/img/r-slides.png" width="465px"></a><a href="https://github.com/shaunlebron/t3tr0s-bare"><img src="public/img/r-bare.png" width="260px"></a>
 
