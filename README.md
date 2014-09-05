@@ -43,6 +43,8 @@ __In the end__, we wrapped up our work in the following forms:
 - [Interactive Guide to Tetris in ClojureScript](https://github.com/shaunlebron/t3tr0s-slides)
 - [A minimal version intended for readability](https://github.com/shaunlebron/t3tr0s-bare)
 
+[![r-slides](public/img/r-slides.png)](https://github.com/shaunlebron/t3tr0s-slides)[![r-bare](public/img/r-bare.png)](https://github.com/shaunlebron/t3tr0s-bare)
+
 ## Setup
 
 1. Install [Leiningen] and [Node.js].
