@@ -13,7 +13,7 @@ remake enabled us to host a small, local tournament to share a montage
 of the game's history, with each level resembling a different version from its
 past.
 
-## Implementation
+## DevBlog
 
 __In the beginning__, we worked on the game at least once a week.  It got p͏͌re̕tty
 c͇̩ͨr᷊̎͘aͤͪ̏z̒̃̃y̬ͣ̆ at the end closer to deadline, but our initial process is documented
@@ -36,12 +36,14 @@ in blogs below:
  ̷ ̙c̹ḩa̯t͆r͘o͗o̿m̋ ͎u͗s̬e᷇r̪ ̺l᷇i̩sͪt̝i͉n͍g͑,͟ ᷀p̲aͅu̗s̫e᷈ ̹s᷈c̸rͧe̦ēn̕ ̪a͌n̟i͘m͘a̙t̪îo̚n̑s͓,ͩ ̸m͡u̳s͕i͔c͑,ͫ ᷿ĥi̢s̀t̆o̘r᷇y̩ ͥs̙t͋a̹t᷆e᷀ ͮg͏r᷊a̚p̥h̪s̋,̲ ̖g͒âm̖e᷇p͙a̬d̰ ̈s̠u̒p̒p̜oͪr̼t̐,̝ ̢q͔ùǐcͅk̡-̨kͦe᷿y̤ ̓r̊e̯pͨe᷁a᷄t̫ ̈c̬u̘s̖t͑ȯm͌i̗z̫a͈t̿i͠o͕ṇ,ͨ ͆s̱pͦêc̣t̡a͋t͍e̚ ͊s̚c͛r̲eͩe͌ñ ͗u᷆s̫e̺r͖ ̝r᷈ēm͔ỏv͉a̻l̨
  ̘̓͜ ͎̈́᷀o̹̺͚n̯ͯ̏ ̴͌̔d̔̃͜i̴̩̅sͣ̊͊c̺̖̉o̥ͥ̐n̫͎᷀n͉ͨ᷈e̷̡͐c̴͔ͬt̝̒̀,̥͛᷉ ͐̎͂i̤̪᷈n̲ͨ̚ẗ́ͨ͊ḙ͛͂r͔̳᷆a̼͑͟c̘̓ͯt̷͖̪i̪͂̌v̗̂͒ë̓̒ ̶̣ͩp͕͍̋r͒᷈͠ě̮͕s̥̔ͯe̹᷇̾n̨͎͟t̓̅̈́ä̙́͂t̗͆̅i̸̮̓ơͯ͘n͚ͣ͟ş᷿᷇,̨̄᷉ ̼᷄̂e̫͆͟v͈͒̄e᷂ͮ᷃n̵̓ͬt̗̓̋-̛̆̆p̥ͩ͜l̸̷̈́a͓̬̅ņ̐͞n̜̒͠iͨ᷆̂n̴̮᷊ǵ̻̂ ͂͛᷈(̖͉ͬn᷃᷃̾o͈̒̋ ̸̼͜b̰̓̚l̠̀̓o̻̎̌g̭̥᷈)͔᷿͞
 
-__In the end__, we wrapped up our work in the following forms:
+## Learn
+
+__In the end__, we wrapped up what we learned into an educational resource:
 
 - [Interactive Guide to Tetris in ClojureScript](https://github.com/shaunlebron/t3tr0s-slides) (below on the left)
 - [A minimal version intended for readability](https://github.com/shaunlebron/t3tr0s-bare) (below on the right)
 
-<a href="https://github.com/shaunlebron/t3tr0s-slides"><img src="public/img/r-slides.png" width="465px"></a><a href="https://github.com/shaunlebron/t3tr0s-bare"><img src="public/img/r-bare.png" width="260px"></a>
+<a href="https://github.com/shaunlebron/t3tr0s-slides"><img width="64%" src="public/img/r-slides.png" width="465px"></a><a href="https://github.com/shaunlebron/t3tr0s-bare"><img width="35%" src="public/img/r-bare.png" width="260px"></a>
 
 ## Setup
 
