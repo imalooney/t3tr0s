@@ -43,7 +43,7 @@ __In the end__, we wrapped up what we learned into an educational resource:
 - [Interactive Guide to Tetris in ClojureScript](https://github.com/shaunlebron/t3tr0s-slides) (below on the left)
 - [A minimal version intended for readability](https://github.com/shaunlebron/t3tr0s-bare) (below on the right)
 
-<a href="https://github.com/shaunlebron/t3tr0s-slides"><img width="64%" src="public/img/r-slides.png" width="465px"></a><a href="https://github.com/shaunlebron/t3tr0s-bare"><img width="35%" src="public/img/r-bare.png" width="260px"></a>
+<a href="https://github.com/shaunlebron/t3tr0s-slides"><img width="64%" src="public/img/r-slides.png"></a><a href="https://github.com/shaunlebron/t3tr0s-bare"><img width="36%" src="public/img/r-bare.png"></a>
 
 ## Setup
 
