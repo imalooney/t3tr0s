@@ -1,7 +1,7 @@
 <a href="http://t3tr0s.com">
 <img src="public/img/logo.png">
 
-<img src="http://i.imgur.com/Y3cvDx2.gif">
+<img src="public/img/T3TR0S_themes.png">
 </a>
 
 [Click to Play!](http://t3tr0s.com)
