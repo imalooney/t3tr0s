@@ -45,7 +45,7 @@ __In the end__, we wrapped up what we learned into an educational resource:
 
 <a href="https://github.com/shaunlebron/t3tr0s-slides"><img width="64%" src="public/img/r-slides.png" width="465px"></a><a href="https://github.com/shaunlebron/t3tr0s-bare"><img width="35%" src="public/img/r-bare.png" width="260px"></a>
 
-## Setup
+## Development Setup
 
 1. Install [Leiningen] and [Node.js].
 1. Run the following in the project directory
@@ -69,8 +69,6 @@ __In the end__, we wrapped up what we learned into an educational resource:
 
 1. Open <http://localhost:1984> in your browser.
 
-### Browser REPL
-
 If you want a REPL connected to the browser for interactive testing:
 
 ```
@@ -78,26 +76,14 @@ lein repl
 > (brepl)
 ```
 
-### Recording GIFs
+## Team
 
-If you want to record a GIF of gameplay:
-
-1. Create empty "gif" directory at the project root.
-1. Play the game in the browser (with the developer console open).
-1. Press "shift" to start/stop recording. (watch the console)
-1. To write the recording to a file, type this in the browser REPL:
-
-    ```clj
-    (ns client.vcr)
-    (publish-record!)
-    ```
-
-1. In the "gif" folder, you should see "anim.gif" and intermediate PNG frames.
-
-## References
-
-- <http://www.tetrisfriends.com/help/tips_appendix.php>
-- <http://tetris.wikia.com/wiki/Tetris_Guideline>
+- Elaine Looney
+- Shaun LeBron
+- Luis Gutierrez
+- Chris Oakman
+- Brett Darnell
+- Phil Gambling
 
 ## License
 
