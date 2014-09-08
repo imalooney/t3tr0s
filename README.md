@@ -10,8 +10,9 @@ We mainly did this to
 [produce the pleasure](http://youtu.be/nTDRY8aPy7c?t=3m14s)
 and to celebrate the 30th anniversary of its original release in 1984.  Our
 remake enabled us to host a small, local tournament to share a montage
-of the game's history, with each level resembling a different version from its
-past.
+of the game's history.  Choose from 10 themes representing the popular versions
+from its past.
+
 
 ## DevBlog
 
