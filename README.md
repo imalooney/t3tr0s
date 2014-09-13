@@ -79,12 +79,12 @@ lein repl
 
 ## Team
 
-- Elaine Looney
-- Shaun LeBron
-- Luis Gutierrez
-- Chris Oakman
-- Brett Darnell
-- Phil Gambling
+- Elaine Looney - [@loonelainey](https://twitter.com/loonelainey), [github.com/imalooney](https://github.com/imalooney)
+- Shaun Williams - [@shaunlebron](https://twitter.com/shaunlebron), [github.com/shaunlebron](https://github.com/shaunlebron)
+- Luis Gutierrez - [@Dudemullet](https://twitter.com/Dudemullet), [github.com/dudemullet](https://github.com/dudemullet)
+- Chris Oakman - [@4c4fc7](https://twitter.com/4c4fc7), [github.com/oakmac](https://github.com/oakmac)
+- Brett Darnell - [@brettdarnell](https://twitter.com/brettdarnell), [darnology.com](http://www.darnology.com/)
+- Phil Gambling - [@pmhg](https://twitter.com/pmhg), [github.com/pgambling](https://github.com/pgambling)
 
 ## License
 
