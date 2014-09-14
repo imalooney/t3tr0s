@@ -16,9 +16,9 @@ from its past.
 
 ## DevBlog
 
-__In the beginning__, we worked on the game at least once a week.  It got p͏͌re̕tty
-c͇̩ͨr᷊̎͘aͤͪ̏z̒̃̃y̬ͣ̆ at the end closer to deadline, but our initial process is documented
-in blogs below:
+__In the beginning__, we worked on the game at least once a week.  It got
+pretty crazy at the end closer to deadline, but our initial process is
+documented in blogs below:
 
 - [DevBlog 1](devblog/day01.md) - data, collision, rotation, drawing
 - [DevBlog 2](devblog/day02.md) - basic piece control
@@ -31,11 +31,8 @@ in blogs below:
 - Day 9 - live board broadcasting (no blog)
 - Day 10 - chat room, more tilemaps, page layouts (no blog)
 - Day 11 - page routing, username (no blog)
-- Day N - socket netcode, socket rooms, page initialization/cleanup, dashboard
-  broadcasting, MC screen, server game go-blocks, full-page gif recording, page
-  re-entry and͞ redirection,̔ global piece stati᷊stics, spec̨tate board sw̠apping c͛ss ar̫tifacts, gravitÿ́ go-block bl̙unders, authentic d̛isplay ârtifact theming,
- ̷ ̙c̹ḩa̯t͆r͘o͗o̿m̋ ͎u͗s̬e᷇r̪ ̺l᷇i̩sͪt̝i͉n͍g͑,͟ ᷀p̲aͅu̗s̫e᷈ ̹s᷈c̸rͧe̦ēn̕ ̪a͌n̟i͘m͘a̙t̪îo̚n̑s͓,ͩ ̸m͡u̳s͕i͔c͑,ͫ ᷿ĥi̢s̀t̆o̘r᷇y̩ ͥs̙t͋a̹t᷆e᷀ ͮg͏r᷊a̚p̥h̪s̋,̲ ̖g͒âm̖e᷇p͙a̬d̰ ̈s̠u̒p̒p̜oͪr̼t̐,̝ ̢q͔ùǐcͅk̡-̨kͦe᷿y̤ ̓r̊e̯pͨe᷁a᷄t̫ ̈c̬u̘s̖t͑ȯm͌i̗z̫a͈t̿i͠o͕ṇ,ͨ ͆s̱pͦêc̣t̡a͋t͍e̚ ͊s̚c͛r̲eͩe͌ñ ͗u᷆s̫e̺r͖ ̝r᷈ēm͔ỏv͉a̻l̨
- ̘̓͜ ͎̈́᷀o̹̺͚n̯ͯ̏ ̴͌̔d̔̃͜i̴̩̅sͣ̊͊c̺̖̉o̥ͥ̐n̫͎᷀n͉ͨ᷈e̷̡͐c̴͔ͬt̝̒̀,̥͛᷉ ͐̎͂i̤̪᷈n̲ͨ̚ẗ́ͨ͊ḙ͛͂r͔̳᷆a̼͑͟c̘̓ͯt̷͖̪i̪͂̌v̗̂͒ë̓̒ ̶̣ͩp͕͍̋r͒᷈͠ě̮͕s̥̔ͯe̹᷇̾n̨͎͟t̓̅̈́ä̙́͂t̗͆̅i̸̮̓ơͯ͘n͚ͣ͟ş᷿᷇,̨̄᷉ ̼᷄̂e̫͆͟v͈͒̄e᷂ͮ᷃n̵̓ͬt̗̓̋-̛̆̆p̥ͩ͜l̸̷̈́a͓̬̅ņ̐͞n̜̒͠iͨ᷆̂n̴̮᷊ǵ̻̂ ͂͛᷈(̖͉ͬn᷃᷃̾o͈̒̋ ̸̼͜b̰̓̚l̠̀̓o̻̎̌g̭̥᷈)͔᷿͞
+- Day N - socket netcode, spectate mode, MC controls, key-repeat control,
+  chatroom, authentic theming, history graphs, ...
 
 ## Learn
 
