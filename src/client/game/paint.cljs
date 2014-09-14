@@ -1,7 +1,6 @@
 (ns client.game.paint
   (:require
     [client.dom :as dom]
-    [client.game.multiplayer :refer [opponent-scale]]
     [client.game.board :refer [empty-board
                                read-board
                                board-size
