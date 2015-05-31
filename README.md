@@ -51,6 +51,9 @@ __In the end__, we wrapped up what we learned into an educational resource:
     ```sh
     # install node.js dependencies
     npm install
+    
+    # install grunt
+    npm install -g grunt-cli
 
     # compile LESS file
     grunt
