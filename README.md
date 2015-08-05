@@ -31,8 +31,10 @@ documented in blogs below:
 - Day 9 - live board broadcasting (no blog)
 - Day 10 - chat room, more tilemaps, page layouts (no blog)
 - Day 11 - page routing, username (no blog)
-- Day N - socket netcode, spectate mode, MC controls, key-repeat control,
+- Day N - [socket netcode], spectate mode, MC controls, key-repeat control,
   chatroom, authentic theming, history graphs, ...
+
+[socket netcode]:http://i.imgur.com/oG9hUpg.jpg
 
 ## Learn
 
