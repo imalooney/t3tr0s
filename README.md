@@ -6,8 +6,7 @@ __[PLAY HERE](http://t3tr0s.com)__
 
 We re-created Tetris™ in
 [ClojureScript](https://github.com/shaunlebron/ClojureScript-Syntax-in-15-minutes).
-We mainly did this to
-[produce the pleasure](http://youtu.be/nTDRY8aPy7c?t=3m14s)
+We mainly did this to [produce the pleasure](http://youtu.be/nTDRY8aPy7c?t=3m14s)
 and to celebrate the 30th anniversary of its original release in 1984.  Our
 remake enabled us to host a small, local tournament to share a montage
 of the game's history.  Choose from 10 themes representing the popular versions
