@@ -83,7 +83,7 @@ lein repl
 - Elaine Looney - [@loonelainey](https://twitter.com/loonelainey), [github.com/imalooney](https://github.com/imalooney)
 - Shaun Williams - [@shaunlebron](https://twitter.com/shaunlebron), [github.com/shaunlebron](https://github.com/shaunlebron), [shaunlebron.com](http://shaunlebron.com/)
 - Luis Gutierrez - [@Dudemullet](https://twitter.com/Dudemullet), [github.com/dudemullet](https://github.com/dudemullet)
-- Chris Oakman - [@oakmac_](https://twitter.com/4c4fc7), [github.com/oakmac](https://github.com/oakmac)
+- Chris Oakman - [@oakmac1](https://twitter.com/oakmac1), [github.com/oakmac](https://github.com/oakmac)
 - Brett Darnell - [@brettdarnell](https://twitter.com/brettdarnell), [darnology.com](http://www.darnology.com/)
 - Phil Gambling - [@pmhg](https://twitter.com/pmhg), [github.com/pgambling](https://github.com/pgambling)
 
