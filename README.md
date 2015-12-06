@@ -6,7 +6,7 @@ __[PLAY HERE](http://t3tr0s.com)__
 
 We re-created Tetris™ in
 [ClojureScript](https://github.com/shaunlebron/ClojureScript-Syntax-in-15-minutes).
-We mainly did this to
+We mainly did this to
 [produce the pleasure](http://youtu.be/nTDRY8aPy7c?t=3m14s)
 and to celebrate the 30th anniversary of its original release in 1984.  Our
 remake enabled us to host a small, local tournament to share a montage
@@ -84,7 +84,7 @@ lein repl
 - Elaine Looney - [@loonelainey](https://twitter.com/loonelainey), [github.com/imalooney](https://github.com/imalooney)
 - Shaun Williams - [@shaunlebron](https://twitter.com/shaunlebron), [github.com/shaunlebron](https://github.com/shaunlebron), [shaunlebron.com](http://shaunlebron.com/)
 - Luis Gutierrez - [@Dudemullet](https://twitter.com/Dudemullet), [github.com/dudemullet](https://github.com/dudemullet)
-- Chris Oakman - [@4c4fc7](https://twitter.com/4c4fc7), [github.com/oakmac](https://github.com/oakmac)
+- Chris Oakman - [@oakmac_](https://twitter.com/4c4fc7), [github.com/oakmac](https://github.com/oakmac)
 - Brett Darnell - [@brettdarnell](https://twitter.com/brettdarnell), [darnology.com](http://www.darnology.com/)
 - Phil Gambling - [@pmhg](https://twitter.com/pmhg), [github.com/pgambling](https://github.com/pgambling)
 
