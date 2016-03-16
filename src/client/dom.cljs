@@ -1,7 +1,7 @@
 (ns client.dom
   (:require
     client.html
-    [client.util :as util]))
+    [client.util :refer [js-log log]]))
 
 (def $ js/jQuery)
 
@@ -46,20 +46,20 @@
     (.removeClass "bg-color-c025c")
     (.addClass "bg-grey-e2019")))
 
-(def ^:private app-container-id (util/uuid))
-(def ^:private panels-container-id (util/uuid))
+(def ^:private app-container-id (str (random-uuid)))
+(def ^:private panels-container-id (str (random-uuid)))
 
 (defn set-app-body!
   "Fills the app with html from the root."
   [html]
-  (if-not (by-id app-container-id)
+  (when-not (by-id app-container-id)
     (.prepend ($ "body") (str "<div id=" app-container-id "></div>")))
   (set-html! app-container-id html))
 
 (defn set-panel-body!
   "Fills a panel with html. Will create the panels if they do not exist."
   [panel-num html]
-  (if-not (by-id panels-container-id)
+  (when-not (by-id panels-container-id)
     (set-app-body! (client.html/panels panels-container-id)))
   (set-html! (str "panel" panel-num) html))
 
@@ -69,11 +69,12 @@
 (def panel-animation-speed 200)
 
 (defn animate-to-panel
-  ([panel-num] (animate-to-panel panel-num (fn [] nil)))
+  ([panel-num]
+   (animate-to-panel panel-num (fn [] nil)))
   ([panel-num next-fn]
-    (reset! current-panel panel-num)
-    (.velocity ($ (str "#" panels-container-id))
-      (js-obj "left" (str (* -1 panel-width (dec panel-num)) "px"))
-      (js-obj
-        "complete" next-fn
-        "duration" panel-animation-speed))))
+   (reset! current-panel panel-num)
+   (let [$panel ($ (str "#" panels-container-id))]
+     (.velocity $panel
+       (js-obj "left" (str (* -1 panel-width (dec panel-num)) "px"))
+       (js-obj "complete" next-fn
+               "duration" panel-animation-speed)))))

@@ -19,16 +19,16 @@
 ;; Socket Interop
 ;;------------------------------------------------------------------------------
 
-(def ^:private socket-id (util/uuid))
+(def ^:private socket-id (str (random-uuid)))
 
 (defn on [evt-name evt-fn]
   (.on (aget js/window socket-id) evt-name evt-fn))
 
 (defn emit
   ([evt-name]
-    (.emit (aget js/window socket-id) evt-name))
+   (.emit (aget js/window socket-id) evt-name))
   ([evt-name evt-data]
-    (.emit (aget js/window socket-id) evt-name (pr-str evt-data))))
+   (.emit (aget js/window socket-id) evt-name (pr-str evt-data))))
 
 (defn connect!
   "Create a web socket connection to the server."

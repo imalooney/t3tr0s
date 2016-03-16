@@ -47,20 +47,20 @@
 ;; Themes
 ;;------------------------------------------------------------------------------
 
-(def themes {
-  0 {:year "1984" :platform "Electronika 60"}
-  10 {:year "1984" :platform "Electronika 60"}
-  1 {:year "1986" :platform "MS DOS"}
-  2 {:year "1986" :platform "Tengen/Atari Arcade"}
-  3 {:year "1989" :platform "Gameboy"}
-  13 {:year "1989" :platform "Gameboy"}
-  4 {:year "1989" :platform "NES"}
-  5 {:year "1989" :platform "Sega Genesis"}
-  6 {:year "1998" :platform "Gameboy color"}
-  7 {:year "2000" :platform "TI-83"}
-  8 {:year "2002" :platform "Flash"}
-  9 {:year "2012" :platform "Facebook"}
-  19 {:year "2014" :platform "Mario"}})
+(def themes
+  {0  {:year "1984" :platform "Electronika 60"}
+   10 {:year "1984" :platform "Electronika 60"}
+   1  {:year "1986" :platform "MS DOS"}
+   2  {:year "1986" :platform "Tengen/Atari Arcade"}
+   3  {:year "1989" :platform "Gameboy"}
+   13 {:year "1989" :platform "Gameboy"}
+   4  {:year "1989" :platform "NES"}
+   5  {:year "1989" :platform "Sega Genesis"}
+   6  {:year "1998" :platform "Gameboy color"}
+   7  {:year "2000" :platform "TI-83"}
+   8  {:year "2002" :platform "Flash"}
+   9  {:year "2012" :platform "Facebook"}
+   19 {:year "2014" :platform "Mario"}})
 
 ;;------------------------------------------------------------
 ;; STATE OF THE GAME
@@ -361,9 +361,7 @@
 
     (swap! state update-in [:total-lines] + n)
 
-    (try-publish-score!)
-
-    )
+    (try-publish-score!))
 
   (display-points!))
 
@@ -497,26 +495,26 @@
     (swap! state assoc :theme (int theme))
     "")) ;; TODO: why is this empty string returning here?
 
-(def key-names {
-  37 :left
-  38 :up
-  39 :right
-  40 :down
-  32 :space
-  16 :shift
-  80 :p
-  77 :m
+(def key-names
+  {37 :left
+   38 :up
+   39 :right
+   40 :down
+   32 :space
+   16 :shift
+   80 :p
+   77 :m
 
-  49 :one
-  50 :two
-  51 :three
-  52 :four
-  53 :five
-  54 :six
-  55 :seven
-  56 :eight
-  57 :nine
-  48 :zero})
+   49 :one
+   50 :two
+   51 :three
+   52 :four
+   53 :five
+   54 :six
+   55 :seven
+   56 :eight
+   57 :nine
+   48 :zero})
 
 (defn resume-game!
   "Restores the state of the board pre-pausing, and resumes gravity"
@@ -636,8 +634,7 @@
           theme (:theme @state)
           next-piece (:next-piece @state)]
       (draw-board! "mainGameCanvas" board cell-size theme rows-cutoff)
-      (draw-board! "nextPieceCanvas" (next-piece-board next-piece) cell-size theme)))
-  )
+      (draw-board! "nextPieceCanvas" (next-piece-board next-piece) cell-size theme))))
 
 (defn init []
 

@@ -4,7 +4,7 @@
   (:require
     [cljs.core.async :refer [<! timeout alts! close! chan sliding-buffer
                              filter< put!]]
-    [clojure.walk]
+    [clojure.walk :refer [keywordize-keys]]
     [cljs.reader :refer [read-string]]
     [server.gif :refer [create-html-gif create-canvas-gif]]
     [server.html :as html]
@@ -27,8 +27,8 @@
 
 (def config
   (-> (js/require "./config.json")
-    js->clj
-    clojure.walk/keywordize-keys))
+      js->clj
+      keywordize-keys))
 
 ;;------------------------------------------------------------------------------
 ;; Player IDs
@@ -227,13 +227,13 @@
         ; no cooldown set, then just wait for mc to manually start the game
         (util/tlog "waiting for manual start of next game")))
 
-      ; wait on the start game channel
-      ; note: if the cooldown timer was interrupted then this should
-      ;       return immediately
-      (<! @start-game-chan)
+    ; wait on the start game channel
+    ; note: if the cooldown timer was interrupted then this should
+    ;       return immediately
+    (<! @start-game-chan)
 
-      ; It's game time, GO!
-      (go-go-game! io :time)))
+    ; It's game time, GO!
+    (go-go-game! io :time)))
 
 (defn- signal-num-players-in-lobby!
   "Publishes the number of players waiting in the lobby in case next game countdown is on hold."
@@ -330,7 +330,7 @@
     (send-lobby-players-update! io)
     (signal-num-players-in-lobby!)))
 
-(def socket-id (util/uuid))
+(def socket-id (str (random-uuid)))
 
 (defn- emit-to-socket [event-name data]
   (.emit (aget js/global socket-id) event-name (pr-str data)))
@@ -353,14 +353,13 @@
 (defn- on-chat-msg [data-str]
   (let [data (read-string data-str)]
     (swap! chat (fn [c]
-      (if (= (count c) max-num-chat)
-        (into [] (rest (conj c data)))
-        (conj c data))))))
+                  (if (= (count c) max-num-chat)
+                    (into [] (rest (conj c data)))
+                    (conj c data))))))
 
 (defn- on-game-update [data-str]
   (let [data (read-string data-str)]
-    (util/log data)
-    ))
+    (util/log data)))
 
 (defn- on-join-dashboard [the-socket io]
   (.join the-socket "dashboard")
@@ -395,7 +394,7 @@
 (defn on-socket-connect
   "Initialize the web socket."
   [io socket]
-  (let [pid (util/uuid)]
+  (let [pid (str (random-uuid))]
 
     (util/tlog "player " (pprint-pid pid) " connected")
 

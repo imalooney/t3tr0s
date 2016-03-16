@@ -20,7 +20,7 @@
   "Converts a Data URL to a file buffer (for writing to file)."
   [data-url]
   (let [regex #"^data:.+/(.+);base64,(.*)$"
-       [_ ext data] (.match data-url regex)]
+        [_ ext data] (.match data-url regex)]
     (js/Buffer. data "base64")))
 
 (defn create-gif
@@ -30,9 +30,9 @@
         gif-file (str cwd "/anim.gif")
         cmd-file (str cwd "/anim.sh")
         cmd (join " " (concat
-               ["convert"]
-               (map #(str "-delay " %1 " " %2) delays images)
-               ["-layers OptimizeTransparency -loop 0" gif-file]))]
+                        ["convert"]
+                        (map #(str "-delay " %1 " " %2) delays images)
+                        ["-layers OptimizeTransparency -loop 0" gif-file]))]
 
     ; Run imagemagick command for generating gif.
     (println cmd)

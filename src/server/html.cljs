@@ -22,12 +22,12 @@
 
 (hiccups/defhtml footer []
   [:script {:src "/socket.io/socket.io.js"}]
-  [:script {:src "/js/jquery-2.1.1.min.js"}]
-  [:script {:src "/js/velocity-1.0.0.min.js"}]
   [:script "window.T3TR0S_CONFIG = " (.stringify js/JSON (client-config)) ";"]
   (if (:minified-client server.core.config)
     [:script {:src "/js/client.min.js"}]
     [:script {:src "/js/client.js"}])
+  ;; NOTE: velocity must come after jQuery, which is bundled in our CLJS file
+  [:script {:src "/js/velocity-1.2.3.min.js"}]
   "</body>"
   "</html>")
 

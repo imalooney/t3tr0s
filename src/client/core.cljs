@@ -1,5 +1,6 @@
 (ns client.core
   (:require
+    cljsjs.jquery
     client.dom
     [client.repl :as repl]
     client.routes

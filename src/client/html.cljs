@@ -1,5 +1,6 @@
 (ns client.html
-  (:require-macros [hiccups.core :as hiccups])
+  (:require-macros
+    [hiccups.core :as hiccups])
   (:require
     hiccups.runtime
     [client.util :as util]))

@@ -52,7 +52,7 @@ __In the end__, we wrapped up what we learned into an educational resource:
     ```sh
     # install node.js dependencies
     npm install
-    
+
     # install grunt
     npm install -g grunt-cli
 
@@ -60,7 +60,7 @@ __In the end__, we wrapped up what we learned into an educational resource:
     grunt
 
     # compile ClojureScript files (this may take a minute)
-    lein cljsbuild once
+    lein clean && lein cljsbuild once
 
     # copy the example config file (edit as needed)
     cp example.config.json config.json
