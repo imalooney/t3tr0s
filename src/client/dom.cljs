@@ -38,13 +38,13 @@
 
 (defn set-color-background! []
   (-> ($ "body")
-    (.removeClass "bg-grey-e2019")
-    (.addClass "bg-color-c025c")))
+      (.removeClass "bg-grey-e2019")
+      (.addClass "bg-color-c025c")))
 
 (defn set-bw-background! []
   (-> ($ "body")
-    (.removeClass "bg-color-c025c")
-    (.addClass "bg-grey-e2019")))
+      (.removeClass "bg-color-c025c")
+      (.addClass "bg-grey-e2019")))
 
 (def ^:private app-container-id (str (random-uuid)))
 (def ^:private panels-container-id (str (random-uuid)))
