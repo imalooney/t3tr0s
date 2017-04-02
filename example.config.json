@@ -2,5 +2,6 @@
   "port": 1984,
   "mc-password": "YOUR MC PASSWORD HERE",
   "minified-client": true,
-  "use-repl": false
+  "use-repl": false,
+  "single-player-only": false
 }

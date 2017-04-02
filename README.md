@@ -1,8 +1,8 @@
-<a href="http://t3tr0s.com">
+<a href="http://t3tr0s.github.io">
 <img src="public/img/banner.png">
 </a>
 
-__[PLAY HERE](http://t3tr0s.com)__
+__[PLAY HERE](https://t3tr0s.github.io)__ (single player only)
 
 We re-created Tetris™ in
 [ClojureScript](https://github.com/shaunlebron/ClojureScript-Syntax-in-15-minutes).
@@ -76,6 +76,14 @@ If you want a REPL connected to the browser for interactive testing:
 ```
 lein repl
 > (brepl)
+```
+
+## Deploying
+
+To deploy a single-player build to https://t3tr0s.github.io
+
+```sh
+./deploy-singleplayer.sh
 ```
 
 ## Team

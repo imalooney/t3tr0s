@@ -10,11 +10,13 @@ pom.xml
 
 *.swp
 
+/deployed/
 /public/out/
 /public/js/client.js
 /public/js/client.min.js
-/server.js
 /public/repl-url
+/public/index.html
+/server.js
 /.repl
 /.nrepl-port
 /node_modules

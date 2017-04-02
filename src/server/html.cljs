@@ -18,10 +18,12 @@
 ;; NOTE: add other config items here as needed
 (defn- client-config []
   (js-obj
-    "use-repl" (boolean (:use-repl server.core.config))))
+    "use-repl" (boolean (:use-repl server.core.config))
+    "single-player-only" (boolean (:single-player-only server.core.config))))
 
 (hiccups/defhtml footer []
-  [:script {:src "/socket.io/socket.io.js"}]
+  (when-not (:single-player-only server.core.config)
+    [:script {:src "/socket.io/socket.io.js"}])
   [:script "window.T3TR0S_CONFIG = " (.stringify js/JSON (client-config)) ";"]
   (if (:minified-client server.core.config)
     [:script {:src "/js/client.min.js"}]

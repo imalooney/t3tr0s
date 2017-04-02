@@ -2,7 +2,8 @@
   (:require
     [cljs.reader :refer [read-string]]
     [client.state :as state]
-    [client.util :as util]))
+    [client.util :as util]
+    [client.config :refer [single-player-only?]]))
 
 (declare
   emit)
@@ -29,6 +30,14 @@
    (.emit (aget js/window socket-id) evt-name))
   ([evt-name evt-data]
    (.emit (aget js/window socket-id) evt-name (pr-str evt-data))))
+
+(defn stub-connection!
+  "Allow us to play without socket connection w/o changing game code."
+  []
+  (aset js/window socket-id
+    #js {:on (fn [])
+         :emit (fn [])
+         :removeAllListeners (fn [])}))
 
 (defn connect!
   "Create a web socket connection to the server."

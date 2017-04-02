@@ -20,6 +20,7 @@
 (def compression (js/require "compression"))
 (def http        (js/require "http"))
 (def socketio    (js/require "socket.io"))
+(def fs          (js/require "fs"))
 
 ;;------------------------------------------------------------------------------
 ;; Config
@@ -454,7 +455,7 @@
 ;; Main
 ;;------------------------------------------------------------------------------
 
-(defn -main [& args]
+(defn run-multiplayer-server []
   (let [app    (express)
         server (.createServer http app)
         io     (.listen socketio server)]
@@ -471,12 +472,31 @@
     (if (:host config)
       (.listen server (:port config) (:host config))
       (.listen server (:port config)))
-    (util/tlog "t3tr0s server listening on port " (:port config))
+    (util/tlog "t3tr0s multiplayer server listening on port " (:port config))
 
     ;; wait for next game to start
     (go-go-next-game-countdown! io)
 
     ;; configure sockets
     (.sockets.on io "connection" #(on-socket-connect io %))))
+
+(defn run-singleplayer-server []
+  (let [app (express)
+        server (.createServer http app)]
+    (.use app (.static express (str js/__dirname "/public")))
+    (.listen server (:port config))
+    (util/tlog "t3tr0s singleplayer server listening on port " (:port config))))
+
+(defn singleplayer []
+  (let [page-filename "public/index.html"]
+    (util/tlog "Writing static page to " page-filename)
+    (.writeFileSync fs page-filename (html/page-shell)))
+  (when-not process.env.SKIP_SERVER
+    (run-singleplayer-server)))
+
+(defn -main [& args]
+  (if (:single-player-only config)
+    (singleplayer)
+    (run-multiplayer-server)))
 
 (set! *main-cli-fn* -main)
