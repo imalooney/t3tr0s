@@ -78,7 +78,7 @@
                  :position nil
                  :board empty-board
 
-                 :theme 0
+                 :theme (rand-nth (keys themes))
 
                  :score 0
                  :level 0
