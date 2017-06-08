@@ -1,8 +1,8 @@
-<a href="http://t3tr0s.github.io">
+<a href="http://t3tr0s.com">
 <img src="public/img/banner.png">
 </a>
 
-__[PLAY HERE](https://t3tr0s.github.io)__ (single player only)
+__[PLAY HERE](http://t3tr0s.com)__
 
 We re-created Tetris™ in
 [ClojureScript](https://github.com/shaunlebron/ClojureScript-Syntax-in-15-minutes).
