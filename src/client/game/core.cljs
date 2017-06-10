@@ -519,16 +519,17 @@
 (defn resume-game!
   "Restores the state of the board pre-pausing, and resumes gravity"
   []
-  (reset! state @paused-board)
+  (let [merge-paused-theme #(merge @paused-board {:theme (:theme %)})]
+    (swap! state merge-paused-theme)
 
-  ;; NOTE: this is just a quick hack to make the modal disappear after the
-  ;;   scramble board is gone
-  ;; it was jarring visually otherwise
-  (js/setTimeout hide-paused-modal! 20)
+    ;; NOTE: this is just a quick hack to make the modal disappear after the
+    ;;   scramble board is gone
+    ;; it was jarring visually otherwise
+    (js/setTimeout hide-paused-modal! 20)
 
-  (go-go-gravity!)
-  (reset! paused? false)
-  (reset! music-playing? @paused-music))
+    (go-go-gravity!)
+    (reset! paused? false)
+    (reset! music-playing? @paused-music)))
 
 (defn pause-game!
   "Saves the current state of the board, loads the game-over animation and pauses gravity"
